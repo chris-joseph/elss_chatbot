@@ -1,0 +1,166 @@
+---
+id: amfi_faq_cas_pdf
+title: "AMFI Comprehensive FAQs on Consolidated Account Statement (CAS)"
+url: "https://portal.amfiindia.com/spages/FAQ%20on%20CAS.pdf"
+organization: "AMFI"
+doc_type: "statutory_faq"
+category: "Statements & CAS"
+last_updated_from_sources: "2026-11-07"
+---
+
+Mutual Fund                                                          Frequently Asked Questions
+Consolidated Account Statement                                                                 Version 1.03
+
+
+    What is a Consolidated Account statement (CAS)?
+           Consolidated Account Statement is a single account statement that consolidates financial
+           transactions in all folios of an investor across all schemes of all mutual funds.
+
+    Why is Consolidated Account statement (CAS) being issued now?
+           Consolidated Account Statement (CAS) is being issued consequent to amendment in SEBI
+           Regulations and introduction of sub-regulation (4) under regulation 36, which interalia states
+           that..
+
+           “the asset management company shall ensure that consolidated account statement for each
+           calendar month is issued, on or before tenth day of succeeding month, detailing all the
+           transactions and holding at the end of the month including transaction charges paid to the
+           distributor, across all schemes of all mutual funds, to all the investors in whose folios
+           transaction has taken place during that month.”
+
+    When will the CAS start? When will the investor receive the first CAS?
+           The first CAS statement shall be issued by November 10th, 2011 covering transactions processed
+           in October 2011.
+
+    What will be the basis for consolidation of folios to be considered for CAS?
+           As per amendment to SEBI regulations, the asset management company shall identify common
+           investor across fund houses by their permanent account number for the purposes of sending
+           consolidated account statement.
+           Consequently, only those folios that have a) financial transactions in a month, b) identical
+           holders and c) all unit holders are KYC compliant will be considered and consolidated while
+           issuing a consolidated account statement.
+
+    Which folios will be included or consolidated in CAS? Whether all the folios will be reflected in the
+    monthly CAS?
+           A monthly CAS will include only those folios in which financial transactions have taken place
+           during the month provided the folios have valid PAN numbers available for all the unit holders.
+           For example, if an investor has three folios and transacts in only two folios in a month, the CAS
+           for the month will include only the two folios and not the third folio.
+
+    What happens if there are no financial transactions in a particular folio for the month?
+           CAS will include only the folios with financial transactions and hence these folios will not
+           reflect in the statement.
+
+    Which financial transactions will be included in CAS?
+
+
+
+
+                                                                                                  Page 1 of 4
+Mutual Fund                                                           Frequently Asked Questions
+Consolidated Account Statement                                                                 Version 1.03
+
+            CAS will include all types of financial transactions like purchase including NFOs, redemption
+            including maturity, switches, systematic transactions like SIP, SWP, STP etc, dividend payouts
+            or reinvestments, merger, bonus transactions etc.
+            Please note that non-financial transactions like updation of address, bank details, nominee
+            registration etc will not be included as confirmation for these will be sent separately by
+            individual AMCs.
+
+    I hold units in demat mode. Will I get a CAS?
+            Transactions under demat mode will not be included as investors should check their demat
+            account statement for the same.
+
+    What if there are no transactions in a folio for a long period?
+            CAS for folios that do not have a financial transaction in a half-year period ending September
+            or March will be sent in the following month detailing the holding at the end of six months.
+
+    Will minor folios be considered for consolidation?
+            No. Minor folios will not be considered for consolidation as different folios of same minor may
+            have different guardians in different mutual funds and it will be inappropriate to consolidate
+            on the basis of PAN of the guardian.
+
+    Will a statement be sent in case of folios like Micro SIP folios, or where the PAN is not valid, since
+    such folios will not be included in CAS?
+            Yes. Regular standard statement will be sent to the account holders individually by each asset
+            management company as per their practice. Generally this may be sent on a monthly basis.
+
+    What details of the investor will be included in CAS?
+            Apart from details of financial transactions, opening and closing unit balances in each folio,
+            CAS will also reflect the email id registered, nominee registration status, mode of holding, KYC
+            status, ISIN and UCC for each folio and scheme.
+
+    What details of the investor will not be provided in CAS?
+            Apart from non financial transactions, sensitive information like registered bank account
+            details, PAN and contact numbers will not be included in CAS. Mobile number will be provided
+            however will be masked to maintain for confidentiality and privacy.
+
+    CAS will be sent to which address? What if the investor has different addresses in different folios?
+            As PAN based KYC is mandatory for all purchases and would be updated in few folios by virtue
+            of a purchase transaction, generally CAS will be sent to the KYC address of the investor.
+            However, if KYC is not updated in any of the folios considered for consolidation, then CAS will
+            be sent to the address available in such folio where the investor had transacted the last
+            transaction in the month.
+
+
+                                                                                                 Page 2 of 4
+Mutual Fund                                                           Frequently Asked Questions
+Consolidated Account Statement                                                                  Version 1.03
+
+           We strongly advise investors to update their PAN and KYC details in all folios in mutual fund
+           industry by approaching respective mutual funds or their registrars.
+
+    What will be the frequency of CAS?
+           CAS will be sent on or before the 10th calendar day of the following month for folios which have
+           been transacted in the previous month. Currently CAS will be sent only via physical and not
+           electronic mode.
+
+    How will CAS be sent? Will it be sent via email?
+           Currently CAS will be sent by regular post, even if an email id is registered in any or all folios.
+           After few months, CAS may be sent via email using any of the email id registered in any of the
+           folios.
+           Hence, we strongly advise investors to verify their email ids (registered in each folio and also
+           printed in CAS against each folio) and update a single email id across all folios.
+
+    How can an investor get a duplicate CAS?
+           A duplicate CAS will not be available in physical form for past months. Investors with emnail id
+           registered may use mail back services provided by registrars of various mutual funds to get a
+           duplicate statement.
+
+    Will the investor get any individual statement from the AMC?
+           Yes. Folios with email id will continue to get regular fund specific account statements
+           electronically after each financial transaction within 5 working days. Folios with no email id
+           will get a monthly CAS.
+
+    How will the investor verify that details mentioned by him in the application form are captured
+    correctly by each AMC if details will be masked?
+           AMC’s will continue to send the first account statement for a new folio separately with all
+           details registered in the folio which will help the investor to verify the same.
+
+    What if some of the folios are not reflected in monthly CAS? Will the investor get any individual
+    statement from the AMC?
+           If investors find some of their folios are not reflected in CAS, they should check the following
+           and act appropriately
+           a. Whether the folio has any financial transaction, as CAS includes only the folios with
+               financial transactions?
+           b. If yes, whether the PAN of all the unit holders has been updated in the folio?
+           c. If no, they should get PAN of all the unit holders updated in the folio/s for future inclusion
+               in CAS.
+
+
+
+
+                                                                                                   Page 3 of 4
+Mutual Fund                                                          Frequently Asked Questions
+Consolidated Account Statement                                                              Version 1.03
+
+           d. If PAN is already updated, investor should check with respective mutual fund or the
+               registrar about the discrepancy.
+
+    In case of any discrepancy in folios related details in CAS, what should the investor do?
+           Investor should approach respective mutual fund or the registrar in case of any discrepancy in
+           financial transactions, folio details printed in CAS or for any other queries.
+
+
+
+
+                                                                                                Page 4 of 4

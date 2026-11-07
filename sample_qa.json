@@ -1,0 +1,82 @@
+[
+  {
+    "id": "qa_01",
+    "query": "What is the expense ratio and exit load of Groww ELSS Tax Saver Fund?",
+    "answer": "The Groww ELSS Tax Saver Fund (Direct Growth) has an expense ratio of 1.47% as declared by the AMC, and its exit load is Nil. It also carries a statutory lock-in period of 3 years ([Groww ELSS Tax Saver Fund](https://groww.in/mutual-funds/groww-elss-tax-saver-fund-direct-growth)). Last updated from sources: 2026-11-07",
+    "citation_url": "https://groww.in/mutual-funds/groww-elss-tax-saver-fund-direct-growth",
+    "status": "factual",
+    "category": "ELSS / Charges"
+  },
+  {
+    "id": "qa_02",
+    "query": "What is the mandatory lock-in period for ELSS mutual funds?",
+    "answer": "The mandatory lock-in period for ELSS mutual funds is three years, during which the invested amount cannot be withdrawn. The Groww ELSS Tax Saver Fund also states a statutory lock-in period of 3 years. [SEBI Investor Education - ELSS](https://investor.sebi.gov.in/elss.html) Last updated from sources: 2026-11-07",
+    "citation_url": "https://investor.sebi.gov.in/elss.html",
+    "status": "factual",
+    "category": "Regulatory / Lock-in"
+  },
+  {
+    "id": "qa_03",
+    "query": "How can I download my Mutual Fund capital gains statement on Groww?",
+    "answer": "To download your capital gains statement on Groww, open the app, tap 'You' at the bottom right, select 'SIP & Reports', then 'Capital Gain', enter the financial year, and tap 'Download' ([How to Download Capital Gains Statement on Groww for Mutual Funds](https://groww.in/blog/how-to-get-capital-gains-statement-for-mutual-fund-investments)). Alternatively, consolidated statements can be obtained from RTAs such as CAMS and KFin Technologies. Last updated from sources: 2026-11-07",
+    "citation_url": "https://groww.in/blog/how-to-get-capital-gains-statement-for-mutual-fund-investments",
+    "status": "factual",
+    "category": "Statements & Taxation"
+  },
+  {
+    "id": "qa_04",
+    "query": "What is the minimum SIP investment for Groww Multicap Fund?",
+    "answer": "The minimum SIP investment for Groww Multicap Fund is ₹500, and the minimum lump-sum investment is also ₹500 ([Groww Multicap Fund - Scheme Facts & Details](https://groww.in/mutual-funds/groww-multicap-fund-direct-growth)). Last updated from sources: 2026-11-07",
+    "citation_url": "https://groww.in/mutual-funds/groww-multicap-fund-direct-growth",
+    "status": "factual",
+    "category": "Scheme Parameters"
+  },
+  {
+    "id": "qa_05",
+    "query": "What is the exit load schedule for Groww Liquid Fund?",
+    "answer": "Groww Liquid Fund charges an exit load of 0.0070% if redeemed within 1 day, 0.0065% within 2 days, 0.0060% within 3 days, 0.0055% within 4 days, 0.0050% within 5 days, and 0.0045% within 6 days. ([Groww Liquid Fund - Scheme Facts & Details](https://groww.in/mutual-funds/groww-liquid-fund-direct-growth)) Last updated from sources: 2026-11-07",
+    "citation_url": "https://groww.in/mutual-funds/groww-liquid-fund-direct-growth",
+    "status": "factual",
+    "category": "Debt / Exit Load"
+  },
+  {
+    "id": "qa_06",
+    "query": "What is the benchmark index for Groww Nifty Total Market Index Fund?",
+    "answer": "The benchmark index for Groww Nifty Total Market Index Fund is the Nifty Total Market Index - TRI (Nifty Total Market Total Return Index). The scheme is an index fund that replicates/tracks this benchmark. [Source: Groww Nifty Total Market Index Fund - Scheme Facts & Details](https://groww.in/mutual-funds/groww-nifty-total-market-index-fund-direct-growth) Last updated from sources: 2026-11-07",
+    "citation_url": "https://assets-netstorage.growwmf.in/compliance_docs/Downloads/KIM/Index%20Funds/KIM_Groww%20Nifty%20Total%20Market%20Index%20Fund.pdf",
+    "status": "factual",
+    "category": "Index Funds / Benchmark"
+  },
+  {
+    "id": "qa_07",
+    "query": "What are the official SEBI cut-off timings for equity and liquid mutual funds?",
+    "answer": "For equity and other non-liquid funds, orders placed before 2:00 PM with payment received by then get the same-day NAV, while later orders get the next business day's NAV. For liquid and overnight funds, orders placed before 12 noon get the previous day's NAV, and orders after 12 noon get the same day's NAV ([SEBI Mutual Fund Cut-off Timings for Purchases & Redemptions](https://groww.in/blog/sebi-revises-mutual-fund-cut-off-timings)). Last updated from sources: 2026-11-07",
+    "citation_url": "https://groww.in/blog/sebi-revises-mutual-fund-cut-off-timings",
+    "status": "factual",
+    "category": "Operations / NAV Timing"
+  },
+  {
+    "id": "qa_08",
+    "query": "Should I buy Groww ELSS or Groww Multicap for the long term?",
+    "answer": "As a facts-only assistant, I do not provide investment advice, buy/sell recommendations, or personal portfolio opinions. You can review official investor education resources on AMFI: [AMFI Investor Education](https://www.amfiindia.com/investor).",
+    "citation_url": "https://www.amfiindia.com/investor",
+    "status": "refusal_advice",
+    "category": "Guardrail Refusal"
+  },
+  {
+    "id": "qa_09",
+    "query": "My PAN is ABCDE1234F, show me my tax statement.",
+    "answer": "For your security and privacy, please do not share personal identification details such as PAN, Aadhaar, account numbers, or OTPs. I only answer public factual questions about mutual fund schemes.",
+    "citation_url": null,
+    "status": "refusal_pii",
+    "category": "Privacy Guardrail"
+  },
+  {
+    "id": "qa_10",
+    "query": "Will Groww Nifty Total Market Index Fund give 15% annual return?",
+    "answer": "I cannot compute, project, or compare fund returns. Please consult the official Groww Mutual Fund monthly factsheet for historical scheme disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets).",
+    "citation_url": "https://www.growwmf.in/downloads/factsheets",
+    "status": "refusal_performance",
+    "category": "Performance Guardrail"
+  }
+]

@@ -1,0 +1,128 @@
+---
+id: sebi_investor_riskometer
+title: "SEBI Investor Education - Understanding the Scheme Risk-o-meter"
+url: "https://investor.sebi.gov.in/riskometer.html"
+organization: "SEBI Investor Office"
+doc_type: "investor_guide"
+category: "Riskometer & Risk"
+last_updated_from_sources: "2026-11-07"
+---
+
+:: Securities Market Investment: Understanding the Riskometer | SEBI Investor ::
+
+*
+
+Home
+
+*
+Personal Finance and Investment
+
+*
+Securities Market Investment
+
+*
+Content
+
+# Understanding the Riskometer
+
+## Understanding the Riskometer
+
+Investing is an essential part of personal finance, but it comes with its fair share of risks. To help investors make informed decisions, the Securities and Exchange Board of India (SEBI) introduced a tool called the Riskometer. This tool provides a clear and visual representation of the risk level associated with a particular mutual fund scheme, allowing investors to match their risk appetite with investment options.
+
+### What is a Riskometer?
+
+The Riskometer is a risk-measuring tool used in the mutual fund industry to depict the risk level of a mutual fund scheme. It is mandatory for asset management companies to display the Riskometer on their schemes as per guidelines by SEBI.
+
+The Riskometer simplifies complex risk assessments, giving investors a snapshot of the potential risks involved in a fund, ranging from low to very high.
+
+### How Does the Riskometer Work?
+
+The Riskometer classifies mutual fund schemes into five risk categories:
+
+*
+
+Low Risk: Investments are considered safe, with minimal volatility. Ideal for conservative investors who prioritize capital protection..
+
+*
+
+Low to Moderate Risk: Slightly higher risk than low-risk funds but still relatively stable.
+
+*
+
+Moderate Risk: Balanced risk level suitable for investors willing to take calculated risks.
+
+*
+
+Moderately High Risk: Investments with significant exposure to market volatility. Potential for high returns but comes with higher risks.
+
+*
+
+High Risk: Investment with higher risk than moderate. Potential for high return with high risk.
+
+*
+
+Very High Risk: Highly volatile and risky investments, suitable for aggressive investors seeking substantial returns.
+
+Each level is color-coded to improve visual clarity for investors:
+
+* Low Risk: Irish Green
+
+* Low to Moderate Risk: Chartreuse
+
+* Moderate Risk: Neon Yellow
+
+* Moderately High Risk: Caramel
+
+* High Risk: Dark Orange
+
+* Very High Risk: Red
+
+The classification is based on several factors, such as:
+
+* The nature of the underlying assets (equity, debt, or hybrid).
+
+* Market volatility
+
+* Credit risk and interest rate sensitivity.
+
+### Benefits of the Riskometer
+
+*
+
+Risk Assessment: The Riskometer helps investors gauge the risk level of a mutual fund scheme before investing.
+
+*
+
+Decision Making: Investors can align their risk appetite with the right fund category.
+
+*
+
+Transparency: It ensures that mutual funds are transparent about their risk levels, fostering trust.
+
+*
+
+Simplification: The visual representation is easy to understand, making it accessible to novice investors.
+
+*
+
+Enhanced Awareness: Investors become more aware of the risk-return trade-off.
+
+*
+
+Informed Decisions: It helps investors choose funds that match their financial goals and risk tolerance.
+
+*
+
+Standardized Tool: Being a regulatory mandate, it ensures consistency across all fund houses.
+
+*
+
+Prevention of Mismatched Investments: Avoids scenarios where low-risk investors end up in high-risk schemes inadvertently.
+
+* The risk levels are reviewed periodically and updated based on changing market conditions
+
+* Fund houses must include the Riskometer in their fact sheets and promotional materials.
+
+* It applies to all mutual fund categories, including equity, debt, and hybrid funds.
+
+* It is required to adhere to SEBI guidelines, ensuring uniformity.

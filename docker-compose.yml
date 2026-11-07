@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  groww-mf-chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: groww-mf-chatbot:latest
+    container_name: groww_mf_chatbot
+    ports:
+      - "8501:8501"
+    environment:
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      - LLM_MODEL=${LLM_MODEL:-deepseek-chat}
+      - PORT=8501
+    restart: unless-stopped
+    volumes:
+      - ./sources:/app/sources:ro
