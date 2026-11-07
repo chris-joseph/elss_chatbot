@@ -66,6 +66,8 @@ The application will be live at `http://localhost:8501`.
 
 ```
 elss_chatbot/
+├── docs/
+│   └── architecture.md               # Detailed RAG pipeline architecture & system design
 ├── sources/                          # 36 Downloaded official sources
 │   ├── groww_scheme_elss_tax_saver.md
 │   ├── groww_scheme_nifty_total_market.md
@@ -75,8 +77,8 @@ elss_chatbot/
 │   └── sources_catalog.md            # Markdown catalog with hyperlinks
 ├── rag/
 │   ├── guardrails.py                 # PII and advice/performance filter
-│   ├── retriever.py                  # Hybrid BM25/TF-IDF source retriever
-│   ├── generator.py                  # Facts-only generator with offline fallback
+│   ├── retriever.py                  # Field-weighted multi-signal source retriever
+│   ├── generator.py                  # Facts-only generator with grounded offline fallback
 │   └── engine.py                     # Unified RAG coordinator
 ├── tests/                            # Automated test suite (52 tests)
 ├── app.py                            # Streamlit interactive web UI
@@ -86,6 +88,8 @@ elss_chatbot/
 ├── disclaimer.md                     # Official disclaimer snippet & disclosures
 └── requirements.txt                  # Python dependencies
 ```
+
+📖 For an in-depth technical breakdown covering algorithms, BM25F field weighting, dynamic typo tolerance, mathematical scoring formulas, and Mermaid sequence diagrams, see the [RAG Pipeline Architecture Documentation](docs/architecture.md).
 
 ---
 
