@@ -26,5 +26,5 @@ Thumbs.db
 .idea/
 *.swp
 
-# Streamlit config cache
-.streamlit/
+# Streamlit config (allow config.toml, ignore secrets)
+.streamlit/secrets.toml

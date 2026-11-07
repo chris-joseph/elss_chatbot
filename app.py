@@ -1,8 +1,9 @@
 """
 app.py
-Conversational Streamlit web application for Groww Mutual Fund Facts-Only FAQ Assistant.
-Features modern chat interface (st.chat_message & st.chat_input), state-isolated example pills,
-and real-time verification badges.
+Adaptive, Mobile-Friendly Streamlit UI for Groww Mutual Fund Facts-Only FAQ Assistant.
+Theme: Orange, Cream, and Navy Blue.
+Features conversational chat (st.chat_message & st.chat_input), touch-friendly targets,
+and fluid responsive typography.
 """
 
 import streamlit as st
@@ -20,74 +21,173 @@ st.set_page_config(
     page_title="Groww Mutual Fund FAQ Assistant",
     page_icon="📈",
     layout="centered",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Custom Styling for Groww Brand Aesthetic
+# Custom Adaptive CSS: Orange, Cream, and Navy Blue Theme
 st.markdown("""
 <style>
+    /* Theme Palette Variables */
     :root {
-        --groww-primary: #00D09C;
-        --groww-dark: #0D1117;
-        --groww-card: #161B22;
-        --groww-border: #30363D;
+        --navy-bg: #0A192F;         /* Deep Midnight Navy */
+        --navy-surface: #112240;    /* Elevated Navy Card */
+        --navy-border: #233554;     /* Navy Border / Divider */
+        --cream-light: #FFFDF9;     /* Pure Warm Cream */
+        --cream-text: #F8F3E6;      /* High-contrast Cream Typography */
+        --cream-muted: #D3C5B4;     /* Secondary Muted Cream */
+        --orange-primary: #FF6B35;  /* Vibrant Sunset Orange */
+        --orange-hover: #FF8552;    /* Warm Hover Orange */
+        --orange-glow: rgba(255, 107, 53, 0.2);
+        --orange-badge-bg: rgba(255, 107, 53, 0.12);
     }
     
+    /* Main Background & Text */
     .stApp {
-        background-color: var(--groww-dark);
-        color: #E6EDF3;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background-color: var(--navy-bg);
+        color: var(--cream-text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     
+    /* Responsive Header Container */
     .header-box {
         text-align: center;
-        padding: 24px 16px 14px 16px;
-        background: linear-gradient(180deg, rgba(0, 208, 156, 0.12) 0%, rgba(13, 17, 23, 0) 100%);
-        border-radius: 12px;
+        padding: clamp(16px, 4vw, 28px) clamp(12px, 3vw, 20px);
+        background: linear-gradient(180deg, rgba(255, 107, 53, 0.14) 0%, rgba(17, 34, 64, 0.5) 100%);
+        border: 1px solid var(--navy-border);
+        border-radius: 16px;
         margin-bottom: 20px;
-        border-bottom: 1px solid var(--groww-border);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     }
     
     .header-title {
-        font-size: 26px;
-        font-weight: 700;
-        color: #FFFFFF;
-        margin-bottom: 6px;
+        font-size: clamp(22px, 5.5vw, 30px);
+        font-weight: 800;
+        color: var(--cream-light);
+        margin-bottom: 8px;
+        line-height: 1.25;
+        letter-spacing: -0.3px;
     }
     
     .header-title span {
-        color: var(--groww-primary);
+        color: var(--orange-primary);
+        text-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
     }
     
     .welcome-line {
-        font-size: 15px;
-        color: #8B949E;
-        margin-bottom: 10px;
+        font-size: clamp(13px, 3.5vw, 15px);
+        color: var(--cream-muted);
+        margin-bottom: 12px;
+        line-height: 1.5;
     }
     
     .disclaimer-badge {
-        display: inline-block;
-        background-color: rgba(0, 208, 156, 0.15);
-        color: var(--groww-primary);
-        border: 1px solid rgba(0, 208, 156, 0.35);
-        padding: 3px 12px;
-        border-radius: 14px;
-        font-size: 12px;
-        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background-color: var(--orange-badge-bg);
+        color: var(--orange-primary);
+        border: 1px solid rgba(255, 107, 53, 0.4);
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: clamp(11px, 3vw, 13px);
+        font-weight: 700;
         letter-spacing: 0.3px;
     }
-
-    .stButton>button {
-        border-radius: 8px;
-        border: 1px solid var(--groww-border);
-        background-color: var(--groww-card);
-        color: #E6EDF3;
-        font-size: 13px;
-        transition: all 0.2s ease;
+    
+    /* Mobile-Friendly Adaptive Example Buttons */
+    .stButton > button {
+        border-radius: 10px;
+        border: 1px solid var(--navy-border);
+        background: linear-gradient(180deg, #172A45 0%, #112240 100%);
+        color: var(--cream-text);
+        font-size: clamp(12px, 3vw, 13.5px);
+        font-weight: 500;
+        padding: 10px 14px;
+        min-height: 46px;
+        width: 100%;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     }
-    .stButton>button:hover {
-        border-color: var(--groww-primary);
-        color: var(--groww-primary);
+    
+    .stButton > button:hover {
+        border-color: var(--orange-primary);
+        color: var(--orange-primary);
+        background: linear-gradient(180deg, #1E3A5F 0%, #172A45 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--orange-glow);
+    }
+
+    .stButton > button:active {
+        transform: translateY(0px);
+    }
+
+    /* Links in Orange */
+    a {
+        color: var(--orange-primary) !important;
+        text-decoration: underline;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+    a:hover {
+        color: var(--orange-hover) !important;
+        text-shadow: 0 0 10px var(--orange-glow);
+    }
+
+    /* Chat Messages - Navy & Cream Surfaces */
+    [data-testid="stChatMessage"] {
+        background-color: var(--navy-surface);
+        border: 1px solid var(--navy-border);
+        border-radius: 12px;
+        padding: clamp(12px, 3vw, 16px);
+        margin-bottom: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    [data-testid="stChatMessage"]:has([data-testid="chatAvatarIcon-user"]) {
+        background: linear-gradient(90deg, rgba(23, 42, 69, 0.7) 0%, rgba(17, 34, 64, 0.9) 100%);
+        border-left: 3px solid var(--orange-primary);
+    }
+
+    /* Expander Styling */
+    .streamlit-expanderHeader {
+        background-color: var(--navy-surface) !important;
+        color: var(--cream-muted) !important;
+        border-radius: 8px !important;
+        font-size: 13px !important;
+    }
+
+    /* Sidebar Navigation in Navy & Cream */
+    [data-testid="stSidebar"] {
+        background-color: #081426;
+        border-right: 1px solid var(--navy-border);
+    }
+    [data-testid="stSidebar"] h3 {
+        color: var(--orange-primary);
+        font-size: 16px;
+        font-weight: 700;
+    }
+    [data-testid="stSidebar"] p, [data-testid="stSidebar"] li {
+        color: var(--cream-muted);
+        font-size: 13.5px;
+    }
+
+    /* Mobile Responsive Media Queries */
+    @media (max-width: 640px) {
+        .header-box {
+            padding: 16px 10px;
+            margin-bottom: 14px;
+        }
+        .header-title {
+            font-size: 22px;
+        }
+        .stButton > button {
+            min-height: 48px; /* Touch target accessibility */
+            margin-bottom: 6px;
+        }
+        [data-testid="stChatMessage"] {
+            padding: 10px 12px;
+            font-size: 14px;
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -99,16 +199,16 @@ def get_engine():
 
 engine = get_engine()
 
-# Initialize Chat Message History
+# Initialize Chat Message History in Session State
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Header & Welcome line
+# Header & Welcome line with Orange, Cream, and Navy styling
 st.markdown("""
 <div class="header-box">
     <div class="header-title">Groww Mutual Fund <span>FAQ Assistant</span></div>
     <div class="welcome-line">Welcome! I am your facts-only guide for mutual fund schemes, charges, exit loads, and statement guides.</div>
-    <div class="disclaimer-badge">Facts-only. No investment advice.</div>
+    <div class="disclaimer-badge">🔒 Facts-only. No investment advice.</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -119,18 +219,24 @@ EXAMPLE_QUESTIONS = [
     "How do I download my Mutual Fund capital gains statement on Groww?"
 ]
 
-st.markdown("##### 💡 Example Questions (Click to Ask):")
-col1, col2, col3 = st.columns(3)
+st.markdown("<p style='font-size: 14px; font-weight: 600; color: #D3C5B4; margin-bottom: 8px;'>💡 Quick Example Questions:</p>", unsafe_allow_html=True)
+
+# Adaptive 3-Column / Mobile Stacked Button Grid
+col1, col2, col3 = st.columns([1, 1, 1])
 
 def handle_query_submission(query_text: str):
-    """Processes a user query cleanly through the RAG pipeline."""
-    # Append user turn
-    st.session_state.messages.append({"role": "user", "content": query_text})
+    """Processes user query cleanly and adds to chat history."""
+    clean_q = query_text.strip()
+    if not clean_q:
+        return
+        
+    # Append user question
+    st.session_state.messages.append({"role": "user", "content": clean_q})
     
     # Run RAG Engine
-    res = engine.answer(query_text)
+    res = engine.answer(clean_q)
     
-    # Append assistant turn
+    # Append assistant response
     st.session_state.messages.append({
         "role": "assistant",
         "content": res["answer"],
@@ -140,7 +246,6 @@ def handle_query_submission(query_text: str):
         "latency_ms": res.get("latency_ms", 0.0)
     })
 
-# Example Button Handlers
 with col1:
     if st.button("📊 Groww ELSS Details", use_container_width=True, help="Expense ratio & exit load"):
         handle_query_submission(EXAMPLE_QUESTIONS[0])
@@ -156,13 +261,13 @@ with col3:
         handle_query_submission(EXAMPLE_QUESTIONS[2])
         st.rerun()
 
-st.markdown("---")
+st.markdown("<hr style='border: none; border-top: 1px solid #233554; margin: 16px 0;'>", unsafe_allow_html=True)
 
-# Render Conversation Stream
+# Render Chat Stream
 for msg in st.session_state.messages:
     if msg["role"] == "user":
         with st.chat_message("user"):
-            st.write(msg["content"])
+            st.markdown(f"<span style='color: #F8F3E6;'>{msg['content']}</span>", unsafe_allow_html=True)
     else:
         with st.chat_message("assistant", avatar="📈"):
             status = msg.get("status", "factual")
@@ -184,7 +289,7 @@ for msg in st.session_state.messages:
                         st.markdown(f"**Primary Citation:** [{msg.get('source_title', 'Official Source')}]({msg['source_url']})")
                     st.caption(f"Status: `{status}` | Latency: `{msg.get('latency_ms', 0)} ms`")
 
-# Chat Input Box
+# Chat Input Box (Fixed at bottom, mobile-friendly)
 user_prompt = st.chat_input("Ask a factual question about Groww mutual funds, charges, or statements...")
 if user_prompt:
     handle_query_submission(user_prompt)
