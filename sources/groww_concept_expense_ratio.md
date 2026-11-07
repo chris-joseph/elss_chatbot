@@ -78,34 +78,3 @@ The rules are different for Exchange Traded Funds and Index Funds . For an initi
 
 Under Section 52 of the SEBI Mutual Fund Regulations, an asset management company can charge a maximum of 2.5% as the total expense ratio for the first Rs. 100 Crore of the portfolio value. For subsequent asset value of Rs. 300 Crore, a rate of maximum 2.25% is deductible, while 2% can be charged on subsequent slabs concerned with the rest of asset value.
 
-Related Mutual Fund Pages
-
-SIP
-
-Lumpsum
-
-AUM
-
-Systematic Transfer Plan
-
-Exit Load
-
-Mutual Fund Units
-
-Expense Ratio
-
-Childrens Fund
-
-NAV
-
-Interval Funds
-
-Systematic Withdrawal Plan (SWP)
-
-Emerging Market Funds
-
-Hedge Funds
-
-Benchmark
-
-Invest in Mutual Funds Start building wealth with SIPs DOWNLOAD NOW Mutual Funds Equity Funds Large Cap Funds Mid Cap Funds Small Cap Funds Multi Cap Funds ELSS Funds Dividend Yield Funds Sector Funds Contra Funds Value Funds Focused Funds Hybrid Funds Aggressive Funds Conservative Funds Arbitrage Funds Balanced Funds Dynamic Asset Allocation Funds Multi Asset Allocation Funds Equity Savings Funds Debt Funds Low Duration Funds Medium Duration Funds Dynamic Bond Funds Gilt Funds Liquid Funds Credit Risk Funds Ultra Short Funds Money Market Fund Overnight Funds Corporate Bond Funds Banking and PSU Funds Gilt Funds with 10 Year Constant Duration Floater Funds Solution Oriented Schemes Retirement Fund Children’s Fund Other Schemes Index Funds Fund of Funds Home > Personal Finance > Expense Ratio

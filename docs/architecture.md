@@ -371,14 +371,17 @@ LLM_BASE_URL=https://api.groq.com/openai/v1
 The entire pipeline is guarded by automated test suites validating retrieval accuracy, guardrails, formatting limits, and offline fallback behavior:
 
 ```bash
-# Run all 72 unit and integration tests
+# Run all 111 unit and integration tests
 ./venv/bin/pytest tests/ -v
 
-# Run the automated headless evaluation suite across standard questions
+# Run the automated headless evaluation suite in offline mode
+./venv/bin/python cli.py --eval --provider offline
+
+# Run the automated headless evaluation suite with online LLM
 ./venv/bin/python cli.py --eval
 
 # Run a single query directly from the terminal
-./venv/bin/python cli.py --query "what is a Mutal fund"
+./venv/bin/python cli.py --query "what is a Mutal fund" --provider offline
 ```
 
 ---

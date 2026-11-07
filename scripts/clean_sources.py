@@ -21,7 +21,9 @@ FOOTER_START_MARKERS = [
     "© 2016- 2025 Groww",
     "NIFTY 50 NIFTY Midcap",
     "PRODUCTS Stocks F&O MTF",
-    "Calculators IPO Miscellaneous"
+    "Calculators IPO Miscellaneous",
+    "Related Mutual Fund Pages",
+    "Invest in Mutual Funds Start building wealth"
 ]
 
 def clean_source_content(content: str) -> str:

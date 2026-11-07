@@ -273,7 +273,7 @@ class FactsOnlyGenerator:
         """
         q_set = set(q_tokens)
         q_lower = query.lower()
-        is_def = any(w in q_lower for w in ["what is", "what are", "define", "meaning"])
+        is_def = any(w in q_lower for w in ["what is", "what are", "define", "meaning", "what does", "mean", "stands for", "abbreviation"])
         is_proc = any(w in q_lower for w in ["how to", "how do", "how can", "steps", "cancel", "start", "download"])
         is_comp = any(w in q_lower for w in [" vs ", " v/s ", " versus ", "difference", "compare", "between"])
 
@@ -287,6 +287,9 @@ class FactsOnlyGenerator:
                     continue
                 clean_s = clean_sentence(raw_s)
                 if len(clean_s) < 25 or len(clean_s) > 300:
+                    continue
+                # Skip unpunctuated heading/title fragments (< 6 words)
+                if not raw_s.endswith((".", "!", "?")) and len(clean_s.split()) < 6:
                     continue
                 if clean_s.endswith(":") or clean_s in seen:
                     continue
@@ -302,7 +305,7 @@ class FactsOnlyGenerator:
                 score = density
 
                 # Definitional query boost
-                if is_def and re.search(r"\b(is a|is an|refers to|means|is defined as|represents|is a mechanism|is a pool)\b", clean_s.lower()):
+                if is_def and re.search(r"\b(is a|is an|refers to|means|is defined as|represents|is a mechanism|is a pool|is the annual|annual maintenance charge|operating fee|stands for)\b", clean_s.lower()):
                     score += 0.8
 
                 # Procedural query boost

@@ -201,6 +201,27 @@ class MutualFundKnowledgeGraph:
         self.graph.add_edge(stocks_node, "Individual Company Single-Stock Risk", relation="RISK")
         self.graph.add_edge(fd_node, "Guaranteed Fixed Interest with DICGC ₹5L Insurance", relation="SAFETY")
 
+        # Core Financial Acronyms & Performance Metrics
+        aum_node = "Assets Under Management (AUM)"
+        nav_node = "Net Asset Value (NAV)"
+        ter_node = "Total Expense Ratio (TER)"
+        cagr_node = "Compounded Annual Growth Rate (CAGR)"
+        xirr_node = "Extended Internal Rate of Return (XIRR)"
+        cas_node = "Consolidated Account Statement (CAS)"
+
+        self.graph.add_node(aum_node, type="Metric", doc_id="groww_guide_mutual_fund_abbreviations_glossary")
+        self.graph.add_node(nav_node, type="Metric", doc_id="groww_concept_nav")
+        self.graph.add_node(ter_node, type="Metric", doc_id="groww_concept_expense_ratio")
+        self.graph.add_node(cagr_node, type="Metric", doc_id="groww_guide_mutual_fund_abbreviations_glossary")
+        self.graph.add_node(xirr_node, type="Metric", doc_id="groww_guide_mutual_fund_abbreviations_glossary")
+        self.graph.add_node(cas_node, type="Document", doc_id="groww_guide_kyc_folio_nomination_rules")
+
+        self.graph.add_edge(mf_node, aum_node, relation="MEASURED_BY")
+        self.graph.add_edge(mf_node, nav_node, relation="UNIT_PRICE_DETERMINED_BY")
+        self.graph.add_edge(mf_node, ter_node, relation="ANNUAL_OPERATING_COST")
+        self.graph.add_edge(mf_node, cagr_node, relation="POINT_TO_POINT_RETURNS_METRIC")
+        self.graph.add_edge(sip_node, xirr_node, relation="PERIODIC_CASHFLOW_RETURNS_METRIC")
+
     def query_graph(self, query: str) -> Dict[str, Any]:
         """
         Parses query, extracts matched graph entities, traverses connected edges,
@@ -231,6 +252,18 @@ class MutualFundKnowledgeGraph:
             elif n_lower == "idcw option" and "idcw" in q_lower:
                 matched_nodes.append(node)
             elif n_lower == "growth option" and "growth" in q_lower and "direct growth" not in q_lower:
+                matched_nodes.append(node)
+            elif n_lower == "assets under management (aum)" and ("aum" in q_lower or "assets under management" in q_lower):
+                matched_nodes.append(node)
+            elif n_lower == "total expense ratio (ter)" and ("ter" in q_lower or "expense ratio" in q_lower):
+                matched_nodes.append(node)
+            elif n_lower == "net asset value (nav)" and ("nav" in q_lower or "net asset value" in q_lower):
+                matched_nodes.append(node)
+            elif n_lower == "compounded annual growth rate (cagr)" and "cagr" in q_lower:
+                matched_nodes.append(node)
+            elif n_lower == "extended internal rate of return (xirr)" and "xirr" in q_lower:
+                matched_nodes.append(node)
+            elif n_lower == "consolidated account statement (cas)" and ("cas" in q_lower or "account statement" in q_lower):
                 matched_nodes.append(node)
 
         # 2. Multi-hop traversal across adjacent edges

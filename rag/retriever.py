@@ -294,6 +294,24 @@ class SourceRetriever:
         numer = sum(self._get_idf(w) for w in inter)
         return numer / denom
 
+    def is_out_of_vocabulary(self, query: str) -> bool:
+        """
+        Fast Out-of-Vocabulary check: returns True if query contains keywords
+        but NONE of them exist in corpus vocabulary or abbreviation synonyms.
+        """
+        q_norm = normalize_query(query, self.vocabulary, self.word_counts)
+        q_words = [
+            w for w in re.findall(r'\b\w+\b', q_norm)
+            if (len(w) >= 3 or w in FINANCIAL_SHORT_TERMS) and w not in STOPWORDS
+        ]
+        if not q_words:
+            return False
+        known_in_corpus = [
+            w for w in q_words
+            if w in self.vocabulary or any(syn in self.vocabulary for syn in ABBREVIATION_SYNONYMS.get(w, []))
+        ]
+        return len(known_in_corpus) == 0
+
     def retrieve(self, query: str, top_k: int = 3, min_score: float = MIN_RELEVANCE_SCORE) -> List[Passage]:
         if not self.passages or self.vectorizer is None or self.tfidf_matrix is None:
             return []
@@ -307,14 +325,9 @@ class SourceRetriever:
         q_set = set(q_words)
         clean_q_phrase = " ".join(q_words)
 
-        # Fast Out-of-Vocabulary Gate: if query has keywords but NONE exist in corpus vocabulary
-        if q_words:
-            known_in_corpus = [
-                w for w in q_words
-                if w in self.vocabulary or any(syn in self.vocabulary for syn in ABBREVIATION_SYNONYMS.get(w, []))
-            ]
-            if not known_in_corpus:
-                return []
+        # Fast Out-of-Vocabulary Gate
+        if self.is_out_of_vocabulary(query):
+            return []
 
         # 2. Enrich query vector with Abbreviation Synonyms (bidirectional)
         expanded_query_tokens = list(q_words)
@@ -355,6 +368,15 @@ class SourceRetriever:
             # Exact N-gram / Phrase Matching
             if clean_q_phrase and (clean_q_phrase in t_lower or clean_q_phrase in s_lower):
                 bonus += 0.25
+
+            # Acronym Definitional Match in Content (e.g. "**AUM (" or "**TER (")
+            for abbr in q_words:
+                if abbr in ABBREVIATION_SYNONYMS:
+                    abbr_pat = f"**{abbr.lower()}"
+                    abbr_parens = f"{abbr.lower()} ("
+                    if abbr_pat in p.content.lower() or abbr_parens in p.content.lower():
+                        bonus += 0.35
+                        break
 
             combined_score = raw_sim + bonus
             if combined_score >= min_score:

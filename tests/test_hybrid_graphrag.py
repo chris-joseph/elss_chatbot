@@ -57,3 +57,20 @@ def test_hybrid_retriever_out_of_scope_rejection(hybrid_retriever):
     """Verifies that non-financial random tokens are rejected by the hybrid pipeline."""
     res = hybrid_retriever.retrieve("boomba diagga", top_k=2)
     assert len(res) == 0
+
+def test_knowledge_graph_acronym_nodes(kg):
+    """Verifies that AUM, CAGR, XIRR, and NAV exist in the knowledge graph."""
+    assert "Assets Under Management (AUM)" in kg.graph.nodes
+    assert "Compounded Annual Growth Rate (CAGR)" in kg.graph.nodes
+    assert "Extended Internal Rate of Return (XIRR)" in kg.graph.nodes
+    assert "Net Asset Value (NAV)" in kg.graph.nodes
+    res = kg.query_graph("what is AUM in mutual funds")
+    assert "Assets Under Management (AUM)" in res["matched_entities"]
+    assert "groww_guide_mutual_fund_abbreviations_glossary" in res["doc_ids"]
+
+def test_hybrid_retriever_aum_query(hybrid_retriever):
+    """Verifies that HybridRetriever successfully retrieves glossary for AUM."""
+    res = hybrid_retriever.retrieve("what is AUM in mutual funds", top_k=2)
+    assert len(res) >= 1
+    assert "groww_guide_mutual_fund_abbreviations_glossary" in res[0].doc_id
+

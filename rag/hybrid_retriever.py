@@ -50,22 +50,26 @@ class HybridRetriever:
         q_lower = query.lower()
         is_proc = any(w in q_lower for w in ["how to", "how do", "how can", "steps", "cancel", "stop", "download", "start"])
 
-        # 1. Lexical BM25F Stream (with fast OOD gate and exact numerical weighting)
-        lex_passages = self.lexical_retriever.retrieve(query, top_k=6, min_score=min_score)
-        
-        # If the fast OOD gate rejected the query, exit immediately
-        if not lex_passages:
+        # Fast Out-of-Vocabulary Gate: abort early if all non-stopwords are out-of-corpus
+        if self.lexical_retriever.is_out_of_vocabulary(query):
             return []
 
-        # 2. Knowledge Graph Stream (Entity extraction & multi-hop edge traversal)
+        # 1. Lexical BM25F Stream (with exact numerical weighting)
+        lex_passages = self.lexical_retriever.retrieve(query, top_k=6, min_score=min_score)
+
+        # 2. Dense Semantic Vector Stream (ChromaDB ONNX embeddings)
+        dense_passages = self.dense_store.search(query, top_k=6)
+
+        # Dual-Stream Out-of-Scope Gate: if lexical found nothing AND dense similarity < 0.40
+        if not lex_passages and (not dense_passages or dense_passages[0].score < 0.40):
+            return []
+
+        # 3. Knowledge Graph Stream (Entity extraction & multi-hop edge traversal)
         # Suppress generic concept graph boosts on procedural queries (e.g. how to cancel SIP)
         kg_doc_ids = set()
         if not is_proc:
             kg_res = self.kg.query_graph(query)
             kg_doc_ids = set(kg_res.get("doc_ids", []))
-
-        # 3. Dense Semantic Vector Stream (ChromaDB ONNX embeddings)
-        dense_passages = self.dense_store.search(query, top_k=6)
 
         # 4. Calibrated Reciprocal Rank Fusion (RRF)
         # Formula: RRF_score(d) = sum( w_m / (k + rank_m(d)) )

@@ -75,3 +75,16 @@ def test_cli_main_with_query_flag():
         main()
         mock_sq.assert_called_once()
 
+def test_cli_main_with_provider_offline_eval():
+    with patch("sys.argv", ["cli.py", "--eval", "--provider", "offline"]), patch("cli.run_eval") as mock_eval, patch("cli.RAGEngine") as mock_engine_cls:
+        main()
+        mock_engine_cls.assert_called_once_with(provider="offline", api_key=None, model=None)
+        mock_eval.assert_called_once()
+
+def test_cli_main_with_provider_offline_query():
+    with patch("sys.argv", ["cli.py", "--query", "what is a mutual fund", "--provider", "offline"]), patch("cli.run_single_query") as mock_sq, patch("cli.RAGEngine") as mock_engine_cls:
+        main()
+        mock_engine_cls.assert_called_once_with(provider="offline", api_key=None, model=None)
+        mock_sq.assert_called_once()
+
+

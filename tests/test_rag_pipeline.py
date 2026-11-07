@@ -113,6 +113,21 @@ def test_engine_idcw_definition(engine):
     assert "income distribution" in ans or "idcw" in ans
     assert "https://groww.in/p/growth-vs-idcw-options" in res["answer"]
 
+def test_engine_aum_definition(engine):
+    """Verifies that 'what is AUM in mutual funds' retrieves the acronym glossary definition."""
+    res = engine.answer("what is AUM in mutual funds")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "assets under management" in ans or "aum" in ans
+
+def test_engine_cagr_xirr(engine):
+    """Verifies that 'what is CAGR and XIRR' returns definition of return metrics."""
+    res = engine.answer("what is CAGR and XIRR")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "cagr" in ans or "growth rate" in ans or "xirr" in ans
+
+
 def test_engine_stocks_vs_mutual_funds(engine):
     """Verifies that mutual funds vs stocks query retrieves the asset comparison guide."""
     res = engine.answer("difference between mutual funds and stocks")
