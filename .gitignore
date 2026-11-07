@@ -28,3 +28,10 @@ Thumbs.db
 
 # Streamlit config (allow config.toml, ignore secrets)
 .streamlit/secrets.toml
+
+# Backups, Logs, and Local Vector Indexes
+.backups/
+.reload_trigger
+vector_store/
+logs/
+

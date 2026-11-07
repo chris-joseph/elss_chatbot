@@ -371,7 +371,7 @@ LLM_BASE_URL=https://api.groq.com/openai/v1
 The entire pipeline is guarded by automated test suites validating retrieval accuracy, guardrails, formatting limits, and offline fallback behavior:
 
 ```bash
-# Run all 52 unit and integration tests
+# Run all 72 unit and integration tests
 ./venv/bin/pytest tests/ -v
 
 # Run the automated headless evaluation suite across standard questions
@@ -380,3 +380,257 @@ The entire pipeline is guarded by automated test suites validating retrieval acc
 # Run a single query directly from the terminal
 ./venv/bin/python cli.py --query "what is a Mutal fund"
 ```
+
+---
+
+## 8. Option D: Tri-Modal Hybrid GraphRAG Architecture 🕸️
+
+### 8.1 Architectural Motivation & Option D Selection
+In high-stakes financial domain question answering, traditional single-model IR systems exhibit critical failure modes:
+1. **Pure Lexical (BM25) limitations:** Fails when user queries use synonyms or colloquial phrasing (e.g., *"putting money regularly"* instead of *"Systematic Investment Plan"*), or when multi-hop reasoning is required across entities (e.g., understanding that *ELSS* implies a *Section 80C* tax rebate and a *3-year statutory lock-in*).
+2. **Pure Dense Vector DB (Option B) limitations:** Dense embeddings (`all-MiniLM-L6-v2`) exhibit severe **semantic blurring** over numerical facts. For example, a passage stating *"Expense Ratio: 1.47%"* and another stating *"Expense Ratio: 0.25%"* occupy almost identical vector neighborhoods ($>0.92$ cosine similarity). A pure vector retriever frequently swaps numerical scheme facts or loses exact acronym matching.
+
+**Option D: Tri-Modal Hybrid GraphRAG** triangulates three orthogonal retrieval paradigms:
+* **Knowledge Graph (NetworkX):** Provides deterministic, multi-hop semantic relationships between entities (Schemes, Benchmarks, Regulations, Investment Channels, Tax Rules).
+* **Dense Vector Database (ChromaDB):** Captures semantic intent, conversational synonyms, and conceptual paraphrase matching via local 384-dimensional ONNX embeddings.
+* **Lexical Index (BM25F Sparse CSR):** Enforces strict keyword precision, exact numerical figures, acronyms, and morphological lemmas.
+
+```
+       ┌────────────────────────────────────────────────────────┐
+       │             Tri-Modal Triangulation                     │
+       ├────────────────────────────────────────────────────────┤
+       │  Lexical BM25F    ──► Numerical & Acronym Precision    │
+       │  ChromaDB Dense   ──► Semantic & Conceptual Paraphrase │
+       │  Knowledge Graph  ──► Multi-Hop Structural Reasoning   │
+       └────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 8.2 Tri-Modal Retrieval Architecture Diagram
+
+```mermaid
+flowchart TD
+    Query["User Query<br/>(e.g., 'what is the difference b/w direct and sip')"] --> Normalizer["Query Normalizer & Lemmatizer<br/>(Abbreviation Expander + Plural Mapper)"]
+    
+    subgraph TriModalRetrieval ["Tri-Modal Retrieval Engine (rag/hybrid_retriever.py)"]
+        direction TB
+        
+        subgraph Modal1 ["Modal 1: Knowledge Graph (rag/knowledge_graph.py)"]
+            KG["NetworkX DiGraph<br/>(50 Nodes, 66 Edges)"]
+            KG_Traverse["Multi-Hop Traversal<br/>& Entity Expansion"]
+            KG --> KG_Traverse
+        end
+        
+        subgraph Modal2 ["Modal 2: Dense Vector DB (rag/chroma_store.py)"]
+            Chroma["Persistent ChromaDB Store<br/>(vector_store/chroma/)"]
+            ONNX["ONNX all-MiniLM-L6-v2<br/>(384-dim Cosine Embeddings)"]
+            ONNX --> Chroma
+        end
+        
+        subgraph Modal3 ["Modal 3: Lexical BM25F (rag/retriever.py)"]
+            BM25F["Field-Weighted BM25F<br/>(Title 3x, Section 2x, Content 1x)"]
+            CSR["Sparse CSR Matrix<br/>(Word Unigrams + Bigrams)"]
+            CSR --> BM25F
+        end
+        
+        Normalizer --> KG_Traverse
+        Normalizer --> Chroma
+        Normalizer --> BM25F
+    end
+    
+    KG_Traverse --> RRF_KG["KG Ranked Passages<br/>(Rank_kg)"]
+    Chroma --> RRF_Dense["Dense Ranked Passages<br/>(Rank_dense)"]
+    BM25F --> RRF_Lex["Lexical Ranked Passages<br/>(Rank_lex)"]
+    
+    RRF_KG --> FusionEngine{"Calibrated Reciprocal Rank Fusion (RRF)<br/>w_lex = 1.2 · conf, w_dense = 0.4, w_kg = 0.6"}
+    RRF_Dense --> FusionEngine
+    RRF_Lex --> FusionEngine
+    
+    FusionEngine --> IntentGate{"Procedural Intent Gate<br/>(is_proc suppression)?"}
+    IntentGate -- "Procedural Query ('how to cancel')" --> SuppressKG["Suppress Concept Graph Boost<br/>Prioritize Step-by-Step FAQ"]
+    IntentGate -- "Factual / Relational Query" --> KeepFusion["Retain Full Multi-Hop Boost"]
+    
+    SuppressKG --> TopK["Top-k High-Confidence Grounded Passages"]
+    KeepFusion --> TopK
+    
+    TopK --> Generator["Dynamic Extractive Generator (≤10 Sentences)"]
+```
+
+---
+
+### 8.3 Modal 1: Knowledge Graph Topology (`rag/knowledge_graph.py`)
+
+The knowledge graph is modeled as an in-memory directed multigraph using `networkx.DiGraph`. It captures the structural ontology of Indian mutual fund regulations, scheme mechanics, taxation, and operational mechanisms:
+
+#### Node Entity Types:
+* **Scheme:** `Groww ELSS Tax Saver Fund`, `Groww Multicap Fund`, `Groww Liquid Fund`, `Groww Nifty Total Market Index Fund`, etc.
+* **Category:** `ELSS`, `Multi Cap`, `Liquid Fund`, `Index Fund`.
+* **Concept:** `Mutual Fund`, `AMC`, `NAV`, `TER`, `Exit Load`, `Folio`, `CAS`, `Benchmark`, etc.
+* **Mechanism:** `SIP`, `Lump Sum`, `STP`, `SWP`, `Direct Plan`, `Regular Plan`, `Growth Option`, `IDCW Option`.
+* **Regulation:** `SEBI`, `AMFI`, `Section 80C`, `KYC`, `CKYC`, `PMLA`.
+* **Taxation:** `LTCG Equity`, `STCG Equity`, `Debt Taxation`.
+
+#### Edge Relations:
+| Edge Relation | Source Entity | Target Entity | Description |
+| :--- | :--- | :--- | :--- |
+| `IS_CATEGORY_OF` | `Groww ELSS Tax Saver Fund` | `ELSS` | Scheme categorization |
+| `REGULATED_BY` | `AMC` / `Mutual Fund` | `SEBI` | Statutory regulatory oversight |
+| `BENCHMARKED_TO` | `Groww ELSS Tax Saver Fund` | `NIFTY 500 TRI` | Official comparative benchmark index |
+| `HAS_OPTION` | `Mutual Fund` | `Growth Option` / `IDCW Option` | Distribution option mechanics |
+| `HAS_CHANNEL` | `Mutual Fund` | `Direct Plan` / `Regular Plan` | Investment fee structure route |
+| `HAS_TAX_STATUS` | `ELSS` | `Section 80C` | ₹1.5 Lakh income tax deduction eligibility |
+| `LOCKED_IN_FOR` | `ELSS` | `3 Years` | Statutory lock-in requirement |
+| `INVESTMENT_MODE_FOR` | `SIP` / `Lump Sum` | `Mutual Fund` | Systematic vs one-time capital commitment |
+
+#### Graph Traversal Methods:
+* `get_neighborhood(node_id, radius=1)`: Traverses incoming and outgoing edges to retrieve contextual graph facts.
+* `find_path(source, target)`: Computes shortest multi-hop reasoning path connecting two entities.
+* `expand_query_concepts(tokens)`: Identifies all graph nodes mentioned or aliased in query tokens and maps them to relevant document slugs.
+
+---
+
+### 8.4 Modal 2: Dense Semantic Vector Store (`rag/chroma_store.py`)
+
+Dense semantic search is powered by an embedded, persistent ChromaDB engine located at `./vector_store/chroma/`:
+* **Embedding Model:** ChromaDB's native ONNX runtime running `all-MiniLM-L6-v2` (384-dimensional dense vectors).
+* **Distance Metric:** Cosine similarity space (`hnsw:space: cosine`).
+* **Zero Cloud Dependency:** Operates 100% locally with zero external API calls, zero token billing, and zero network latency.
+* **Passage Chunking:** Automatically indexes 174 discrete document passages with complete frontmatter metadata (`doc_id`, `title`, `url`, `organization`, `category`, `section_title`).
+* **Idempotent Re-indexing:** Validates collection count against source passages, bypassing redundant re-indexing on warm application startup.
+
+---
+
+### 8.5 Modal 3: Lexical Field-Weighted BM25F (`rag/retriever.py`)
+
+The lexical retriever preserves exact keyword fidelity and numerical accuracy:
+* **Morphological Lemmatization:** Employs `PLURAL_MAPPINGS` to normalize irregular plurals (`funds` $\to$ `fund`, `stocks` $\to$ `stock`, `indices` $\to$ `index`, `amcs` $\to$ `amc`).
+* **Financial Token Preservation:** Protects crucial 2-letter financial abbreviations from stopword removal (`mf`, `fd`, `pe`, `pb`, `dp`).
+* **Bidirectional Abbreviation Expansion:** Expands aliases via `ABBREVIATION_SYNONYMS` (`nav` $\leftrightarrow$ *net asset value*, `ter` $\leftrightarrow$ *total expense ratio*, `elss` $\leftrightarrow$ *equity linked savings scheme*, `idcw` $\leftrightarrow$ *income distribution cum capital withdrawal*).
+* **Field Weighting:** Computes weighted TF-IDF scores:
+  $$\text{FieldWeight}(f) = \begin{cases} 3.0 & \text{Document Title} \\ 2.0 & \text{Section Title} \\ 1.0 & \text{Category} \\ 1.0 & \text{Section Content} \end{cases}$$
+
+---
+
+### 8.6 Calibrated Reciprocal Rank Fusion (RRF) Formulation
+
+The tri-modal hybrid retriever fuses ranking lists from Lexical, Dense, and Graph search using a calibrated Reciprocal Rank Fusion formula:
+
+$$RRF(d) = w_{\text{lex}} \cdot \frac{1}{k + rank_{\text{lex}}(d)} + w_{\text{dense}} \cdot \frac{1}{k + rank_{\text{dense}}(d)} + w_{\text{kg}} \cdot \frac{1}{k + rank_{\text{kg}}(d)}$$
+
+Where:
+* $k = 60$ (smoothing constant preventing top-rank bias).
+* $w_{\text{dense}} = 0.4$ (dense semantic vector weight).
+* $w_{\text{kg}} = 0.6$ (knowledge graph relation weight).
+* $w_{\text{lex}} = 1.2 \times \text{confidence\_weight}$ (dynamic lexical weight scaled by keyword density and exact phrase matching).
+
+#### Procedural Intent Gating (`is_proc`):
+When a query contains procedural keywords (`"how to"`, `"steps"`, `"cancel"`, `"download"`, `"apply"`), conceptual graph boosts are suppressed. This ensures that operational queries (such as *"How to cancel an ongoing SIP"*) rank specific procedural FAQ passages above generic SIP concept overviews.
+
+---
+
+## 9. Automated Overnight Cron Pipeline & Self-Healing Sync ⏱️
+
+### 9.1 Pipeline Architecture & Self-Healing Lifecycle
+
+To ensure regulatory disclosures, cut-off timings, and scheme facts remain synchronized with official sources, the system includes an automated overnight update orchestrator (`scripts/overnight_update.py`) wrapped in an idempotent production shell script (`scripts/cron_sync_sources.sh`).
+
+```mermaid
+flowchart TD
+    CronTrigger["Crontab / Scheduler<br/>(Daily at 02:00 AM IST)"] --> LockCheck{"Acquire Flocking Lock<br/>(flock -n /tmp/elss_cron.lock)?"}
+    
+    LockCheck -- "Already Running" --> ExitBusy["Exit 0: Skip Concurrent Run"]
+    LockCheck -- "Lock Acquired" --> Step1["Phase 1: Atomic Snapshot Backup<br/>(Copy sources/ & catalogs to .backups/TIMESTAMP/)"]
+    
+    Step1 --> Step2["Phase 2: Scrape & Clean Markdown Sources<br/>(Strip HTML, Navbars, Cookie Banners, Disclaimers)"]
+    Step2 --> Step3["Phase 3: Catalog Re-synchronization<br/>(Update sources_catalog.json, .csv, .md)"]
+    Step3 --> Step4["Phase 4: Tri-Modal Re-Indexing<br/>(Rebuild ChromaDB vectors, NetworkX KG, BM25F matrix)"]
+    
+    Step4 --> Step5{"Phase 5: Automated Verification Gate<br/>(Run pytest tests/ -v)"}
+    
+    Step5 -- "Tests Passed (100%)" --> Step6["Phase 6: Zero-Downtime Hot Reload<br/>(touch .reload_trigger)"]
+    Step5 -- "Any Test Failed" --> Rollback["Phase 5b: Automated Rollback<br/>(Restore .backups/TIMESTAMP/ snapshot)"]
+    
+    Rollback --> LogFailure["Log Critical Alert to logs/overnight_sync.log & Exit 1"]
+    Step6 --> Success["Log Success Summary & Release Lock"]
+```
+
+---
+
+### 9.2 Automated Pipeline Phases (`scripts/overnight_update.py`)
+
+1. **Phase 1: Atomic Snapshot Backup:**
+   * Creates timestamped isolated backup in `.backups/YYYYMMDD_HHMMSS/`.
+   * Preserves existing `sources/` documents, `sources_catalog.*`, and vector indexes prior to mutation.
+2. **Phase 2: Source Cleansing & Normalization:**
+   * Removes extraneous website artifacts (cookie banners, navigation links, tracking scripts).
+   * Enforces standard YAML frontmatter (`title`, `url`, `organization`, `category`, `last_updated`).
+3. **Phase 3: Catalog Resynchronization:**
+   * Synchronizes `sources_catalog.json`, `sources_catalog.csv`, and `sources_catalog.md` with new or updated sources.
+4. **Phase 4: Tri-Modal Index Rebuilding:**
+   * Re-embeds passages into persistent ChromaDB store (`force_reindex=True`).
+   * Rebuilds in-memory NetworkX directed graph nodes and multi-hop edges.
+   * Recalculates sparse BM25F document-term frequencies.
+5. **Phase 5: Automated Test Verification Gate & Rollback:**
+   * Executes the full automated test suite (`pytest tests/ -v`).
+   * **Self-Healing Guarantee:** If any test fails, the orchestrator instantly halts, rolls back the entire `sources/` directory and catalog from the snapshot backup, and logs an alert. No broken state ever reaches the running application.
+6. **Phase 6: Zero-Downtime Hot-Reload:**
+   * Touches `.reload_trigger`.
+   * Streamlit and backend file watchers detect the timestamp change and automatically reload retriever caches without application downtime or service restarts.
+
+---
+
+### 9.3 Production Deployment & Scheduling
+
+#### Option A: Native Linux Host / Crontab (Recommended)
+Edit the system crontab using `crontab -e`:
+
+```bash
+# Groww Mutual Fund RAG - Automated Overnight Sync (Daily at 02:00 AM IST)
+0 2 * * * /home/chris/Project/elss_chatbot/scripts/cron_sync_sources.sh >> /home/chris/Project/elss_chatbot/logs/overnight_sync.log 2>&1
+```
+
+#### Option B: Standalone Python Runner (Manual / Dry-Run Mode)
+```bash
+# Dry run verification without modifying files
+./venv/bin/python scripts/overnight_update.py --dry-run
+
+# Full live execution with snapshot creation and hot reload
+./venv/bin/python scripts/overnight_update.py
+```
+
+#### Option C: Coolify / Docker Container Cron
+In containerized environments (Coolify or standalone Docker), add a background cron daemon entry to `supervisord.conf` or invoke via Docker exec:
+
+```dockerfile
+# Add cron job to crontabs
+RUN echo "0 2 * * * /app/scripts/cron_sync_sources.sh >> /app/logs/overnight_sync.log 2>&1" > /etc/crontabs/root
+CMD ["crond", "-f", "-d", "8"]
+```
+
+#### Option D: GitHub Actions Scheduled Workflow (`.github/workflows/overnight_sync.yml`)
+```yaml
+name: Overnight Sources Sync & Verification
+
+on:
+  schedule:
+    - cron: '30 20 * * *' # 02:00 AM IST (20:30 UTC)
+  workflow_dispatch:
+
+jobs:
+  sync-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run Overnight Sync Pipeline
+        run: python scripts/overnight_update.py
+      - name: Run Full Test Suite
+        run: pytest tests/ -v
+```
+

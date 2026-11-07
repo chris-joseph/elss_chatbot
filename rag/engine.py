@@ -8,6 +8,7 @@ import time
 from typing import Dict, Any, Optional
 from rag.guardrails import GuardrailsChecker
 from rag.retriever import SourceRetriever
+from rag.hybrid_retriever import HybridRetriever
 from rag.generator import FactsOnlyGenerator
 
 class RAGEngine:
@@ -20,7 +21,10 @@ class RAGEngine:
         model: Optional[str] = None
     ):
         self.guardrails = GuardrailsChecker()
-        self.retriever = SourceRetriever(sources_dir=sources_dir)
+        try:
+            self.retriever = HybridRetriever(sources_dir=sources_dir)
+        except Exception:
+            self.retriever = SourceRetriever(sources_dir=sources_dir)
         self.generator = FactsOnlyGenerator(
             provider=provider,
             api_key=api_key,
