@@ -30,4 +30,3 @@ The scheme seeks to provide a high level of liquidity with returns commensurate 
 All data reflects official disclosures from Groww Mutual Fund and Groww Investment Platform.
 - Source URL: https://groww.in/mutual-funds/groww-liquid-fund-direct-growth
 - Last updated from sources: 2026-11-07
-

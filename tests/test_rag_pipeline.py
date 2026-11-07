@@ -37,12 +37,9 @@ def test_engine_factual_elss_lockin(engine):
     assert res["status"] == "factual"
     ans = res["answer"]
     assert "3 year" in ans.lower() or "3-year" in ans.lower()
-    # Exactly one markdown citation link
     links = re.findall(r'\[([^\]]+)\]\((https?://[^\)]+)\)', ans)
     assert len(links) >= 1
-    # Last updated timestamp present
     assert "Last updated from sources:" in ans
-    # Less than or equal to 3 sentences (excluding update timestamp)
     main_text = ans.split("Last updated from sources:")[0].strip()
     sentences = [s for s in re.split(r'(?<=[.!?])\s+', main_text) if s.strip()]
     assert len(sentences) <= 3
@@ -61,3 +58,27 @@ def test_engine_factual_liquid_exit_load(engine):
     ans = res["answer"]
     assert "0.007" in ans or "exit load" in ans.lower() or "day" in ans.lower()
     assert "Last updated from sources:" in ans
+
+def test_engine_distinct_queries_produce_distinct_responses(engine):
+    """Ensures sequential diverse queries do not yield static/identical answers."""
+    q1 = "What is the expense ratio of Groww ELSS Tax Saver Fund?"
+    q2 = "How can I cancel my ongoing SIP on Groww?"
+    q3 = "What is the benchmark of Groww Banking & Financial Services Fund?"
+
+    r1 = engine.answer(q1)
+    r2 = engine.answer(q2)
+    r3 = engine.answer(q3)
+
+    assert r1["status"] == "factual"
+    assert r2["status"] == "factual"
+    assert r3["status"] == "factual"
+
+    # Answers must be distinctly different
+    assert r1["answer"] != r2["answer"]
+    assert r2["answer"] != r3["answer"]
+    assert r1["answer"] != r3["answer"]
+
+    # Verify specific contents
+    assert "1.47%" in r1["answer"]
+    assert "cancel" in r2["answer"].lower()
+    assert "financial services" in r3["answer"].lower()

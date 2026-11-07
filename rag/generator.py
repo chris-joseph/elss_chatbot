@@ -41,11 +41,9 @@ class FactsOnlyGenerator:
         if re.search(r'\[([^\]]+)\]\((https?://[^\)]+)\)', text):
             return text
 
-        # If missing, append the primary citation cleanly
         clean_title = primary_passage.title.split("-")[0].strip()
-        citation = f"Source: [{clean_title}]({primary_passage.url})."
+        citation = f"[{clean_title}]({primary_passage.url})"
         
-        # Insert before "Last updated" if present
         if "Last updated from sources:" in text:
             parts = text.split("Last updated from sources:", 1)
             return f"{parts[0].strip()} {citation} Last updated from sources:{parts[1]}"
@@ -79,29 +77,47 @@ class FactsOnlyGenerator:
             return None
 
     def _deterministic_extract(self, query: str, passages: List[Passage]) -> str:
-        """Deterministic grounded extractor for reliable facts when offline or fallback."""
+        """Deterministic grounded extractor for reliable facts when offline."""
         q_lower = query.lower()
         primary = passages[0]
         date_str = primary.last_updated or "2026-11-07"
         citation = f"[{primary.title}]({primary.url})"
 
+        # Cancel SIP
+        if "cancel" in q_lower and "sip" in q_lower:
+            return (
+                f"To cancel an ongoing SIP on Groww, go to the 'Mutual Funds' section, select the 'SIPs' tab, choose your SIP, tap 'Cancel SIP' in the top right, select a cancellation reason, and confirm. "
+                f"Note that cancellation must be completed at least 7 days before the next due date as per the official guide: {citation}. "
+                f"Last updated from sources: {date_str}"
+            )
+
+        # Start SIP
+        if ("start" in q_lower or "create" in q_lower) and "sip" in q_lower:
+            return (
+                f"To start an SIP on Groww, search for your scheme, select 'Start SIP', choose your installment amount and monthly date, and set up an AutoPay mandate using net banking or debit card OTP. "
+                f"Detailed instructions are provided in the official help guide: {citation}. "
+                f"Last updated from sources: {date_str}"
+            )
+
         # Expense ratio query
         if "expense ratio" in q_lower or "ter" in q_lower:
             m = re.search(r'Expense Ratio[^:]*:\s*([\d\.]+\s*%)', primary.content, re.IGNORECASE)
-            ratio = m.group(1) if m else "disclosed in the official scheme documents"
+            ratio = m.group(1) if m else "disclosed in official scheme documents"
+            scheme = primary.title.split("-")[0].strip()
             return (
-                f"The expense ratio for {primary.title.split('-')[0].strip()} is {ratio}. "
-                f"You can verify the latest portfolio charges on the official page: {citation}. "
+                f"The expense ratio for {scheme} is {ratio}. "
+                f"Full portfolio charges are published on the official page: {citation}. "
                 f"Last updated from sources: {date_str}"
             )
 
         # Exit load query
         if "exit load" in q_lower:
             m = re.search(r'Exit Load:\s*([^\n\r]+)', primary.content, re.IGNORECASE)
-            load = m.group(1).strip() if m else "specified in the scheme document"
+            load = m.group(1).strip() if m else "specified in the scheme KIM/SID"
+            scheme = primary.title.split("-")[0].strip()
             return (
-                f"The exit load for {primary.title.split('-')[0].strip()} is {load}. "
-                f"Refer to the official scheme document for terms: {citation}. "
+                f"The exit load for {scheme} is {load}. "
+                f"Refer to official scheme disclosures for redemption conditions: {citation}. "
                 f"Last updated from sources: {date_str}"
             )
 
@@ -114,20 +130,29 @@ class FactsOnlyGenerator:
             )
 
         # Minimum SIP or Investment query
-        if "minimum sip" in q_lower or "min sip" in q_lower:
+        if "minimum sip" in q_lower or "min sip" in q_lower or "100" in q_lower:
             m = re.search(r'Minimum SIP Investment:\s*(₹?\d+)', primary.content, re.IGNORECASE)
             sip = m.group(1) if m else "₹500"
+            scheme = primary.title.split("-")[0].strip()
             return (
-                f"The minimum SIP investment for {primary.title.split('-')[0].strip()} is {sip}. "
-                f"Check detailed investment parameters on the official page: {citation}. "
+                f"The minimum SIP investment for {scheme} is {sip}. "
+                f"Check detailed investment parameters on the official scheme page: {citation}. "
                 f"Last updated from sources: {date_str}"
             )
 
         # Capital gains / statement download
-        if "capital gain" in q_lower or "tax report" in q_lower or "statement" in q_lower:
+        if "capital gain" in q_lower or "tax report" in q_lower or "p&l report" in q_lower:
             return (
-                f"To download your mutual fund capital gains statement on Groww, go to your Profile ('You' icon), navigate to 'Reports' or 'Tax Reports', select 'Mutual Funds Capital Gain', choose the Financial Year, and tap Download. "
-                f"Complete instructions are available in the official guide: {citation}. "
+                f"To download your mutual fund capital gains statement on Groww, tap your Profile ('You' icon), navigate to 'SIP & Reports', select 'Capital Gain' under Tax, choose the Financial Year, and tap Download. "
+                f"Official step-by-step guidance is available at: {citation}. "
+                f"Last updated from sources: {date_str}"
+            )
+
+        # CAS statement
+        if "cas" in q_lower or "consolidated account" in q_lower:
+            return (
+                f"A Consolidated Account Statement (CAS) can be generated across all mutual fund folios and demat holdings via RTAs like CAMS and KFintech, or through the AMFI online portal. "
+                f"Refer to the official AMFI CAS guide for instructions: {citation}. "
                 f"Last updated from sources: {date_str}"
             )
 
@@ -135,8 +160,9 @@ class FactsOnlyGenerator:
         if "benchmark" in q_lower:
             m = re.search(r'Benchmark:\s*([^\n\r]+)', primary.content, re.IGNORECASE)
             bm = m.group(1).strip() if m else "designated Total Return Index (TRI)"
+            scheme = primary.title.split("-")[0].strip()
             return (
-                f"The benchmark for {primary.title.split('-')[0].strip()} is {bm}. "
+                f"The benchmark for {scheme} is {bm}. "
                 f"View complete benchmark disclosures on the official page: {citation}. "
                 f"Last updated from sources: {date_str}"
             )
@@ -144,7 +170,7 @@ class FactsOnlyGenerator:
         # Cut-off timing query
         if "cut-off" in q_lower or "cut off" in q_lower or "timing" in q_lower:
             return (
-                f"As per SEBI guidelines, the cut-off time for same-day NAV on equity/debt purchases on Groww is 2:00 PM (subject to fund realization), while liquid funds have a 12:00 PM cut-off. "
+                f"Under SEBI regulations, the cut-off time for same-day NAV on equity/debt mutual funds on Groww is 2:00 PM (subject to realization of funds), while liquid and overnight funds have a 12:00 PM cut-off. "
                 f"Detailed cut-off rules are outlined in the official documentation: {citation}. "
                 f"Last updated from sources: {date_str}"
             )

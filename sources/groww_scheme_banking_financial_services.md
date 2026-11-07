@@ -30,4 +30,3 @@ The scheme seeks to generate consistent long-term returns by investing in equity
 All data reflects official disclosures from Groww Mutual Fund and Groww Investment Platform.
 - Source URL: https://groww.in/mutual-funds/groww-banking-financial-services-fund-direct-growth
 - Last updated from sources: 2026-11-07
-

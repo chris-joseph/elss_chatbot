@@ -11,7 +11,6 @@ last_updated_from_sources: "2026-11-07"
 Mutual Fund                                                          Frequently Asked Questions
 Consolidated Account Statement                                                                 Version 1.03
 
-
     What is a Consolidated Account statement (CAS)?
            Consolidated Account Statement is a single account statement that consolidates financial
            transactions in all folios of an investor across all schemes of all mutual funds.
@@ -51,9 +50,6 @@ Consolidated Account Statement                                                  
            reflect in the statement.
 
     Which financial transactions will be included in CAS?
-
-
-
 
                                                                                                   Page 1 of 4
 Mutual Fund                                                           Frequently Asked Questions
@@ -101,7 +97,6 @@ Consolidated Account Statement                                                  
             be sent to the address available in such folio where the investor had transacted the last
             transaction in the month.
 
-
                                                                                                  Page 2 of 4
 Mutual Fund                                                           Frequently Asked Questions
 Consolidated Account Statement                                                                  Version 1.03
@@ -146,9 +141,6 @@ Consolidated Account Statement                                                  
            c. If no, they should get PAN of all the unit holders updated in the folio/s for future inclusion
                in CAS.
 
-
-
-
                                                                                                    Page 3 of 4
 Mutual Fund                                                          Frequently Asked Questions
 Consolidated Account Statement                                                              Version 1.03
@@ -159,8 +151,5 @@ Consolidated Account Statement                                                  
     In case of any discrepancy in folios related details in CAS, what should the investor do?
            Investor should approach respective mutual fund or the registrar in case of any discrepancy in
            financial transactions, folio details printed in CAS or for any other queries.
-
-
-
 
                                                                                                 Page 4 of 4

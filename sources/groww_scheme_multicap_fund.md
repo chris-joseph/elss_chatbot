@@ -30,4 +30,3 @@ The scheme seeks to achieve long-term capital appreciation by predominantly inve
 All data reflects official disclosures from Groww Mutual Fund and Groww Investment Platform.
 - Source URL: https://groww.in/mutual-funds/groww-multicap-fund-direct-growth
 - Last updated from sources: 2026-11-07
-

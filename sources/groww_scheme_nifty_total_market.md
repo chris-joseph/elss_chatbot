@@ -30,4 +30,3 @@ The scheme seeks to achieve a return equivalent to the Nifty Total Market Index-
 All data reflects official disclosures from Groww Mutual Fund and Groww Investment Platform.
 - Source URL: https://groww.in/mutual-funds/groww-nifty-total-market-index-fund-direct-growth
 - Last updated from sources: 2026-11-07
-
