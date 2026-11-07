@@ -10,7 +10,7 @@
   },
   {
     "id": "amfi_guide_what_is_a_mutual_fund",
-    "title": "What is a Mutual Fund - AMFI Official Definition & Guide",
+    "title": "What is a Mutual Fund",
     "organization": "AMFI",
     "category": "Mutual Fund Basics",
     "doc_type": "concept_guide",
@@ -180,6 +180,87 @@
     "filename": "groww_guide_cutoff_timings.md"
   },
   {
+    "id": "groww_guide_direct_vs_regular_mutual_funds",
+    "title": "Direct Plans vs Regular Plans in Mutual Funds",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/direct-vs-regular-mutual-funds",
+    "filename": "groww_guide_direct_vs_regular_mutual_funds.md"
+  },
+  {
+    "id": "groww_guide_growth_vs_idcw_options",
+    "title": "Growth Option vs IDCW (Dividend) Option in Mutual Funds",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/growth-vs-idcw-options",
+    "filename": "groww_guide_growth_vs_idcw_options.md"
+  },
+  {
+    "id": "groww_guide_kyc_folio_nomination_rules",
+    "title": "Mutual Fund KYC, Folio Numbers, and Nomination Rules",
+    "organization": "Groww",
+    "category": "Investor Operations",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/mutual-fund-kyc-folio-nomination",
+    "filename": "groww_guide_kyc_folio_nomination_rules.md"
+  },
+  {
+    "id": "groww_guide_mutual_fund_abbreviations_glossary",
+    "title": "Complete Glossary of Mutual Fund Abbreviations and Acronyms",
+    "organization": "Groww",
+    "category": "Glossary & Terminology",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/mutual-fund-glossary-abbreviations",
+    "filename": "groww_guide_mutual_fund_abbreviations_glossary.md"
+  },
+  {
+    "id": "groww_guide_mutual_fund_taxation_capital_gains",
+    "title": "Mutual Fund Taxation, Capital Gains, and Section 80C Tax Rules",
+    "organization": "Groww",
+    "category": "Taxation",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/mutual-fund-taxation-rules",
+    "filename": "groww_guide_mutual_fund_taxation_capital_gains.md"
+  },
+  {
+    "id": "groww_guide_mutual_fund_types_categories",
+    "title": "SEBI Categorization of Mutual Fund Schemes",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/mutual-fund-types-and-categories",
+    "filename": "groww_guide_mutual_fund_types_categories.md"
+  },
+  {
+    "id": "groww_guide_mutual_funds_vs_stocks_fd",
+    "title": "Mutual Funds vs Direct Stocks, Fixed Deposits, and PPF",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/mutual-funds-vs-stocks-fd",
+    "filename": "groww_guide_mutual_funds_vs_stocks_fd.md"
+  },
+  {
+    "id": "groww_guide_sip_lumpsum_stp_swp",
+    "title": "Understanding SIP, Lump Sum, STP, and SWP Investment Modes",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/sip-lumpsum-stp-swp",
+    "filename": "groww_guide_sip_lumpsum_stp_swp.md"
+  },
+  {
+    "id": "groww_guide_transacting_buying_selling_nav",
+    "title": "Buying, Selling, Cut-Off Timings, and Settlement in Mutual Funds",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/mutual-fund-cut-off-timings-settlement",
+    "filename": "groww_guide_transacting_buying_selling_nav.md"
+  },
+  {
     "id": "groww_guide_unit_allotment_nav",
     "title": "Mutual Fund Unit Allotment & NAV Realization Process",
     "organization": "Groww",
@@ -190,12 +271,21 @@
   },
   {
     "id": "groww_guide_what_is_a_mutual_fund",
-    "title": "What is a Mutual Fund - Groww Knowledge Guide",
+    "title": "What is a Mutual Fund",
     "organization": "Groww",
     "category": "Mutual Fund Basics",
     "doc_type": "concept_guide",
     "url": "https://groww.in/p/what-is-mutual-fund",
     "filename": "groww_guide_what_is_a_mutual_fund.md"
+  },
+  {
+    "id": "groww_guide_what_is_an_amc",
+    "title": "What is an Asset Management Company (AMC) in Mutual Funds",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/what-is-amc",
+    "filename": "groww_guide_what_is_an_amc.md"
   },
   {
     "id": "groww_pricing_charges",

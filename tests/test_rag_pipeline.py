@@ -82,3 +82,52 @@ def test_engine_distinct_queries_produce_distinct_responses(engine):
     assert "1.47%" in r1["answer"]
     assert "cancel" in r2["answer"].lower()
     assert "financial services" in r3["answer"].lower()
+
+def test_engine_amc_definition(engine):
+    """Verifies that 'what is AMC' retrieves the AMC guide, not demat charges."""
+    res = engine.answer("what is AMC")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "asset management company" in ans or "amc" in ans
+    assert "https://groww.in/p/what-is-amc" in res["answer"]
+
+def test_engine_abbreviation_ter(engine):
+    """Verifies that 'what does TER mean' correctly answers with Total Expense Ratio."""
+    res = engine.answer("what does TER mean")
+    assert res["status"] == "factual"
+    assert "ter" in res["answer"].lower() or "expense ratio" in res["answer"].lower()
+
+def test_engine_common_indices(engine):
+    """Verifies that 'what are common mutual fund indices' retrieves benchmark indices."""
+    res = engine.answer("what are common mutual fund indices")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "nifty 50" in ans or "sensex" in ans or "benchmark" in ans
+    assert "https://groww.in/p/benchmark" in res["answer"]
+
+def test_engine_idcw_definition(engine):
+    """Verifies that 'what is IDCW' retrieves the growth vs IDCW guide."""
+    res = engine.answer("what is IDCW")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "income distribution" in ans or "idcw" in ans
+    assert "https://groww.in/p/growth-vs-idcw-options" in res["answer"]
+
+def test_engine_stocks_vs_mutual_funds(engine):
+    """Verifies that mutual funds vs stocks query retrieves the asset comparison guide."""
+    res = engine.answer("difference between mutual funds and stocks")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "stock" in ans
+    assert "https://groww.in/p/mutual-funds-vs-stocks-fd" in res["answer"]
+
+def test_engine_out_of_scope_rejection(engine):
+    """Verifies that random gibberish or non-mutual fund queries are rejected."""
+    r1 = engine.answer("boomba diagga")
+    assert r1["status"] == "out_of_scope"
+    assert "No verified official sources were found" in r1["answer"]
+
+    r2 = engine.answer("what time is it now")
+    assert r2["status"] == "out_of_scope"
+    assert "No verified official sources were found" in r2["answer"]
+

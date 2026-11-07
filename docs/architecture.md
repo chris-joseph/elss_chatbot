@@ -46,9 +46,10 @@ flowchart TD
     Guardrails -- "Safe Factual Query" --> Normalizer["Corpus-Guided Spell-Checker<br/>(difflib on Corpus Vocabulary)"]
     
     subgraph OfflineCorpusIndex ["Offline Document Indexing"]
-        RawDocs["36 Verified Sources (Markdown)"] --> Cleaner["Pre-processor & Navbar Cleaner"]
+        RawDocs["46 Verified Sources (Markdown)"] --> Cleaner["Pre-processor & Navbar Cleaner"]
         Cleaner --> Chunker["Header Segmentation & Stub Merging"]
-        Chunker --> FieldWeights["Field-Weighting (Title 3x, Sec 2x, Cat 1x, Content 1x)"]
+        Chunker --> Lemmatizer["Morphological Lemmatization (PLURAL_MAPPINGS)"]
+        Lemmatizer --> FieldWeights["Field-Weighting (Title 3x, Sec 2x, Cat 1x, Content 1x)"]
         FieldWeights --> TFIDFIndex["Scikit-Learn TF-IDF Matrix (1, 2)-grams"]
         FieldWeights --> VocabIndex["Corpus Vocabulary & Frequency Counter"]
     end
@@ -123,13 +124,16 @@ last_updated_from_sources: "2026-11-07"
 
 ---
 
-### 3.3 Step 3: Dynamic Corpus-Guided Spelling Normalization
+### 3.3 Step 3: Morphological Lemmatization, Plural Mapping & Dynamic Spelling
 
-Rather than maintaining a brittle, manually authored typo dictionary, the retriever builds a live vocabulary index directly from the corpus:
-* **Index Creation:** Every unique lowercase token ($\ge 3$ characters) across all 36 source documents is registered in `self.vocabulary` alongside its term frequency in `self.word_counts`.
+Rather than maintaining a brittle, manually authored typo dictionary, the retriever combines morphological lemma mapping with dynamic corpus vocabulary correction:
+* **Morphological Lemmatization (`PLURAL_MAPPINGS`):** Maps plural and inflected financial terms to their canonical base form (e.g., `indices` $\to$ `index`, `amcs` $\to$ `amc`, `sips` $\to$ `sip`, `funds` $\to$ `fund`, `stocks` $\to$ `stock`, `buying` $\to$ `buy`, `selling` $\to$ `sell`).
+* **Short Financial Acronym Whitelist (`FINANCIAL_SHORT_TERMS`):** Whitelists critical 2-letter financial abbreviations (`mf`, `fd`, `pe`, `pb`, `dp`, `fy`, `ay`, `sd`) to prevent premature length-based token filtering.
+* **Bidirectional Abbreviation Synonyms:** Automatically enriches queries containing financial abbreviations with their full canonical expansions (e.g., `amc` $\leftrightarrow$ `asset management company`, `ter` $\leftrightarrow$ `total expense ratio`, `nav` $\leftrightarrow$ `net asset value`).
+* **Corpus Index Creation:** Every unique lowercase token across all 46 source documents is registered in `self.vocabulary` alongside its term frequency in `self.word_counts`.
 * **Dynamic Correction Algorithm:**
   1. For each token $t$ in user query $Q$:
-  2. If $t \in \text{vocabulary}$ or $\text{len}(t) < 4$, keep $t$ unmodified.
+  2. If $t \in \text{vocabulary}$, $t \in \text{FINANCIAL\_SHORT\_TERMS}$, or $\text{len}(t) < 4$, keep $t$ unmodified.
   3. If $t \notin \text{vocabulary}$, compute Levenshtein / Gestalt similarity against `self.vocabulary` using `difflib.get_close_matches(t, self.vocabulary, n=3, cutoff=0.75)`.
   4. If candidate matches exist, select the match $m$ with the highest corpus occurrence $\text{word\_counts}[m]$.
 * **Example:**
@@ -139,36 +143,36 @@ Rather than maintaining a brittle, manually authored typo dictionary, the retrie
 
 ---
 
-### 3.4 Step 4: Field-Weighted Vectorization & Multi-Signal Retrieval
+### 3.4 Step 4: Field-Weighted Vectorization & IDF-Weighted Multi-Signal Retrieval
 
 #### A. Field-Weighted Representation (BM25F Principle)
-In financial FAQs, the document title and section heading carry exponentially higher topic specificity than repeated mentions in body text. Each passage $p$ is vectorized using weighted field repetition:
+In financial FAQs, the document title and section heading carry exponentially higher topic specificity than repeated mentions in body text. Each passage $p$ is vectorized using weighted field repetition over lemmatized fields:
 
-$$\text{Text}(p) = \underbrace{p.\text{title} \times 3}_{\text{Document Subject}} + \underbrace{p.\text{section\_title} \times 2}_{\text{Sub-topic Topic}} + \underbrace{p.\text{category} \times 1}_{\text{Asset Class}} + \underbrace{p.\text{content} \times 1}_{\text{Factual Body}}$$
+$$\text{Text}(p) = \underbrace{\text{lem}(p.\text{title}) \times 3}_{\text{Document Subject}} + \underbrace{\text{lem}(p.\text{section\_title}) \times 2}_{\text{Sub-topic Topic}} + \underbrace{\text{lem}(p.\text{category}) \times 1}_{\text{Asset Class}} + \underbrace{\text{lem}(p.\text{content}) \times 1}_{\text{Factual Body}}$$
 
 Vectorization is performed using Scikit-Learn `TfidfVectorizer`:
 * `ngram_range = (1, 2)` (captures key phrases like *"mutual fund"*, *"expense ratio"*, *"exit load"*).
 * `sublinear_tf = True` (replaces linear TF $f$ with $1 + \log(f)$ to prevent long documents from dominating over concise documents).
 * `token_pattern = r'(?u)\b\w+\b'`.
 
-#### B. Multi-Signal Scoring Function
-For a normalized query $Q$ with keywords $Q_{\text{keywords}} = \{w \in Q \mid \text{len}(w) \ge 3 \text{ and } w \notin \text{STOPWORDS}\}$:
+#### B. IDF-Weighted Multi-Signal Scoring Function
+For a normalized query $Q$ with keywords $Q_{\text{keywords}} = \{w \in \text{lem}(Q) \mid (\text{len}(w) \ge 3 \text{ or } w \in \text{FINANCIAL\_SHORT\_TERMS}) \text{ and } w \notin \text{STOPWORDS}\}$:
 
-$$\text{Score}(p, Q) = S_{\text{cosine}} + B_{\text{title\_recall}} + B_{\text{title\_jaccard}} + B_{\text{sec\_jaccard}} + B_{\text{content\_coverage}} + B_{\text{phrase}}$$
+$$\text{Score}(p, Q) = S_{\text{cosine}} + B_{\text{title\_recall}}^{\text{IDF}} + B_{\text{title\_jaccard}}^{\text{IDF}} + B_{\text{sec\_jaccard}}^{\text{IDF}} + B_{\text{content\_coverage}}^{\text{IDF}} + B_{\text{phrase}}$$
 
-Where:
-1. **$S_{\text{cosine}}$:** Cosine similarity between query vector and passage vector in TF-IDF space.
-2. **Title Recall ($B_{\text{title\_recall}}$):**
-   $$B_{\text{title\_recall}} = 0.30 \times \frac{|Q_{\text{keywords}} \cap T_{\text{clean}}|}{|Q_{\text{keywords}}|}$$
-3. **Title Jaccard Specificity ($B_{\text{title\_jaccard}}$):** Measures whether the title is specifically about the query:
-   $$B_{\text{title\_jaccard}} = 0.35 \times \frac{|Q_{\text{keywords}} \cap T_{\text{clean}}|}{|Q_{\text{keywords}} \cup T_{\text{clean}}|}$$
-   *(For "What is a Mutual Fund", the Jaccard similarity is $2/2 = 1.0$. For an Expense Ratio guide mentioning mutual funds, Jaccard is only $2/5 = 0.40$).*
-4. **Section Jaccard Specificity ($B_{\text{sec\_jaccard}}$):**
-   $$B_{\text{sec\_jaccard}} = 0.25 \times \frac{|Q_{\text{keywords}} \cap S_{\text{clean}}|}{|Q_{\text{keywords}} \cup S_{\text{clean}}|}$$
-5. **Passage Content Coverage ($B_{\text{content\_coverage}}$):**
-   $$B_{\text{content\_coverage}} = 0.20 \times \frac{|Q_{\text{keywords}} \cap C_{\text{words}}|}{|Q_{\text{keywords}}|}$$
+Where term alignment is weighted by Inverse Document Frequency ($\text{IDF}(w)$), ensuring rare, high-information terms (`amc`, `indices`, `idcw`) dominate over ubiquitous background words (`mutual`, `fund`):
+
+1. **$S_{\text{cosine}}$:** Cosine similarity between query vector (enriched with abbreviation synonyms) and passage vector in TF-IDF space.
+2. **IDF-Weighted Title Recall ($B_{\text{title\_recall}}^{\text{IDF}}$):**
+   $$B_{\text{title\_recall}}^{\text{IDF}} = 0.30 \times \frac{\sum_{w \in Q_{\text{keywords}} \cap T_{\text{clean}}} \text{IDF}(w)}{\sum_{w \in Q_{\text{keywords}}} \text{IDF}(w)}$$
+3. **IDF-Weighted Title Jaccard Specificity ($B_{\text{title\_jaccard}}^{\text{IDF}}$):**
+   $$B_{\text{title\_jaccard}}^{\text{IDF}} = 0.35 \times \frac{\sum_{w \in Q_{\text{keywords}} \cap T_{\text{clean}}} \text{IDF}(w)}{\sum_{w \in Q_{\text{keywords}} \cup T_{\text{clean}}} \text{IDF}(w)}$$
+4. **IDF-Weighted Section Jaccard Specificity ($B_{\text{sec\_jaccard}}^{\text{IDF}}$):**
+   $$B_{\text{sec\_jaccard}}^{\text{IDF}} = 0.25 \times \frac{\sum_{w \in Q_{\text{keywords}} \cap S_{\text{clean}}} \text{IDF}(w)}{\sum_{w \in Q_{\text{keywords}} \cup S_{\text{clean}}} \text{IDF}(w)}$$
+5. **IDF-Weighted Content Coverage ($B_{\text{content\_coverage}}^{\text{IDF}}$):**
+   $$B_{\text{content\_coverage}}^{\text{IDF}} = 0.20 \times \frac{\sum_{w \in Q_{\text{keywords}} \cap C_{\text{words}}} \text{IDF}(w)}{\sum_{w \in Q_{\text{keywords}}} \text{IDF}(w)}$$
 6. **Verbatim N-Gram Phrase Bonus ($B_{\text{phrase}}$):**
-   $$B_{\text{phrase}} = 0.25 \quad \text{if cleaned query string is a substring of } p.\text{title} \text{ or } p.\text{section\_title}$$
+   $$B_{\text{phrase}} = 0.25 \quad \text{if cleaned query string is a substring of } \text{lem}(p.\text{title}) \text{ or } \text{lem}(p.\text{section\_title})$$
 
 ---
 

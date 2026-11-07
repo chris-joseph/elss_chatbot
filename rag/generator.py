@@ -280,7 +280,7 @@ class FactsOnlyGenerator:
         for p_idx, p in enumerate(passages[:2]):
             raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", p.content) if s.strip()]
             for s_idx, raw_s in enumerate(raw_sentences):
-                if raw_s.startswith("#") or raw_s.endswith("?"):
+                if raw_s.startswith("#") or raw_s.endswith("?") or raw_s.startswith("|") or raw_s.endswith("|"):
                     continue
                 clean_s = clean_sentence(raw_s)
                 if len(clean_s) < 25 or len(clean_s) > 300:

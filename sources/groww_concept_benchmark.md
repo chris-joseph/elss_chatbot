@@ -58,34 +58,27 @@ Beta ratios can differ depending on the large, small, and mid-cap investment wit
 
 R-squared – R-squared measures the performance of a fund affecting its benchmark. It is based on a percentage of 0 to 100, with 0 representing the lowest correlation and 100 being the exact, hence the best match with the benchmarking standard.
 
-Related Mutual Fund Pages
+## Common Mutual Fund Benchmark Indices
 
-SIP
+Mutual funds in India are compared against standardized benchmark indices designed to represent their specific asset universe and market capitalization categories:
 
-Lumpsum
+- **Large Cap Indices**:
+  - **NIFTY 50**: Represents the 50 largest and most liquid Indian companies listed on the National Stock Exchange (NSE).
+  - **S&P BSE Sensex**: Represents 30 well-established and financially sound companies listed on the Bombay Stock Exchange (BSE).
+  - **NIFTY 100**: Captures the top 100 companies by full market capitalization.
 
-AUM
+- **Mid Cap and Small Cap Indices**:
+  - **NIFTY Midcap 150**: Tracks the performance of the next 150 companies (ranked 101 to 250) after the top 100 companies.
+  - **NIFTY Smallcap 250**: Tracks 250 small-cap companies ranked 251 to 500 by full market capitalization.
 
-Systematic Transfer Plan
+- **Broad Market & Multi-Cap Indices**:
+  - **NIFTY 500 TRI (Total Return Index)**: Measures the performance of the top 500 companies, commonly used as the benchmark for Multi Cap, Flexi Cap, and ELSS funds.
+  - **BSE 500**: Broad market index representing approximately 93% of the total market capitalization on the BSE.
 
-Exit Load
+- **Sectoral and Thematic Indices**:
+  - **NIFTY Bank / BSE Bankex**: Benchmark indices for banking and financial services sector funds.
+  - **NIFTY IT**: Benchmark index for information technology funds.
 
-Mutual Fund Units
+- **SEBI Total Return Index (TRI) Mandate**:
+  Under SEBI regulations, all mutual fund schemes must benchmark their performance against the **Total Return variant of the index (TRI)** rather than the Price Return Index (PRI). A Total Return Index captures both capital price movements and dividend payouts, providing a fair and accurate standard for mutual fund comparison.
 
-Expense Ratio
-
-Childrens Fund
-
-NAV
-
-Interval Funds
-
-Systematic Withdrawal Plan (SWP)
-
-Emerging Market Funds
-
-Hedge Funds
-
-Benchmark
-
-Invest in Mutual Funds Start building wealth with SIPs DOWNLOAD NOW Mutual Funds Equity Funds Large Cap Funds Mid Cap Funds Small Cap Funds Multi Cap Funds ELSS Funds Dividend Yield Funds Sector Funds Contra Funds Value Funds Focused Funds Hybrid Funds Aggressive Funds Conservative Funds Arbitrage Funds Balanced Funds Dynamic Asset Allocation Funds Multi Asset Allocation Funds Equity Savings Funds Debt Funds Low Duration Funds Medium Duration Funds Dynamic Bond Funds Gilt Funds Liquid Funds Credit Risk Funds Ultra Short Funds Money Market Fund Overnight Funds Corporate Bond Funds Banking and PSU Funds Gilt Funds with 10 Year Constant Duration Floater Funds Solution Oriented Schemes Retirement Fund Children’s Fund Other Schemes Index Funds Fund of Funds Home > Personal Finance > Benchmark
