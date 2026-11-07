@@ -211,6 +211,7 @@ class FactsOnlyGenerator:
         primary = passages[0]
         date_str = primary.last_updated or "2026-11-07"
         citation = f"[{primary.title}]({primary.url})"
+        combined_content = "\n".join([p.content for p in passages])
 
         if "cancel" in q_lower and "sip" in q_lower:
             return (
@@ -227,7 +228,7 @@ class FactsOnlyGenerator:
             )
 
         if "expense ratio" in q_lower or "ter" in q_lower:
-            m = re.search(r'Expense Ratio.*?:[^\d]*([\d\.]+\s*%)', primary.content, re.IGNORECASE)
+            m = re.search(r'Expense Ratio.*?:[^\d]*([\d\.]+\s*%)', combined_content, re.IGNORECASE)
             ratio = m.group(1) if m else "disclosed in official scheme documents"
             scheme = primary.title.split("-")[0].strip()
             return (
@@ -237,7 +238,7 @@ class FactsOnlyGenerator:
             )
 
         if "exit load" in q_lower:
-            m = re.search(r'Exit Load:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
+            m = re.search(r'Exit Load:\**\s*([^\n\r]+)', combined_content, re.IGNORECASE)
             load = m.group(1).strip() if m else "specified in the scheme KIM/SID"
             scheme = primary.title.split("-")[0].strip()
             return (
@@ -254,7 +255,7 @@ class FactsOnlyGenerator:
             )
 
         if "minimum sip" in q_lower or "min sip" in q_lower or "100" in q_lower:
-            m = re.search(r'Minimum SIP Investment:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
+            m = re.search(r'Minimum SIP Investment:\**\s*([^\n\r]+)', combined_content, re.IGNORECASE)
             sip = m.group(1).strip() if m else "₹500"
             scheme = primary.title.split("-")[0].strip()
             return (
@@ -278,7 +279,7 @@ class FactsOnlyGenerator:
             )
 
         if "benchmark" in q_lower:
-            m = re.search(r'Benchmark:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
+            m = re.search(r'Benchmark:\**\s*([^\n\r]+)', combined_content, re.IGNORECASE)
             bm = m.group(1).strip() if m else "designated Total Return Index (TRI)"
             scheme = primary.title.split("-")[0].strip()
             return (

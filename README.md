@@ -82,7 +82,7 @@ elss_chatbot/
 
 ## ⚙️ Configurable LLM Providers
 
-The assistant supports plug-and-play LLM providers configured either via environment variables (`.env`) or directly within the Streamlit UI sidebar:
+The assistant supports plug-and-play LLM providers configured securely via environment variables in the `.env` file:
 
 | Provider | Model | API Key Environment Variable | Why Use It? |
 | :--- | :--- | :--- | :--- |
@@ -97,7 +97,7 @@ The assistant supports plug-and-play LLM providers configured either via environ
 1. **Speed:** Groq's LPU inference engines process at 300–500 tokens per second, making RAG generation near-instantaneous (<1 second round-trip).
 2. **Cost:** Groq provides a generous free tier with zero setup cost.
 3. **Accuracy:** You can run `llama-3.3-70b-versatile` which excels at following the strict 3-sentence, single-citation, and facts-only guardrails.
-4. **Ease of Setup:** Paste your `gsk_...` key in the Streamlit sidebar or set `GROQ_API_KEY=gsk_...` in `.env`.
+4. **Ease of Setup:** Simply set `GROQ_API_KEY=gsk_...` in your `.env` file (no key input in UI required).
 
 ---
 

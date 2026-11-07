@@ -3,7 +3,7 @@ app.py
 Adaptive, Mobile-Friendly Streamlit UI for Groww Mutual Fund Facts-Only FAQ Assistant.
 Theme: Orange, Cream, and Navy Blue.
 Features conversational chat (st.chat_message & st.chat_input), touch-friendly targets,
-configurable LLM provider settings (Groq, DeepSeek, OpenAI, Ollama), and fluid responsive typography.
+environment-based LLM configuration (.env), and fluid responsive typography.
 """
 
 import streamlit as st
@@ -202,75 +202,13 @@ engine = get_engine()
 # Initialize Chat & Session State
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "custom_api_key" not in st.session_state:
-    st.session_state.custom_api_key = ""
 
-# Sidebar: Controls, LLM Configuration, Scope, and Sources Explorer
+# Sidebar: Controls, LLM Status, Scope, and Sources Explorer
 with st.sidebar:
-    st.markdown("### ⚙️ LLM Configuration")
-    
-    provider_map = {
-        "Auto-Detect": "auto",
-        "Groq (Fastest / Recommended)": "groq",
-        "DeepSeek": "deepseek",
-        "OpenAI": "openai",
-        "Ollama (Local)": "ollama",
-        "Custom Endpoint": "custom"
-    }
-    
-    # Default index: Groq if GROQ_API_KEY is present
-    default_idx = 1 if os.environ.get("GROQ_API_KEY") else 0
-    selected_provider_label = st.selectbox(
-        "LLM Provider",
-        list(provider_map.keys()),
-        index=default_idx,
-        help="Select inference provider. Groq gives ~300-500 tokens/sec on Llama 3.3 70B with high accuracy."
-    )
-    chosen_provider = provider_map[selected_provider_label]
-    
-    # Dynamic placeholder based on environment
-    env_has_key = bool(
-        (chosen_provider == "groq" and os.environ.get("GROQ_API_KEY")) or
-        (chosen_provider == "deepseek" and os.environ.get("DEEPSEEK_API_KEY")) or
-        (chosen_provider == "openai" and os.environ.get("OPENAI_API_KEY")) or
-        (chosen_provider == "auto" and (os.environ.get("GROQ_API_KEY") or os.environ.get("DEEPSEEK_API_KEY") or os.environ.get("OPENAI_API_KEY")))
-    )
-    key_placeholder = "Configured in environment (.env)" if env_has_key else "Enter API key (e.g., gsk_...)"
-    
-    user_api_key = st.text_input(
-        "API Key (Optional if set in .env)",
-        value=st.session_state.get("custom_api_key", ""),
-        type="password",
-        placeholder=key_placeholder,
-        help="Your key stays in session memory only and is not logged or written to disk."
-    )
-    st.session_state.custom_api_key = user_api_key
-    
-    default_models = {
-        "groq": "llama-3.3-70b-versatile",
-        "deepseek": "deepseek-chat",
-        "openai": "gpt-4o-mini",
-        "ollama": "llama3.1",
-        "auto": "llama-3.3-70b-versatile" if os.environ.get("GROQ_API_KEY") else "deepseek-chat"
-    }
-    
-    custom_model = st.text_input(
-        "Model Identifier",
-        value=default_models.get(chosen_provider, "llama-3.3-70b-versatile"),
-        help="Specify the model ID (e.g., llama-3.3-70b-versatile, llama-3.1-8b-instant)."
-    )
-    
-    # Configure Engine for current request
-    effective_key = user_api_key.strip() if user_api_key.strip() else None
-    engine.set_llm_config(
-        provider=chosen_provider,
-        api_key=effective_key,
-        model=custom_model.strip() if custom_model.strip() else None
-    )
-    
-    # Display Active Connection Status Badge
+    st.markdown("### ⚡ LLM Engine Status")
     llm_status = engine.get_llm_status()
-    st.markdown(f"<p style='font-size: 13px; font-weight: 600; color: #FF6B35; margin-top: 4px;'>{llm_status['status_label']}</p>", unsafe_allow_html=True)
+    st.markdown(f"<p style='font-size: 13.5px; font-weight: 600; color: #FF6B35; margin-bottom: 2px;'>{llm_status['status_label']}</p>", unsafe_allow_html=True)
+    st.caption("Configured via environment variables / `.env` file.")
 
     st.markdown("---")
     st.markdown("### 🧹 Session Controls")

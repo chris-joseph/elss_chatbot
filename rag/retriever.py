@@ -79,7 +79,9 @@ class SourceRetriever:
                 sec_text = sec.strip()
                 if not sec_text or len(sec_text) < 30:
                     continue
-                lines = sec_text.splitlines()
+                lines = [l.strip() for l in sec_text.splitlines() if l.strip()]
+                if len(lines) <= 1 and lines[0].startswith("#"):
+                    continue
                 sec_title = lines[0].lstrip("#").strip() if lines and lines[0].startswith("#") else title
 
                 # If section is lengthy, sub-chunk logically
