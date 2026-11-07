@@ -10,9 +10,12 @@ services:
     ports:
       - "8501:8501"
     environment:
+      - LLM_PROVIDER=${LLM_PROVIDER:-auto}
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
       - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
-      - DEEPSEEK_BASE_URL=${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
-      - LLM_MODEL=${LLM_MODEL:-deepseek-chat}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - LLM_MODEL=${LLM_MODEL:-llama-3.3-70b-versatile}
       - PORT=8501
     restart: unless-stopped
     volumes:

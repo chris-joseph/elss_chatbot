@@ -152,3 +152,41 @@ def test_call_llm_mock_exception(sample_passage):
         # Gracefully falls back to deterministic extraction
         assert "1.47%" in res["answer"]
         assert sample_passage.url in res["answer"]
+
+def test_groq_provider_resolution():
+    with patch.dict("os.environ", {"GROQ_API_KEY": "gsk_test12345"}, clear=True):
+        gen = FactsOnlyGenerator()
+        assert gen.provider == "groq"
+        assert gen.api_key == "gsk_test12345"
+        assert gen.model == "llama-3.3-70b-versatile"
+        assert gen.base_url == "https://api.groq.com/openai/v1"
+        status = gen.get_status()
+        assert status["is_active"] is True
+        assert "Groq" in status["status_label"]
+
+def test_explicit_provider_selection():
+    gen_groq = FactsOnlyGenerator(provider="groq", api_key="gsk_custom_key", model="llama-3.1-8b-instant")
+    assert gen_groq.provider == "groq"
+    assert gen_groq.api_key == "gsk_custom_key"
+    assert gen_groq.model == "llama-3.1-8b-instant"
+    assert gen_groq.base_url == "https://api.groq.com/openai/v1"
+    assert gen_groq.get_status()["is_active"] is True
+
+    gen_ollama = FactsOnlyGenerator(provider="ollama")
+    assert gen_ollama.provider == "ollama"
+    assert gen_ollama.base_url == "http://localhost:11434/v1"
+    assert gen_ollama.get_status()["is_active"] is True
+
+def test_engine_dynamic_llm_reconfiguration():
+    from rag.engine import RAGEngine
+    engine = RAGEngine()
+    status_initial = engine.get_llm_status()
+    assert "provider" in status_initial
+
+    engine.set_llm_config(provider="groq", api_key="gsk_new_key", model="llama-3.3-70b-versatile")
+    status_updated = engine.get_llm_status()
+    assert status_updated["provider"] == "groq"
+    assert status_updated["model"] == "llama-3.3-70b-versatile"
+    assert status_updated["is_active"] is True
+    assert "Groq" in status_updated["status_label"]
+

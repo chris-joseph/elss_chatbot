@@ -16,8 +16,12 @@ A lightweight, production-ready, facts-only RAG (Retrieval-Augmented Generation)
   Every answer includes **exactly one official markdown link** to the primary public document supporting the fact.
 * **Brevity & Transparency:**
   Explanations are strictly **≤ 3 sentences** and conclude with an auditable timestamp: `Last updated from sources: YYYY-MM-DD`.
+* **Configurable LLM Inference (Groq, DeepSeek, OpenAI, Ollama):**
+  Supports any OpenAI-compatible provider. A **Groq API Key** (`GROQ_API_KEY`) is highly recommended: running `llama-3.3-70b-versatile` or `llama-3.1-8b-instant` at 300–500 tokens/sec on LPUs with a generous free tier.
 * **Zero-Failure Fallback:**
-  Integrates with LLM API (`DeepSeek Chat` / OpenAI-compatible endpoint) and includes a deterministic grounded extraction engine so it functions 100% reliably even offline.
+  Includes an offline deterministic grounded extraction engine so it functions 100% reliably even without an internet connection or API key.
+* **Adaptive Responsive UI (Orange, Cream, Navy Blue):**
+  Polished, mobile-friendly Streamlit web app with dynamic typography, touch-friendly touch targets, live LLM switching in the sidebar, and chat history controls.
 
 ---
 
@@ -73,6 +77,27 @@ elss_chatbot/
 ├── requirements.txt                  # Python dependencies
 └── README.md                         # Documentation
 ```
+
+---
+
+## ⚙️ Configurable LLM Providers
+
+The assistant supports plug-and-play LLM providers configured either via environment variables (`.env`) or directly within the Streamlit UI sidebar:
+
+| Provider | Model | API Key Environment Variable | Why Use It? |
+| :--- | :--- | :--- | :--- |
+| **Groq (Recommended)** | `llama-3.3-70b-versatile` | `GROQ_API_KEY` | Ultra-fast (300-500 tokens/sec), generous free tier, state-of-the-art Llama 3.3 70B accuracy. |
+| **DeepSeek** | `deepseek-chat` | `DEEPSEEK_API_KEY` | Cost-effective, high reasoning capability. |
+| **OpenAI** | `gpt-4o-mini` | `OPENAI_API_KEY` | Industry standard JSON & instruction-following accuracy. |
+| **Ollama (Local)** | `llama3.1` | None required | 100% private, local inference without external network calls. |
+| **Offline Fallback** | Deterministic Engine | None required | Zero-dependency, regex & keyword grounded extractor guaranteeing 100% uptime. |
+
+### Does a Groq API Key help?
+**Yes, significantly!**
+1. **Speed:** Groq's LPU inference engines process at 300–500 tokens per second, making RAG generation near-instantaneous (<1 second round-trip).
+2. **Cost:** Groq provides a generous free tier with zero setup cost.
+3. **Accuracy:** You can run `llama-3.3-70b-versatile` which excels at following the strict 3-sentence, single-citation, and facts-only guardrails.
+4. **Ease of Setup:** Paste your `gsk_...` key in the Streamlit sidebar or set `GROQ_API_KEY=gsk_...` in `.env`.
 
 ---
 
@@ -139,12 +164,13 @@ Run the full automated test suite:
 ```bash
 ./venv/bin/pytest tests/ -v
 ```
-All 19 test cases validate:
-* PAN, Aadhaar, Phone, and Email privacy blocking.
+All 44 test cases validate:
+* PAN, Aadhaar, Phone, Email, OTP, and Bank Account privacy blocking.
 * Buy/sell opinion & portfolio advice refusals with AMFI education links.
 * Return calculations and CAGR prediction refusals with Factsheet links.
 * Exact citation link formatting and ≤3 sentences length constraint.
 * Keyword & semantic retrieval accuracy on all 5 scoped Groww schemes.
+* Groq, DeepSeek, OpenAI, Ollama, and offline generator configurations.
 
 ---
 

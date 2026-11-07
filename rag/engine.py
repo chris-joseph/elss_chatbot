@@ -1,7 +1,7 @@
 """
 engine.py
 Unified RAG Engine for Groww Mutual Fund FAQ Assistant.
-Coordinates Guardrails, Source Retrieval, and Generator execution.
+Coordinates Guardrails, Source Retrieval, and Configurable Generator execution.
 """
 
 import time
@@ -11,10 +11,40 @@ from rag.retriever import SourceRetriever
 from rag.generator import FactsOnlyGenerator
 
 class RAGEngine:
-    def __init__(self, sources_dir: Optional[str] = None):
+    def __init__(
+        self,
+        sources_dir: Optional[str] = None,
+        provider: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None
+    ):
         self.guardrails = GuardrailsChecker()
         self.retriever = SourceRetriever(sources_dir=sources_dir)
-        self.generator = FactsOnlyGenerator()
+        self.generator = FactsOnlyGenerator(
+            provider=provider,
+            api_key=api_key,
+            base_url=base_url,
+            model=model
+        )
+
+    def set_llm_config(
+        self,
+        provider: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None
+    ):
+        """Allows dynamically updating LLM configuration from UI or runtime."""
+        self.generator = FactsOnlyGenerator(
+            provider=provider,
+            api_key=api_key,
+            base_url=base_url,
+            model=model
+        )
+
+    def get_llm_status(self) -> Dict[str, Any]:
+        return self.generator.get_status()
 
     def answer(self, query: str) -> Dict[str, Any]:
         start_time = time.time()

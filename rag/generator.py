@@ -1,24 +1,129 @@
 """
 generator.py
-Facts-Only Answer Generator with strict citation enforcement and length constraints.
-Integrates with DeepSeek Chat API and includes an offline deterministic grounded extractor.
+Configurable Facts-Only Answer Generator supporting multiple LLM backends:
+- Groq (llama-3.3-70b-versatile, llama-3.1-8b-instant)
+- DeepSeek (deepseek-chat)
+- OpenAI (gpt-4o-mini)
+- Ollama / Local (llama3.1)
+- Custom OpenAI-compatible endpoints
+- Offline deterministic grounded extractor fallback
 """
 
 import os
 import re
 import json
 import urllib.request
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from rag.retriever import Passage
 
+PROVIDER_DEFAULTS = {
+    "groq": {
+        "base_url": "https://api.groq.com/openai/v1",
+        "default_model": "llama-3.3-70b-versatile",
+        "env_key": "GROQ_API_KEY",
+        "display_name": "Groq"
+    },
+    "deepseek": {
+        "base_url": "https://api.deepseek.com",
+        "default_model": "deepseek-chat",
+        "env_key": "DEEPSEEK_API_KEY",
+        "display_name": "DeepSeek"
+    },
+    "openai": {
+        "base_url": "https://api.openai.com/v1",
+        "default_model": "gpt-4o-mini",
+        "env_key": "OPENAI_API_KEY",
+        "display_name": "OpenAI"
+    },
+    "ollama": {
+        "base_url": "http://localhost:11434/v1",
+        "default_model": "llama3.1",
+        "env_key": None,
+        "display_name": "Ollama (Local)"
+    }
+}
+
 class FactsOnlyGenerator:
-    def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key if api_key is not None else os.environ.get("DEEPSEEK_API_KEY")
-        self.base_url = (base_url or os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")).rstrip("/")
-        self.model = model or os.environ.get("LLM_MODEL", "deepseek-chat")
+    def __init__(
+        self,
+        provider: Optional[str] = None,
+        api_key: Optional[str] = None,
+        base_url: Optional[str] = None,
+        model: Optional[str] = None
+    ):
+        self.provider, self.api_key, self.base_url, self.model = self._resolve_config(
+            provider=provider,
+            api_key=api_key,
+            base_url=base_url,
+            model=model
+        )
+
+    def _resolve_config(
+        self,
+        provider: Optional[str],
+        api_key: Optional[str],
+        base_url: Optional[str],
+        model: Optional[str]
+    ):
+        # 1. Determine Provider
+        prov = (provider or os.environ.get("LLM_PROVIDER", "auto")).lower()
+
+        # Auto-detect if requested
+        if prov == "auto":
+            if os.environ.get("GROQ_API_KEY"):
+                prov = "groq"
+            elif os.environ.get("DEEPSEEK_API_KEY"):
+                prov = "deepseek"
+            elif os.environ.get("OPENAI_API_KEY"):
+                prov = "openai"
+            elif os.environ.get("LLM_BASE_URL"):
+                prov = "custom"
+            else:
+                prov = "offline"
+
+        # 2. Resolve Key
+        key = api_key
+        if key is None:
+            if prov in PROVIDER_DEFAULTS and PROVIDER_DEFAULTS[prov]["env_key"]:
+                key = os.environ.get(PROVIDER_DEFAULTS[prov]["env_key"])
+            if not key:
+                key = os.environ.get("LLM_API_KEY")
+
+        # 3. Resolve Base URL
+        b_url = base_url or os.environ.get("LLM_BASE_URL")
+        if not b_url:
+            if prov in PROVIDER_DEFAULTS:
+                b_url = PROVIDER_DEFAULTS[prov]["base_url"]
+            else:
+                b_url = "https://api.groq.com/openai/v1"
+
+        # 4. Resolve Model
+        m_name = model or os.environ.get("LLM_MODEL")
+        if not m_name:
+            if prov in PROVIDER_DEFAULTS:
+                m_name = PROVIDER_DEFAULTS[prov]["default_model"]
+            else:
+                m_name = "llama-3.3-70b-versatile"
+
+        return prov, key, b_url.rstrip("/"), m_name
+
+    def get_status(self) -> Dict[str, Any]:
+        has_key = bool(self.api_key and "your_" not in self.api_key)
+        is_active = (has_key or self.provider == "ollama")
+        
+        display = PROVIDER_DEFAULTS.get(self.provider, {}).get("display_name", self.provider.title())
+        status_label = f"🟢 Connected: {display} ({self.model})" if is_active else "🟡 Offline Mode: Grounded Extractor"
+
+        return {
+            "provider": self.provider,
+            "model": self.model,
+            "base_url": self.base_url,
+            "has_api_key": has_key,
+            "is_active": is_active,
+            "status_label": status_label
+        }
 
     def _truncate_to_sentences(self, text: str, max_sentences: int = 3) -> str:
-        # Separate out the "Last updated from sources:" line if present
         updated_line = ""
         main_text = text
         update_match = re.search(r'(Last updated from sources:\s*[\d\-]+)', text, re.IGNORECASE)
@@ -26,7 +131,6 @@ class FactsOnlyGenerator:
             updated_line = update_match.group(1)
             main_text = text[:update_match.start()].strip()
 
-        # Split text into sentences
         sentences = re.split(r'(?<=[.!?])\s+', main_text)
         sentences = [s.strip() for s in sentences if s.strip()]
         if len(sentences) > max_sentences:
@@ -37,7 +141,6 @@ class FactsOnlyGenerator:
         return main_text
 
     def _ensure_citation(self, text: str, primary_passage: Passage) -> str:
-        # Check if text already has a valid markdown link
         if re.search(r'\[([^\]]+)\]\((https?://[^\)]+)\)', text):
             return text
 
@@ -50,14 +153,17 @@ class FactsOnlyGenerator:
         return f"{text.strip()} {citation}"
 
     def _call_llm(self, prompt: str, system_prompt: str) -> Optional[str]:
-        if not self.api_key or "your_deepseek" in self.api_key:
+        # If no key (and not local ollama), use fallback
+        if (not self.api_key or "your_" in self.api_key) and self.provider != "ollama":
             return None
 
         url = f"{self.base_url}/chat/completions"
         headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {self.api_key}"
+            "Content-Type": "application/json"
         }
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
         payload = {
             "model": self.model,
             "messages": [
@@ -77,13 +183,11 @@ class FactsOnlyGenerator:
             return None
 
     def _deterministic_extract(self, query: str, passages: List[Passage]) -> str:
-        """Deterministic grounded extractor for reliable facts when offline."""
         q_lower = query.lower()
         primary = passages[0]
         date_str = primary.last_updated or "2026-11-07"
         citation = f"[{primary.title}]({primary.url})"
 
-        # Cancel SIP
         if "cancel" in q_lower and "sip" in q_lower:
             return (
                 f"To cancel an ongoing SIP on Groww, go to the 'Mutual Funds' section, select the 'SIPs' tab, choose your SIP, tap 'Cancel SIP' in the top right, select a cancellation reason, and confirm. "
@@ -91,7 +195,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Start SIP
         if ("start" in q_lower or "create" in q_lower) and "sip" in q_lower:
             return (
                 f"To start an SIP on Groww, search for your scheme, select 'Start SIP', choose your installment amount and monthly date, and set up an AutoPay mandate using net banking or debit card OTP. "
@@ -99,7 +202,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Expense ratio query
         if "expense ratio" in q_lower or "ter" in q_lower:
             m = re.search(r'Expense Ratio.*?:[^\d]*([\d\.]+\s*%)', primary.content, re.IGNORECASE)
             ratio = m.group(1) if m else "disclosed in official scheme documents"
@@ -110,7 +212,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Exit load query
         if "exit load" in q_lower:
             m = re.search(r'Exit Load:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
             load = m.group(1).strip() if m else "specified in the scheme KIM/SID"
@@ -121,7 +222,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Lock-in / ELSS query
         if "lock-in" in q_lower or "lock in" in q_lower or "elss" in q_lower:
             return (
                 f"ELSS (Equity Linked Saving Scheme) funds carry a statutory mandatory lock-in period of 3 years from the date of allotment. "
@@ -129,7 +229,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Minimum SIP or Investment query
         if "minimum sip" in q_lower or "min sip" in q_lower or "100" in q_lower:
             m = re.search(r'Minimum SIP Investment:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
             sip = m.group(1).strip() if m else "₹500"
@@ -140,7 +239,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Capital gains / statement download
         if "capital gain" in q_lower or "tax report" in q_lower or "p&l report" in q_lower:
             return (
                 f"To download your mutual fund capital gains statement on Groww, tap your Profile ('You' icon), navigate to 'SIP & Reports', select 'Capital Gain' under Tax, choose the Financial Year, and tap Download. "
@@ -148,7 +246,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # CAS statement
         if "cas" in q_lower or "consolidated account" in q_lower:
             return (
                 f"A Consolidated Account Statement (CAS) can be generated across all mutual fund folios and demat holdings via RTAs like CAMS and KFintech, or through the AMFI online portal. "
@@ -156,9 +253,8 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Benchmark query
         if "benchmark" in q_lower:
-            m = re.search(r'Benchmark:\s*([^\n\r]+)', primary.content, re.IGNORECASE)
+            m = re.search(r'Benchmark:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
             bm = m.group(1).strip() if m else "designated Total Return Index (TRI)"
             scheme = primary.title.split("-")[0].strip()
             return (
@@ -167,7 +263,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Cut-off timing query
         if "cut-off" in q_lower or "cut off" in q_lower or "timing" in q_lower:
             return (
                 f"Under SEBI regulations, the cut-off time for same-day NAV on equity/debt mutual funds on Groww is 2:00 PM (subject to realization of funds), while liquid and overnight funds have a 12:00 PM cut-off. "
@@ -175,7 +270,6 @@ class FactsOnlyGenerator:
                 f"Last updated from sources: {date_str}"
             )
 
-        # Generic summary from first passage
         sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', primary.content) if len(s.strip()) > 20]
         summary = " ".join(sentences[:2]) if sentences else "Factual details are available in the official fund documentation."
         return (

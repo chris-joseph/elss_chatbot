@@ -297,7 +297,66 @@ if user_prompt:
 
 # Sidebar: Controls, Scope, and Sources Explorer
 with st.sidebar:
-    st.markdown("### ⚙️ Session Controls")
+    st.markdown("### ⚙️ LLM Configuration")
+    
+    # Provider Selection
+    provider_map = {
+        "Auto-Detect": "auto",
+        "Groq (Fastest / Recommended)": "groq",
+        "DeepSeek": "deepseek",
+        "OpenAI": "openai",
+        "Ollama (Local)": "ollama",
+        "Custom Endpoint": "custom"
+    }
+    
+    selected_provider_label = st.selectbox(
+        "LLM Provider",
+        list(provider_map.keys()),
+        index=0,
+        help="Select your LLM inference provider. Groq provides ultra-fast inference with generous free limits."
+    )
+    chosen_provider = provider_map[selected_provider_label]
+    
+    # API Key Input
+    current_key = os.environ.get("GROQ_API_KEY") if chosen_provider == "groq" else (
+        os.environ.get("DEEPSEEK_API_KEY") if chosen_provider == "deepseek" else os.environ.get("OPENAI_API_KEY")
+    )
+    
+    user_api_key = st.text_input(
+        "API Key",
+        value=st.session_state.get("custom_api_key", ""),
+        type="password",
+        placeholder="Enter Groq (gsk_...) or other API Key",
+        help="Your key stays in session memory only and is not persisted to disk."
+    )
+    
+    # Optional Custom Model Name
+    default_models = {
+        "groq": "llama-3.3-70b-versatile",
+        "deepseek": "deepseek-chat",
+        "openai": "gpt-4o-mini",
+        "ollama": "llama3.1"
+    }
+    custom_model = st.text_input(
+        "Model Name",
+        value=default_models.get(chosen_provider, "llama-3.3-70b-versatile"),
+        help="Specify the model identifier (e.g., llama-3.3-70b-versatile, llama-3.1-8b-instant)."
+    )
+    
+    # Update Engine if settings changed
+    effective_key = user_api_key.strip() if user_api_key.strip() else None
+    engine.set_llm_config(
+        provider=chosen_provider,
+        api_key=effective_key,
+        model=custom_model.strip() if custom_model.strip() else None
+    )
+    
+    # Display Active Connection Status Badge
+    llm_status = engine.get_llm_status()
+    st.markdown(f"<p style='font-size: 13px; font-weight: 600; color: #FF6B35; margin-top: 4px;'>{llm_status['status_label']}</p>", unsafe_allow_html=True)
+
+    st.markdown("---")
+    st.markdown("### 🧹 Session Controls")
     if st.button("🗑️ Clear Chat History", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
