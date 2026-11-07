@@ -8,17 +8,29 @@ An academic research prototype for a facts-only RAG (Retrieval-Augmented Generat
 
 * **Target Product:** **Groww** (`groww.in`)
 * **Asset Management Company:** **Groww Mutual Fund** (`growwmf.in` - Groww Asset Management Limited)
-* **5 Scoped Schemes:**
-  1. **Groww ELSS Tax Saver Fund** (Equity / ELSS — 3-year statutory lock-in, 0% exit load, 1.47% expense ratio)
-  2. **Groww Nifty Total Market Index Fund** (Index / Flexi Cap — 0.25% exit load if redeemed ≤7 days, 0.66% expense ratio)
-  3. **Groww Multicap Fund** (Equity / Multi Cap — 1% exit load if redeemed ≤1 year, 0.98% expense ratio)
-  4. **Groww Liquid Fund** (Debt / Liquid — 7-day graded exit load, 0.11% expense ratio)
-  5. **Groww Banking & Financial Services Fund** (Equity / Sectoral — 1% exit load if redeemed ≤30 days, 1.42% expense ratio)
-* **Corpus Sources (36 Public Regulatory & Platform Pages):**
-  * Groww AMC Statutory KIM/SID and Factsheets (`growwmf.in`)
-  * Groww Platform Help, Concepts & Statements Guides (`groww.in/blog`, `groww.in/p`, `groww.in/help`)
+* **Comprehensive Scheme Catalog & Core Scoped Offerings:**
+  * **Complete Scheme Directory:** [Groww Mutual Fund Schemes Directory](sources/groww_amc_schemes_directory.md) covering all active equity, passive index, ETF FoF, and debt/liquid funds managed by Groww AMC.
+  * **1. Groww ELSS Tax Saver Fund** (Equity / ELSS — 3-year statutory lock-in, Nil exit load, 1.47% expense ratio)
+  * **2. Groww Nifty Total Market Index Fund** (Index / Flexi Cap — 0.25% exit load if redeemed ≤7 days, 0.66% expense ratio)
+  * **3. Groww Multicap Fund** (Equity / Multi Cap — 1% exit load if redeemed ≤1 year, 0.98% expense ratio)
+  * **4. Groww Liquid Fund** (Debt / Liquid — 7-day graded exit load, 0.11% expense ratio)
+  * **5. Groww Banking & Financial Services Fund** (Equity / Sectoral — 1% exit load if redeemed ≤30 days, 1.42% expense ratio)
+* **Corpus Sources (47 Public Regulatory & Platform Documents):**
+  * Groww AMC Complete Schemes Directory, KIM/SID, and Factsheets (`growwmf.in`)
+  * Groww Platform Help, Concepts, Taxation, and Statements Guides (`groww.in/blog`, `groww.in/p`, `groww.in/help`)
+  * Comprehensive Mutual Fund Basics & Glossary taxonomy (AUM, NAV, TER, CAGR, XIRR, CAS, Cut-off times, Direct vs Regular, Growth vs IDCW, SIP vs Lump sum, KYC & Nomination)
   * SEBI Regulations & Investor Education Guides (`sebi.gov.in`, `investor.sebi.gov.in`)
   * AMFI Master Guides, Definitions & CAS Retrieval Portals (`amfiindia.com`, `portal.amfiindia.com`)
+
+---
+
+## 🏗️ Tri-Modal Hybrid GraphRAG Architecture
+
+The system employs a multi-tiered retrieval pipeline:
+1. **Dense Semantic Vector Stream (ChromaDB ONNX):** Embedded local vector store using `all-MiniLM-L6-v2` (384 dimensions) for semantic paraphrasing and natural question intent matching.
+2. **Lexical BM25F Stream:** Exact numerical weighting and field-aligned scoring for precise financial parameters (expense ratios, lock-ins, cutoff times).
+3. **Knowledge Graph Stream (NetworkX):** Directed graph modeling entities (Schemes, AMCs, Benchmarks, Lock-in periods, Tax Sections) and relational edges (`MANAGES`, `BENCHMARKED_TO`, `HAS_LOCK_IN`).
+4. **Calibrated Reciprocal Rank Fusion (RRF):** Fuses dense, lexical, and graph streams with candidate injection and scheme entity prioritization.
 
 ---
 
@@ -33,7 +45,18 @@ An academic research prototype for a facts-only RAG (Retrieval-Augmented Generat
 * **Verifiable Citations:**
   Every answer includes **exactly one official markdown link** to the primary public document supporting the fact.
 * **Brevity & Transparency:**
-  Explanations are strictly **≤ 3 sentences** and conclude with an auditable source timestamp: `Last updated from sources: YYYY-MM-DD`.
+  Explanations are strictly **≤ 10 sentences** and conclude with an auditable source timestamp: `Last updated from sources: YYYY-MM-DD`.
+
+---
+
+## ⚡ Multi-Provider LLM Engine & Dynamic Auto-Reconciliation
+
+The generation engine supports multi-provider LLM inference with automatic cross-provider model reconciliation:
+* **Production Mode (Groq):** Powered by `llama-3.3-70b-versatile` with high-throughput inference and full 2,500-character context chunks.
+* **Google Gemini:** `gemini-2.0-flash` via OpenAI-compatible endpoint.
+* **DeepSeek:** `deepseek-chat` with dynamic parameter correction.
+* **OpenAI:** `gpt-4o-mini`.
+* **Grounded Offline Fallback:** Fully deterministic extractive engine using regex attribute parsers and BM25 sentence density ranking, operating with zero external API calls or network dependencies.
 
 ---
 
@@ -41,8 +64,9 @@ An academic research prototype for a facts-only RAG (Retrieval-Augmented Generat
 
 ### Prerequisites
 * Python 3.10+
+* Docker & Docker Compose (optional for container deployment)
 
-### Setup Steps
+### Local Setup
 ```bash
 # 1. Clone repository
 git clone <repo-url> elss_chatbot
@@ -58,7 +82,38 @@ streamlit run app.py
 ```
 The application will be live at `http://localhost:8501`.
 
-*(Optional: Copy `.env.example` to `.env` if you wish to configure an external inference provider like Groq, DeepSeek, or OpenAI. By default, the app runs completely offline using its built-in grounded factual extractor).*
+### Docker Compose Deployment
+```bash
+# 1. Build and launch container in background
+docker compose up -d --build
+
+# 2. View container logs
+docker compose logs -f
+```
+
+*(Optional: Set `GROQ_API_KEY`, `DEEPSEEK_API_KEY`, or `GEMINI_API_KEY` in `.env` to enable live LLM synthesis. By default, the app runs completely offline using its built-in grounded factual extractor).*
+
+---
+
+## 🔄 Automated Overnight Sync & Re-indexing Pipeline
+
+The repository includes a self-healing automated overnight synchronization and regression testing pipeline:
+* **Master Orchestrator:** [`scripts/overnight_update.py`](scripts/overnight_update.py)
+* **Shell Wrapper:** [`scripts/cron_sync_sources.sh`](scripts/cron_sync_sources.sh)
+* **Automated Cycle:**
+  1. Creates an atomic snapshot backup (`.backups/snapshot_YYYYMMDD_HHMMSS`) of `sources/` and `vector_store/`.
+  2. Cleans source markdown and strips navigation artifacts (`scripts/clean_sources.py`).
+  3. Rebuilds metadata catalogs (`scripts/rebuild_catalog.py`).
+  4. Re-indexes the Hybrid GraphRAG pipeline (Knowledge Graph and ChromaDB embeddings).
+  5. Executes the full 121-test regression test suite (`pytest tests/`).
+  6. Signals running applications via `.reload_trigger` to hot-reload state.
+  7. **Atomic Rollback:** If any step fails, the system automatically restores the previous snapshot.
+
+### Scheduling via Linux Crontab
+Add to crontab (`crontab -e`):
+```bash
+0 2 * * * /home/chris/Project/elss_chatbot/scripts/cron_sync_sources.sh
+```
 
 ---
 
@@ -68,28 +123,55 @@ The application will be live at `http://localhost:8501`.
 elss_chatbot/
 ├── docs/
 │   └── architecture.md               # Detailed RAG pipeline architecture & system design
-├── sources/                          # 36 Downloaded official sources
+├── sources/                          # 47 Verified official sources
+│   ├── groww_amc_schemes_directory.md# Complete directory of schemes under Groww AMC
 │   ├── groww_scheme_elss_tax_saver.md
 │   ├── groww_scheme_nifty_total_market.md
 │   ├── groww_guide_capital_gains_statement.md
-│   ├── sources_catalog.json          # Machine-readable catalog
-│   ├── sources_catalog.csv           # Required CSV deliverable
-│   └── sources_catalog.md            # Markdown catalog with hyperlinks
+│   ├── sources_catalog.json          # Machine-readable catalog (47 items)
+│   ├── sources_catalog.csv           # Required CSV deliverable (47 items)
+│   └── sources_catalog.md            # Markdown catalog with hyperlinks (47 items)
 ├── rag/
 │   ├── guardrails.py                 # PII and advice/performance filter
-│   ├── retriever.py                  # Field-weighted multi-signal source retriever
-│   ├── generator.py                  # Facts-only generator with grounded offline fallback
+│   ├── retriever.py                  # Field-weighted BM25F lexical retriever
+│   ├── chroma_store.py               # Local ChromaDB persistent dense vector store
+│   ├── knowledge_graph.py            # NetworkX in-memory knowledge graph engine
+│   ├── hybrid_retriever.py           # Tri-Modal hybrid RRF retriever
+│   ├── generator.py                  # Facts-only generator with multi-provider LLM & offline fallback
 │   └── engine.py                     # Unified RAG coordinator
-├── tests/                            # Automated test suite (52 tests)
+├── scripts/
+│   ├── overnight_update.py           # Master automated sync orchestrator with rollback
+│   ├── cron_sync_sources.sh          # Linux crontab execution wrapper
+│   ├── clean_sources.py              # Source sanitizer and banner stripper
+│   └── rebuild_catalog.py            # Catalog synchronization utility
+├── vector_store/
+│   └── chroma/                       # Persistent local ChromaDB collection (180 passages)
+├── tests/                            # Automated test suite (121 tests, 100% passing)
 ├── app.py                            # Streamlit interactive web UI
 ├── cli.py                            # Command-line interface and evaluator
+├── Dockerfile                        # Self-hosting container definition
+├── docker-compose.yml                # Docker Compose multi-environment configuration
 ├── sample_qa.md                      # Evaluated Q&A pairs (markdown)
 ├── sample_qa.json                    # Evaluated Q&A pairs (json)
 ├── disclaimer.md                     # Official disclaimer snippet & disclosures
 └── requirements.txt                  # Python dependencies
 ```
 
-📖 For an in-depth technical breakdown covering algorithms, BM25F field weighting, dynamic typo tolerance, mathematical scoring formulas, and Mermaid sequence diagrams, see the [RAG Pipeline Architecture Documentation](docs/architecture.md).
+---
+
+## 🧪 Testing & Verification
+
+The suite includes **121 automated unit, integration, and offline evaluation tests** passing with 100% compliance:
+```bash
+# Run complete test suite
+./venv/bin/pytest tests/ -v
+
+# Run headless CLI evaluation
+./venv/bin/python cli.py --eval
+
+# Query specific question
+./venv/bin/python cli.py --query "what are schemes under groww amc"
+```
 
 ---
 

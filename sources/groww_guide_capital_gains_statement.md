@@ -130,32 +130,4 @@ Please read the Risk Disclosure documents carefully before investing in Equity S
 instruments traded on the Stock Exchanges. As investments are subject to market risks and price fluctuation risk, there is no
 assurance or guarantee that the investment objectives shall be achieved. Groww Invest Tech Pvt. Ltd. (Formerly known as Nextbillion Technology Pvt. Ltd)
 Ltd. do not guarantee any assured returns on any investments. Past performance of securities/instruments is
-not indicative of their future performance. Do you like this edition? LEAVE A FEEDBACK Invest in Mutual Funds Start building wealth with SIPs DOWNLOAD NOW Recent Posts Sitaram Denims India Files DRHP With SEBI for IPO Mahanadi Coalfields, Sagar Defence Engineering & Arjun Jewellers Receive SEBI Approval for IPOs Investing in US stocks through Groww: A Complete Guide Perpetual Bonds Explained: How They Work and the Risks Involved Vedant Poly Fabs IPO Allotment Status: Steps to Verify Status & Key Issue Details Related Posts Annualised Return in Mutual Funds: Meaning, Formula, Calculation & Examples Absolute Return in Mutual Funds: Meaning, Calculation, Limitations Total Expense Ratio (TER) in Mutual Funds Daily SIP vs Weekly SIP vs Monthly SIP: Which One Should You Choose? Best Pharma Sector Mutual Funds 2026 What are Mutual Funds? What are Thematic Funds? Asset Management Company (AMC) SBI Mutual Fund HDFC Mutual Fund Nippon India Mutual Fund Axis Mutual Fund Groww Mutual Fund ICICI Prudential Mutual Fund Tata Mutual Fund Aditya Birla Sunlife Mutual Fund Mirae Asset Mutual Fund View Other AMCs ETFs from Groww Groww Gold ETF Groww Silver ETF Groww Nifty India Defence ETF Groww Nifty India Railways ETF All Topics
-* FnO
-* Gold
-* IPO
-* Journal
-* Learn
-* Markets
-* Mutual Funds
-* News
-* NFO
-* Personal Finance
-* Stocks
-* Tax
-* Trust and Safety
-* Commodity Trading
-* Algo Trading
-* Corporate Bonds
-* Demat
-* HUF
-* ETF
-* PMS
-* 915
-* MTF
-* SIF
-* Wealth
-* US Stocks
-* Unlisted Shares
-* Bonds
-* Intraday Home > Blog > Mutual Funds > How To Get Capital Gains Statement For Mutual Fund Investments?
+not indicative of their future performance. Do you like this edition? LEAVE A FEEDBACK

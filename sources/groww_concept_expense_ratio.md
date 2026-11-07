@@ -77,4 +77,3 @@ Expense ratios charged by an asset management company on their mutual funds are 
 The rules are different for Exchange Traded Funds and Index Funds . For an initial asset base of Rs. 500 Crore of such a fund, a maximum total expense ratio of 2% is levied. For next Rs. 250 Crore, if any, a ratio of 1.75% is imposed, while any asset base higher than that is processed at 1.5% respectively.
 
 Under Section 52 of the SEBI Mutual Fund Regulations, an asset management company can charge a maximum of 2.5% as the total expense ratio for the first Rs. 100 Crore of the portfolio value. For subsequent asset value of Rs. 300 Crore, a rate of maximum 2.25% is deductible, while 2% can be charged on subsequent slabs concerned with the rest of asset value.
-

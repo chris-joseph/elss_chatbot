@@ -1,6 +1,6 @@
 # Sample Q&A - Groww Mutual Fund Facts-Only Assistant
 
-This file contains 10 evaluated real-world queries demonstrating the assistant's factual accuracy, brevity (≤3 sentences), single official citation link, and strict guardrails (refusing advice, PII, and performance claims).
+This file contains evaluated real-world queries demonstrating the assistant's factual accuracy, brevity (≤10 sentences), single official citation link, and strict guardrails (refusing advice, PII, and performance claims).
 
 ---
 
@@ -108,4 +108,13 @@ This file contains 10 evaluated real-world queries demonstrating the assistant's
 * **Assistant Answer:**
   > A mutual fund is a pool of money managed by a professional Fund Manager. A mutual fund is an investment vehicle formed when an Asset Management Company (AMC) or fund house pools money from multiple individuals and institutional investors who share a common investment objective. Official details: [What is a Mutual Fund](https://groww.in/p/what-is-mutual-fund). Last updated from sources: 2026-11-07
 * **Citation Link:** [What is a Mutual Fund](https://groww.in/p/what-is-mutual-fund)
+* **Status:** `factual`
+
+---
+
+### Query 13: Schemes Managed Under Groww AMC Directory
+* **User Query:** `what are schemes under groww amc`
+* **Assistant Answer:**
+  > Groww Asset Management Limited (formerly Indiabulls Asset Management Company Limited) is the SEBI-registered AMC managing all schemes under Groww Mutual Fund, spanning active equity, passive index funds, ETFs, fund of funds, and debt/liquid categories. Its active equity schemes include Groww ELSS Tax Saver Fund, Groww Multicap Fund, Groww Banking & Financial Services Fund, Groww Large Cap Fund, Groww Small Cap Fund, and Groww Value Fund. Index funds and FoFs include Groww Nifty Total Market Index Fund, Groww Nifty 50 Index Fund, Groww Nifty Smallcap 250 Index Fund, and Groww Gold/Silver ETF FoFs. Debt and liquid schemes include Groww Liquid Fund, Groww Overnight Fund, and Groww Short Duration Fund. [Complete Directory of Schemes Managed by Groww AMC](https://www.growwmf.in/downloads/factsheets) Last updated from sources: 2026-11-07
+* **Citation Link:** [Complete Directory of Schemes Managed by Groww AMC](https://www.growwmf.in/downloads/factsheets)
 * **Status:** `factual`

@@ -85,35 +85,3 @@ Most investors believe the net value of an asset is the same as its stock price.
 The net value of an asset merely illustrates how the underlying assets have performed in the previous years. Therefore, investors should not make it a deciding parameter while choosing funds to invest in. They should check the returns from their investments to make an informed decision.
 
 Thus, the net value of an asset is useful when it comes to understanding how a fund performs every day. It does not indicate how lucrative a fund is. Therefore, investors should check the current cost of funds and its historical performance before choosing to invest in it.
-
-Related Mutual Fund Pages
-
-SIP
-
-Lumpsum
-
-AUM
-
-Systematic Transfer Plan
-
-Exit Load
-
-Mutual Fund Units
-
-Expense Ratio
-
-Childrens Fund
-
-NAV
-
-Interval Funds
-
-Systematic Withdrawal Plan (SWP)
-
-Emerging Market Funds
-
-Hedge Funds
-
-Benchmark
-
-Invest in Mutual Funds Start building wealth with SIPs DOWNLOAD NOW Mutual Funds Equity Funds Large Cap Funds Mid Cap Funds Small Cap Funds Multi Cap Funds ELSS Funds Dividend Yield Funds Sector Funds Contra Funds Value Funds Focused Funds Hybrid Funds Aggressive Funds Conservative Funds Arbitrage Funds Balanced Funds Dynamic Asset Allocation Funds Multi Asset Allocation Funds Equity Savings Funds Debt Funds Low Duration Funds Medium Duration Funds Dynamic Bond Funds Gilt Funds Liquid Funds Credit Risk Funds Ultra Short Funds Money Market Fund Overnight Funds Corporate Bond Funds Banking and PSU Funds Gilt Funds with 10 Year Constant Duration Floater Funds Solution Oriented Schemes Retirement Fund Children’s Fund Other Schemes Index Funds Fund of Funds Home > Personal Finance > What is NAV?

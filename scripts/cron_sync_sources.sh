@@ -23,6 +23,7 @@ if [ -f "$PROJECT_DIR/venv/bin/activate" ]; then
     source "$PROJECT_DIR/venv/bin/activate"
 fi
 
+export PYTHONPATH="$PROJECT_DIR"
 python3 "$PROJECT_DIR/scripts/overnight_update.py" >> "$LOG_FILE" 2>&1
 
 EXIT_CODE=$?

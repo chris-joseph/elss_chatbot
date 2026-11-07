@@ -43,31 +43,30 @@ flowchart TD
     Guardrails -- "Financial Advice / Opinion<br/>('Should I buy?')" --> RefusalAdvice["Refusal: Regulatory Non-Advice Notice<br/>+ AMFI Investor Education Link"]
     Guardrails -- "Return Projection<br/>('How much return?')" --> RefusalPerf["Refusal: No Performance Claims<br/>+ Official Factsheet Link"]
     
-    Guardrails -- "Safe Factual Query" --> Normalizer["Corpus-Guided Spell-Checker<br/>(difflib on Corpus Vocabulary)"]
+    Guardrails -- "Safe Factual Query" --> TriModal["Tri-Modal Hybrid GraphRAG Retriever<br/>(hybrid_retriever.py)"]
     
-    subgraph OfflineCorpusIndex ["Offline Document Indexing"]
-        RawDocs["46 Verified Sources (Markdown)"] --> Cleaner["Pre-processor & Navbar Cleaner"]
-        Cleaner --> Chunker["Header Segmentation & Stub Merging"]
-        Chunker --> Lemmatizer["Morphological Lemmatization (PLURAL_MAPPINGS)"]
-        Lemmatizer --> FieldWeights["Field-Weighting (Title 3x, Sec 2x, Cat 1x, Content 1x)"]
-        FieldWeights --> TFIDFIndex["Scikit-Learn TF-IDF Matrix (1, 2)-grams"]
-        FieldWeights --> VocabIndex["Corpus Vocabulary & Frequency Counter"]
+    subgraph MultiModalStreams ["Tri-Modal Retrieval Streams (47 Verified Sources, 180 Passages)"]
+        DenseStream["1. Dense Vector Stream<br/>(ChromaDB ONNX all-MiniLM-L6-v2)"]
+        LexStream["2. Lexical BM25F Stream<br/>(Exact Numerical Weighting & TF-IDF)"]
+        GraphStream["3. Knowledge Graph Stream<br/>(NetworkX DiGraph Multi-Hop Traversal)"]
     end
+
+    TriModal --> DenseStream
+    TriModal --> LexStream
+    TriModal --> GraphStream
     
-    VocabIndex -.-> Normalizer
+    DenseStream --> RRF["Calibrated Reciprocal Rank Fusion (RRF)<br/>w_lex: 1.2, w_dense: 1.0, w_kg: 0.8<br/>+ Scheme Candidate Injection"]
+    LexStream --> RRF
+    GraphStream --> RRF
     
-    Normalizer --> Retriever{"Multi-Signal Retriever<br/>(retriever.py)"}
-    TFIDFIndex -.-> Retriever
-    
-    Retriever --> ConfidenceGate{"Relevance Confidence Gate<br/>(Score ≥ 0.45 & In-Vocab)?"}
-    
-    ConfidenceGate -- "Below Threshold / OOD<br/>('boomba diagga', 'time now')" --> OutOfScope["Status: out_of_scope<br/>Scope Refusal Notice + Factsheet Link"]
-    ConfidenceGate -- "Confidence Validated<br/>(Score ≥ 0.45)" --> TopK["Top-k Scored Passages<br/>(Cosine Sim + Title Jaccard + Section Alignment)"]
+    RRF --> Gate{"Relevance Gate<br/>(Dense Sim ≥ 0.30 or Lexical Valid)?"}
+    Gate -- "Unrelated OOD Query<br/>('boomba diagga')" --> OutOfScope["Status: out_of_scope<br/>Scope Refusal Notice + Factsheet Link"]
+    Gate -- "Relevant Passages Identified" --> TopK["Top-K Grounded Passages<br/>(Context window: 2,500 chars per passage)"]
     
     TopK --> Generator{"Generator Engine<br/>(generator.py)"}
     
-    Generator -- "LLM Key Active<br/>(Groq / DeepSeek / OpenAI / Ollama)" --> OnlineLLM["Strict System-Prompted LLM Inference<br/>(Temperature: 0.1, Max Tokens: 600)"]
-    Generator -- "Offline / No API Key / Timeout" --> OfflineExtractor["Dynamic Grounded Extractor<br/>(Key-Value Bullet Parser + BM25 Sentence Ranker)"]
+    Generator -- "LLM Key Active<br/>(Groq / Gemini / DeepSeek / OpenAI)" --> OnlineLLM["Strict System-Prompted LLM Inference<br/>(Groq 70B / Gemini 2.0 / DeepSeek-Chat)"]
+    Generator -- "Offline / No Key / Timeout" --> OfflineExtractor["Dynamic Grounded Extractor<br/>(Key-Value Bullet Parser + BM25 Sentence Ranker)"]
     
     OnlineLLM --> PostProc["Post-Processor: Truncate to ≤10 Sentences & Ensure Citation"]
     OfflineExtractor --> PostProc
@@ -130,7 +129,7 @@ Rather than maintaining a brittle, manually authored typo dictionary, the retrie
 * **Morphological Lemmatization (`PLURAL_MAPPINGS`):** Maps plural and inflected financial terms to their canonical base form (e.g., `indices` $\to$ `index`, `amcs` $\to$ `amc`, `sips` $\to$ `sip`, `funds` $\to$ `fund`, `stocks` $\to$ `stock`, `buying` $\to$ `buy`, `selling` $\to$ `sell`).
 * **Short Financial Acronym Whitelist (`FINANCIAL_SHORT_TERMS`):** Whitelists critical 2-letter financial abbreviations (`mf`, `fd`, `pe`, `pb`, `dp`, `fy`, `ay`, `sd`) to prevent premature length-based token filtering.
 * **Bidirectional Abbreviation Synonyms:** Automatically enriches queries containing financial abbreviations with their full canonical expansions (e.g., `amc` $\leftrightarrow$ `asset management company`, `ter` $\leftrightarrow$ `total expense ratio`, `nav` $\leftrightarrow$ `net asset value`).
-* **Corpus Index Creation:** Every unique lowercase token across all 46 source documents is registered in `self.vocabulary` alongside its term frequency in `self.word_counts`.
+* **Corpus Index Creation:** Every unique lowercase token across all 47 source documents is registered in `self.vocabulary` alongside its term frequency in `self.word_counts`.
 * **Dynamic Correction Algorithm:**
   1. For each token $t$ in user query $Q$:
   2. If $t \in \text{vocabulary}$, $t \in \text{FINANCIAL\_SHORT\_TERMS}$, or $\text{len}(t) < 4$, keep $t$ unmodified.

@@ -81,4 +81,3 @@ Mutual funds in India are compared against standardized benchmark indices design
 
 - **SEBI Total Return Index (TRI) Mandate**:
   Under SEBI regulations, all mutual fund schemes must benchmark their performance against the **Total Return variant of the index (TRI)** rather than the Price Return Index (PRI). A Total Return Index captures both capital price movements and dividend payouts, providing a fair and accurate standard for mutual fund comparison.
-

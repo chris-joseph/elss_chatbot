@@ -63,6 +63,15 @@
     "filename": "groww_amc_kim_portal.md"
   },
   {
+    "id": "groww_amc_schemes_directory",
+    "title": "Groww Mutual Fund - Complete Directory of Schemes Managed by Groww AMC",
+    "organization": "Groww Mutual Fund AMC",
+    "category": "AMC Schemes & Portfolios",
+    "doc_type": "scheme_directory",
+    "url": "https://www.growwmf.in/downloads/factsheets",
+    "filename": "groww_amc_schemes_directory.md"
+  },
+  {
     "id": "groww_amc_sid_portal",
     "title": "Groww Mutual Fund - Scheme Information Documents (SID) Downloads",
     "organization": "Groww Mutual Fund AMC",
@@ -412,14 +421,5 @@
     "doc_type": "sebi_circular",
     "url": "https://investor.sebi.gov.in/mutualfunds.html",
     "filename": "sebi_investor_what_is_mutual_fund.md"
-  },
-  {
-    "id": "groww_amc_schemes_directory",
-    "title": "Groww Mutual Fund - Complete Directory of Schemes Managed by Groww AMC",
-    "organization": "Groww Mutual Fund AMC",
-    "category": "AMC Schemes & Portfolios",
-    "doc_type": "scheme_directory",
-    "url": "https://www.growwmf.in/downloads/factsheets",
-    "filename": "groww_amc_schemes_directory.md"
   }
 ]

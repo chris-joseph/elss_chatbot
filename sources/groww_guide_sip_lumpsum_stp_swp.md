@@ -43,4 +43,3 @@ A Systematic Withdrawal Plan (SWP) is a facility that allows an investor to rede
 ## Is a SIP Different from Direct or Regular Plans?
 
 Yes. A Systematic Investment Plan (SIP) is an **investment execution method** (investing periodically in automated installments vs making a one-time lump sum), whereas Direct and Regular are **plan distribution variants** (determining whether distributor commissions are deducted from the scheme's NAV). You can invest in a Direct Plan through a SIP (known as a Direct SIP) or in a Regular Plan through a SIP (Regular SIP).
-

@@ -95,35 +95,3 @@ It should be noted that equity fund, debt fund, liquid fund riskometer should no
 Some of these include expense ratio, performance against category, performance against the benchmark, the scheme’s assets under management ( AUM ), the experience of the fund manager, etc.
 
 Investors should also consider their objective of investment. Depending on that, they can opt for a short-term, medium-term, or long-term fund. Generally, medium-term and long-term mutual funds do not belong to the category of low-risk investment options.
-
-Related Mutual Fund Pages
-
-SIP
-
-Lumpsum
-
-AUM
-
-Systematic Transfer Plan
-
-Exit Load
-
-Mutual Fund Units
-
-Expense Ratio
-
-Childrens Fund
-
-NAV
-
-Interval Funds
-
-Systematic Withdrawal Plan (SWP)
-
-Emerging Market Funds
-
-Hedge Funds
-
-Benchmark
-
-Invest in Mutual Funds Start building wealth with SIPs DOWNLOAD NOW Mutual Funds Equity Funds Large Cap Funds Mid Cap Funds Small Cap Funds Multi Cap Funds ELSS Funds Dividend Yield Funds Sector Funds Contra Funds Value Funds Focused Funds Hybrid Funds Aggressive Funds Conservative Funds Arbitrage Funds Balanced Funds Dynamic Asset Allocation Funds Multi Asset Allocation Funds Equity Savings Funds Debt Funds Low Duration Funds Medium Duration Funds Dynamic Bond Funds Gilt Funds Liquid Funds Credit Risk Funds Ultra Short Funds Money Market Fund Overnight Funds Corporate Bond Funds Banking and PSU Funds Gilt Funds with 10 Year Constant Duration Floater Funds Solution Oriented Schemes Retirement Fund Children’s Fund Other Schemes Index Funds Fund of Funds Home > Personal Finance > Riskometer
