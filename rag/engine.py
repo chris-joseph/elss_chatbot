@@ -8,8 +8,12 @@ import time
 from typing import Dict, Any, Optional
 from rag.guardrails import GuardrailsChecker
 from rag.retriever import SourceRetriever
-from rag.hybrid_retriever import HybridRetriever
 from rag.generator import FactsOnlyGenerator
+
+try:
+    from rag.hybrid_retriever import HybridRetriever
+except (ImportError, ModuleNotFoundError):
+    HybridRetriever = None
 
 class RAGEngine:
     def __init__(
@@ -21,9 +25,12 @@ class RAGEngine:
         model: Optional[str] = None
     ):
         self.guardrails = GuardrailsChecker()
-        try:
-            self.retriever = HybridRetriever(sources_dir=sources_dir)
-        except Exception:
+        if HybridRetriever is not None:
+            try:
+                self.retriever = HybridRetriever(sources_dir=sources_dir)
+            except Exception:
+                self.retriever = SourceRetriever(sources_dir=sources_dir)
+        else:
             self.retriever = SourceRetriever(sources_dir=sources_dir)
         self.generator = FactsOnlyGenerator(
             provider=provider,

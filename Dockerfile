@@ -8,10 +8,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Install system dependencies (including pdftotext for statutory PDF processing)
+# Install system dependencies (including pdftotext for statutory PDF processing and build tools)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     poppler-utils \
     curl \
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 # Install python dependencies

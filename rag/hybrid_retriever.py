@@ -12,8 +12,16 @@ import os
 from typing import List, Dict, Optional, Any, Set
 from collections import defaultdict
 from rag.retriever import SourceRetriever, Passage, MIN_RELEVANCE_SCORE
-from rag.knowledge_graph import MutualFundKnowledgeGraph
-from rag.chroma_store import ChromaDenseStore
+
+try:
+    from rag.knowledge_graph import MutualFundKnowledgeGraph
+except (ImportError, ModuleNotFoundError):
+    MutualFundKnowledgeGraph = None
+
+try:
+    from rag.chroma_store import ChromaDenseStore
+except (ImportError, ModuleNotFoundError):
+    ChromaDenseStore = None
 
 class HybridRetriever:
     """
@@ -21,6 +29,11 @@ class HybridRetriever:
     dense vector similarity, and field-weighted BM25F lexical matching.
     """
     def __init__(self, sources_dir: Optional[str] = None):
+        if MutualFundKnowledgeGraph is None or ChromaDenseStore is None:
+            raise ImportError(
+                "Missing required dependencies (networkx or chromadb) for HybridRetriever. "
+                "Install with: pip install networkx chromadb"
+            )
         self.lexical_retriever = SourceRetriever(sources_dir=sources_dir)
         self.kg = MutualFundKnowledgeGraph(sources_dir=sources_dir)
         self.dense_store = ChromaDenseStore()

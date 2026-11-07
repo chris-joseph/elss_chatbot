@@ -175,4 +175,16 @@ def test_engine_vs_direct_vs_regular(engine):
     assert "https://groww.in/p/direct-vs-regular-mutual-funds" in r1["answer"]
     assert "https://groww.in/p/direct-vs-regular-mutual-funds" in r2["answer"]
 
+def test_engine_graceful_retriever_fallback():
+    """Verifies that RAGEngine gracefully falls back to SourceRetriever if HybridRetriever is unavailable."""
+    from unittest.mock import patch
+    import rag.engine
+    with patch.object(rag.engine, "HybridRetriever", None):
+        fallback_engine = rag.engine.RAGEngine(provider="offline")
+        assert fallback_engine.retriever.__class__.__name__ == "SourceRetriever"
+        res = fallback_engine.answer("what is a mutual fund")
+        assert res["status"] == "factual"
+        assert "pool of money" in res["answer"].lower() or "fund manager" in res["answer"].lower()
+
+
 

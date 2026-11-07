@@ -7,8 +7,14 @@ Provides dense semantic vector similarity matching with zero cloud dependencies.
 
 import os
 from typing import List, Dict, Optional, Any
-import chromadb
-from chromadb.utils import embedding_functions
+
+try:
+    import chromadb
+    from chromadb.utils import embedding_functions
+except (ImportError, ModuleNotFoundError):
+    chromadb = None
+    embedding_functions = None
+
 from rag.retriever import Passage
 
 class ChromaDenseStore:
@@ -20,6 +26,11 @@ class ChromaDenseStore:
         persist_directory: Optional[str] = None,
         collection_name: str = "groww_mutual_funds"
     ):
+        if chromadb is None or embedding_functions is None:
+            raise ImportError(
+                "chromadb is required for ChromaDenseStore. "
+                "Install with: pip install chromadb"
+            )
         if persist_directory is None:
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             persist_directory = os.path.join(base_dir, "vector_store", "chroma")

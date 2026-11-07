@@ -9,7 +9,12 @@ Enables deterministic multi-hop reasoning (e.g. Section 80C -> Groww ELSS -> NIF
 import os
 import re
 from typing import List, Dict, Optional, Tuple, Set, Any
-import networkx as nx
+
+try:
+    import networkx as nx
+except (ImportError, ModuleNotFoundError):
+    nx = None
+
 from rag.retriever import Passage
 
 class MutualFundKnowledgeGraph:
@@ -18,6 +23,11 @@ class MutualFundKnowledgeGraph:
     regulatory attributes, and operational rules.
     """
     def __init__(self, sources_dir: Optional[str] = None):
+        if nx is None:
+            raise ImportError(
+                "networkx is required for MutualFundKnowledgeGraph. "
+                "Install with: pip install networkx"
+            )
         if sources_dir is None:
             base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             sources_dir = os.path.join(base_dir, "sources")
