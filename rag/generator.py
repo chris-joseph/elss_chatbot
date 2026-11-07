@@ -13,7 +13,7 @@ from rag.retriever import Passage
 
 class FactsOnlyGenerator:
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None, model: Optional[str] = None):
-        self.api_key = api_key or os.environ.get("DEEPSEEK_API_KEY")
+        self.api_key = api_key if api_key is not None else os.environ.get("DEEPSEEK_API_KEY")
         self.base_url = (base_url or os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")).rstrip("/")
         self.model = model or os.environ.get("LLM_MODEL", "deepseek-chat")
 
@@ -101,7 +101,7 @@ class FactsOnlyGenerator:
 
         # Expense ratio query
         if "expense ratio" in q_lower or "ter" in q_lower:
-            m = re.search(r'Expense Ratio[^:]*:\s*([\d\.]+\s*%)', primary.content, re.IGNORECASE)
+            m = re.search(r'Expense Ratio.*?:[^\d]*([\d\.]+\s*%)', primary.content, re.IGNORECASE)
             ratio = m.group(1) if m else "disclosed in official scheme documents"
             scheme = primary.title.split("-")[0].strip()
             return (
@@ -112,7 +112,7 @@ class FactsOnlyGenerator:
 
         # Exit load query
         if "exit load" in q_lower:
-            m = re.search(r'Exit Load:\s*([^\n\r]+)', primary.content, re.IGNORECASE)
+            m = re.search(r'Exit Load:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
             load = m.group(1).strip() if m else "specified in the scheme KIM/SID"
             scheme = primary.title.split("-")[0].strip()
             return (
@@ -131,8 +131,8 @@ class FactsOnlyGenerator:
 
         # Minimum SIP or Investment query
         if "minimum sip" in q_lower or "min sip" in q_lower or "100" in q_lower:
-            m = re.search(r'Minimum SIP Investment:\s*(₹?\d+)', primary.content, re.IGNORECASE)
-            sip = m.group(1) if m else "₹500"
+            m = re.search(r'Minimum SIP Investment:\**\s*([^\n\r]+)', primary.content, re.IGNORECASE)
+            sip = m.group(1).strip() if m else "₹500"
             scheme = primary.title.split("-")[0].strip()
             return (
                 f"The minimum SIP investment for {scheme} is {sip}. "

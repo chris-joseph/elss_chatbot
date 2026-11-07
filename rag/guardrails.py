@@ -22,7 +22,7 @@ class GuardrailsChecker:
     # Regex Patterns for PII
     PAN_PATTERN = re.compile(r'\b[A-Z]{5}[0-9]{4}[A-Z]\b', re.IGNORECASE)
     AADHAAR_PATTERN = re.compile(r'\b\d{4}\s?\d{4}\s?\d{4}\b')
-    PHONE_PATTERN = re.compile(r'(?:\+?91[\s-]?)?[6-9]\d{9}\b')
+    PHONE_PATTERN = re.compile(r'\b(?:\+?91[\s-]?)?[6-9]\d{9}\b')
     EMAIL_PATTERN = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b')
     OTP_PATTERN = re.compile(r'\b(?:otp|one\s*time\s*password)\b.*?\b\d{4,6}\b|\b\d{4,6}\b.*?\b(?:otp|code)\b', re.IGNORECASE)
     ACCOUNT_PATTERN = re.compile(r'\b(?:account|acct|acc)\s*(?:no|number)?\s*[:#-]?\s*\d{9,18}\b', re.IGNORECASE)
@@ -58,7 +58,15 @@ class GuardrailsChecker:
     def check(self, query: str) -> GuardrailResult:
         normalized = query.strip()
 
-        # 1. PII Check
+        # 1. PII Check - Sensitive Financial Credentials (OTP, Account Numbers)
+        if self.OTP_PATTERN.search(normalized) or self.ACCOUNT_PATTERN.search(normalized):
+            return GuardrailResult(
+                is_safe=False,
+                status="refusal_pii",
+                message="For your security and privacy, sensitive financial credentials (OTPs, bank account numbers) are not accepted. I only answer public factual questions about mutual fund schemes."
+            )
+
+        # 2. PII Check - Identification Details (PAN, Aadhaar, Phone, Email)
         if self.PAN_PATTERN.search(normalized):
             return GuardrailResult(
                 is_safe=False,
@@ -82,12 +90,6 @@ class GuardrailsChecker:
                 is_safe=False,
                 status="refusal_pii",
                 message="For your security and privacy, please do not share email addresses. I only answer public factual questions about mutual fund schemes."
-            )
-        if self.OTP_PATTERN.search(normalized) or self.ACCOUNT_PATTERN.search(normalized):
-            return GuardrailResult(
-                is_safe=False,
-                status="refusal_pii",
-                message="For your security and privacy, sensitive financial credentials (OTPs, bank account numbers) are not accepted. I only answer public factual questions about mutual fund schemes."
             )
 
         # 2. Performance / Returns Claim Check (Run before general advice so specific return queries trigger performance refusal)
