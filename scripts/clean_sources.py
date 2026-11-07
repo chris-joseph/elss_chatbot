@@ -43,6 +43,13 @@ def clean_source_content(content: str) -> str:
 
     clean_body = body[:cut_idx].strip()
 
+    # Remove leading web scraper navigation banner
+    clean_body = re.sub(
+        r'(?s)^\s*(?:[^\n]+\n+)?Invest in stocks, ETFs, IPOs with fast orders.*?(?=\n#|\Z)',
+        '',
+        clean_body
+    ).strip()
+
     # Remove repeated excessive blank lines
     clean_body = re.sub(r'\n{3,}', '\n\n', clean_body)
 

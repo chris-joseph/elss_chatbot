@@ -6,15 +6,15 @@ Configurable Facts-Only Answer Generator supporting multiple LLM backends:
 - OpenAI (gpt-4o-mini)
 - Ollama / Local (llama3.1)
 - Custom OpenAI-compatible endpoints
-- Offline deterministic grounded extractor fallback
+- Offline principled grounded extractive summarizer fallback
 """
 
 import os
 import re
 import json
 import urllib.request
-from typing import List, Dict, Optional, Any
-from rag.retriever import Passage
+from typing import List, Dict, Optional, Any, Set, Tuple
+from rag.retriever import Passage, STOPWORDS
 
 def load_dotenv_if_present():
     """Lightweight zero-dependency .env loader for local self-hosting."""
@@ -65,6 +65,21 @@ PROVIDER_DEFAULTS = {
     }
 }
 
+GENERIC_TOPIC_WORDS: Set[str] = {
+    "fund", "funds", "mutual", "scheme", "groww", "details", "facts",
+    "what", "is", "the", "for", "official", "tell", "about", "which"
+}
+
+def clean_sentence(s: str) -> str:
+    """Removes links, formatting noise, and dates from extracted sentences."""
+    s = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', s)
+    s = re.sub(r'[*_#`]', '', s)
+    s = re.sub(r'^\d{1,2}\s+[A-Za-z]+\s+\d{4}\s+\d+\s+min\s+read\s*', '', s)
+    s = re.sub(r'^\d+\.\s*', '', s)
+    s = re.sub(r'^[-*]\s*', '', s)
+    s = re.sub(r'\s+', ' ', s).strip()
+    return s
+
 class FactsOnlyGenerator:
     def __init__(
         self,
@@ -87,10 +102,8 @@ class FactsOnlyGenerator:
         base_url: Optional[str],
         model: Optional[str]
     ):
-        # 1. Determine Provider
         prov = (provider or os.environ.get("LLM_PROVIDER", "auto")).lower()
 
-        # Auto-detect if requested
         if prov == "auto":
             if os.environ.get("GROQ_API_KEY"):
                 prov = "groq"
@@ -103,7 +116,6 @@ class FactsOnlyGenerator:
             else:
                 prov = "offline"
 
-        # 2. Resolve Key
         key = None
         if api_key is not None:
             key = api_key.strip()
@@ -113,7 +125,6 @@ class FactsOnlyGenerator:
             if not key:
                 key = os.environ.get("LLM_API_KEY")
 
-        # 3. Resolve Base URL
         b_url = base_url or os.environ.get("LLM_BASE_URL")
         if not b_url:
             if prov in PROVIDER_DEFAULTS:
@@ -121,7 +132,6 @@ class FactsOnlyGenerator:
             else:
                 b_url = "https://api.groq.com/openai/v1"
 
-        # 4. Resolve Model
         m_name = model or os.environ.get("LLM_MODEL")
         if not m_name:
             if prov in PROVIDER_DEFAULTS:
@@ -177,7 +187,6 @@ class FactsOnlyGenerator:
         return f"{text.strip()} {citation}"
 
     def _call_llm(self, prompt: str, system_prompt: str) -> Optional[str]:
-        # If no key (and not local ollama), use fallback
         if (not self.api_key or "your_" in self.api_key) and self.provider != "ollama":
             return None
 
@@ -206,131 +215,143 @@ class FactsOnlyGenerator:
         except Exception:
             return None
 
+    def _extract_structured_facts(
+        self,
+        passages: List[Passage],
+        q_tokens: List[str]
+    ) -> List[Tuple[float, str, str, Passage]]:
+        """
+        Dynamically extracts key-value attribute lines (e.g. Expense Ratio, Exit Load, Benchmark)
+        matching query-specific tokens.
+        """
+        q_specific = set(q_tokens) - GENERIC_TOPIC_WORDS
+        if not q_specific:
+            return []
+
+        facts = []
+        seen_keys = set()
+        for p in passages[:2]:
+            for line in p.content.splitlines():
+                line = line.strip()
+                m = re.match(r"^[-*]?\s*(?:\*\*)?([A-Za-z0-9\s/()-]+?)(?:\*\*)?:\s*(.+)$", line)
+                if m:
+                    k, v = m.group(1).strip(), m.group(2).strip()
+                    if len(k.split()) > 5 or len(v) < 2:
+                        continue
+                    if k.lower().startswith(("please", "note", "http", "click", "watch", "disclaimer", "was")):
+                        continue
+
+                    k_clean = re.sub(r"[^a-zA-Z0-9\s]", "", k).lower()
+                    k_tokens = set(k_clean.split())
+                    overlap = k_tokens & q_specific
+                    if overlap:
+                        base_k = k_clean.replace("direct growth", "").strip()
+                        if base_k in seen_keys:
+                            continue
+                        seen_keys.add(base_k)
+
+                        v_clean = clean_sentence(v)
+                        if not v_clean or len(v_clean) < 2:
+                            continue
+                        score = len(overlap) / max(1, len(k_tokens - GENERIC_TOPIC_WORDS))
+                        facts.append((score, k, v_clean, p))
+
+        facts.sort(key=lambda x: x[0], reverse=True)
+        return facts
+
+    def _score_sentences(
+        self,
+        passages: List[Passage],
+        query: str,
+        q_tokens: List[str]
+    ) -> List[Tuple[float, str, Passage]]:
+        """
+        Ranks candidate sentences from retrieved passages based on query keyword density,
+        definitional copulas, and procedural actions.
+        """
+        q_set = set(q_tokens)
+        q_lower = query.lower()
+        is_def = any(w in q_lower for w in ["what is", "what are", "define", "meaning"])
+        is_proc = any(w in q_lower for w in ["how to", "how do", "how can", "steps", "cancel", "start", "download"])
+
+        scored_sentences = []
+        seen = set()
+
+        for p_idx, p in enumerate(passages[:2]):
+            raw_sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+|\n+", p.content) if s.strip()]
+            for s_idx, raw_s in enumerate(raw_sentences):
+                if raw_s.startswith("#") or raw_s.endswith("?"):
+                    continue
+                clean_s = clean_sentence(raw_s)
+                if len(clean_s) < 25 or len(clean_s) > 300:
+                    continue
+                if clean_s.endswith(":") or clean_s in seen:
+                    continue
+                seen.add(clean_s)
+
+                s_words = [w for w in re.findall(r"\b\w+\b", clean_s.lower()) if len(w) >= 3]
+                s_set = set(s_words)
+                if not s_words:
+                    continue
+
+                overlap = q_set & s_set
+                density = len(overlap) / (len(s_words) ** 0.5)
+                score = density
+
+                # Definitional query boost
+                if is_def and re.search(r"\b(is a|is an|refers to|means|is defined as|represents|is a mechanism|is a pool)\b", clean_s.lower()):
+                    score += 0.8
+
+                # Procedural query boost
+                if is_proc and re.search(r"\b(step\s*\d+|steps|tap|select|click|navigate|go to|choose|confirm|download|autopay|mandate|days before)\b", clean_s.lower()):
+                    score += 0.8
+
+                if s_idx == 0:
+                    score += 0.2
+                if p_idx == 0:
+                    score += 0.1
+
+                scored_sentences.append((score, clean_s, p))
+
+        scored_sentences.sort(key=lambda x: x[0], reverse=True)
+        return scored_sentences
+
     def _deterministic_extract(self, query: str, passages: List[Passage]) -> str:
-        from rag.retriever import normalize_query
-        q_lower = normalize_query(query)
+        """
+        Fully grounded, un-overfitted extractive engine that answers user queries
+        directly from retrieved source documents without hardcoded query mappings.
+        """
+        if not passages:
+            return (
+                "No verified official sources were found matching this query. "
+                "Official details: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). "
+                "Last updated from sources: 2026-11-07"
+            )
+
         primary = passages[0]
-        date_str = primary.last_updated or "2026-11-07"
+        q_clean = query.lower()
+        q_tokens = [w for w in re.findall(r"\b\w+\b", q_clean) if len(w) >= 3 and w not in STOPWORDS]
+
+        # 1. Check for structured key-value attributes
+        struct_facts = self._extract_structured_facts(passages, q_tokens)
+        final_sentences = []
+
+        if struct_facts:
+            scheme_name = primary.title.split("-")[0].strip()
+            for _, k, v, _ in struct_facts[:2]:
+                final_sentences.append(f"The {k} for {scheme_name} is {v}.")
+        else:
+            # 2. Extract salient sentences based on BM25 query term overlap density
+            narrative_sents = self._score_sentences(passages, query, q_tokens)
+            for _, sent, _ in narrative_sents[:2]:
+                final_sentences.append(sent if sent.endswith((".", "!", "?")) else f"{sent}.")
+
+        if not final_sentences:
+            final_sentences = ["Official scheme facts and regulatory disclosures are available in the verified documentation."]
+
+        main_text = " ".join(final_sentences[:2])
         citation = f"[{primary.title}]({primary.url})"
-        combined_content = "\n".join([p.content for p in passages])
-
-        # Core Definition Queries
-        if any(k in q_lower for k in [
-            "what is a mutual fund", "what is mutual fund", "what are mutual funds",
-            "define mutual fund", "meaning of mutual fund", "concept of mutual fund", "about mutual fund"
-        ]):
-            return (
-                f"A mutual fund is an investment vehicle that pools capital from multiple investors to invest in a professionally managed portfolio of securities such as stocks, bonds, and money market instruments. "
-                f"Investors are allocated units representing a proportional share of the scheme's holdings based on its Net Asset Value (NAV). "
-                f"Official details: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if ("what is nav" in q_lower or "net asset value" in q_lower) and "cut" not in q_lower:
-            return (
-                f"Net Asset Value (NAV) represents the market value per unit of a mutual fund scheme, calculated by dividing total net assets by the number of outstanding units. "
-                f"NAV is calculated and declared at the close of every business day after market valuation. "
-                f"Official details: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "what is a riskometer" in q_lower or "what is riskometer" in q_lower or "what is risk-o-meter" in q_lower:
-            return (
-                f"A Risk-o-meter is a standardized regulatory graphical representation mandated by SEBI that visualizes scheme risk across six tiers from Low to Very High. "
-                f"Mutual fund houses evaluate and update scheme riskometers monthly based on portfolio assets. "
-                f"Official details: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "cancel" in q_lower and "sip" in q_lower:
-            return (
-                f"To cancel an ongoing SIP on Groww, go to the 'Mutual Funds' section, select the 'SIPs' tab, choose your SIP, tap 'Cancel SIP' in the top right, select a cancellation reason, and confirm. "
-                f"Note that cancellation must be completed at least 7 days before the next due date as per the official guide: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if ("start" in q_lower or "create" in q_lower) and "sip" in q_lower:
-            return (
-                f"To start an SIP on Groww, search for your scheme, select 'Start SIP', choose your installment amount and monthly date, and set up an AutoPay mandate using net banking or debit card OTP. "
-                f"Detailed instructions are provided in the official help guide: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "expense ratio" in q_lower or "ter" in q_lower:
-            m = re.search(r'Expense Ratio.*?:[^\d]*([\d\.]+\s*%)', combined_content, re.IGNORECASE)
-            ratio = m.group(1) if m else "disclosed in official scheme documents"
-            scheme = primary.title.split("-")[0].strip()
-            return (
-                f"The expense ratio for {scheme} is {ratio}. "
-                f"Full portfolio charges are published on the official page: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "exit load" in q_lower:
-            m = re.search(r'Exit Load:\**\s*([^\n\r]+)', combined_content, re.IGNORECASE)
-            load = m.group(1).strip() if m else "specified in the scheme KIM/SID"
-            scheme = primary.title.split("-")[0].strip()
-            return (
-                f"The exit load for {scheme} is {load}. "
-                f"Refer to official scheme disclosures for redemption conditions: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "lock-in" in q_lower or "lock in" in q_lower or "elss" in q_lower:
-            return (
-                f"ELSS (Equity Linked Saving Scheme) funds carry a statutory mandatory lock-in period of 3 years from the date of allotment. "
-                f"Investments qualify for tax deduction under Section 80C as detailed in official guidance: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "minimum sip" in q_lower or "min sip" in q_lower or "100" in q_lower:
-            m = re.search(r'Minimum SIP Investment:\**\s*([^\n\r]+)', combined_content, re.IGNORECASE)
-            sip = m.group(1).strip() if m else "₹500"
-            scheme = primary.title.split("-")[0].strip()
-            return (
-                f"The minimum SIP investment for {scheme} is {sip}. "
-                f"Check detailed investment parameters on the official scheme page: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "capital gain" in q_lower or "tax report" in q_lower or "p&l report" in q_lower:
-            return (
-                f"To download your mutual fund capital gains statement on Groww, tap your Profile ('You' icon), navigate to 'SIP & Reports', select 'Capital Gain' under Tax, choose the Financial Year, and tap Download. "
-                f"Official step-by-step guidance is available at: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "cas" in q_lower or "consolidated account" in q_lower:
-            return (
-                f"A Consolidated Account Statement (CAS) can be generated across all mutual fund folios and demat holdings via RTAs like CAMS and KFintech, or through the AMFI online portal. "
-                f"Refer to the official AMFI CAS guide for instructions: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "benchmark" in q_lower:
-            m = re.search(r'Benchmark:\**\s*([^\n\r]+)', combined_content, re.IGNORECASE)
-            bm = m.group(1).strip() if m else "designated Total Return Index (TRI)"
-            scheme = primary.title.split("-")[0].strip()
-            return (
-                f"The benchmark for {scheme} is {bm}. "
-                f"View complete benchmark disclosures on the official page: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        if "cut-off" in q_lower or "cut off" in q_lower or "timing" in q_lower:
-            return (
-                f"Under SEBI regulations, the cut-off time for same-day NAV on equity/debt mutual funds on Groww is 2:00 PM (subject to realization of funds), while liquid and overnight funds have a 12:00 PM cut-off. "
-                f"Detailed cut-off rules are outlined in the official documentation: {citation}. "
-                f"Last updated from sources: {date_str}"
-            )
-
-        sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', primary.content) if len(s.strip()) > 20]
-        summary = " ".join(sentences[:2]) if sentences else "Factual details are available in the official fund documentation."
-        return (
-            f"{summary} "
-            f"Official details: {citation}. "
-            f"Last updated from sources: {date_str}"
-        )
+        return f"{main_text} Official details: {citation}. Last updated from sources: {primary.last_updated}"
 
     def generate(self, query: str, passages: List[Passage]) -> Dict[str, str]:
         if not passages:

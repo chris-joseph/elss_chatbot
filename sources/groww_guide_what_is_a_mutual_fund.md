@@ -1,6 +1,6 @@
 ---
 id: groww_guide_what_is_a_mutual_fund
-title: "What is a Mutual Fund - Groww Knowledge Guide"
+title: "What is a Mutual Fund"
 url: "https://groww.in/p/what-is-mutual-fund"
 organization: "Groww"
 doc_type: "concept_guide"

@@ -1,6 +1,6 @@
 ---
 id: amfi_guide_what_is_a_mutual_fund
-title: "What is a Mutual Fund - AMFI Official Definition & Guide"
+title: "What is a Mutual Fund"
 url: "https://www.amfiindia.com/investor-corner/knowledge-center/what-are-mutual-funds.html"
 organization: "AMFI"
 doc_type: "concept_guide"

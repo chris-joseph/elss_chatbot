@@ -1,14 +1,20 @@
 """
 retriever.py
-Upgraded Hybrid Retriever using scikit-learn TfidfVectorizer (unigrams + bigrams),
-cosine similarity, BM25 term weighting, and scheme-specific entity boosting.
+Principled Information Retrieval Engine for Mutual Fund FAQs.
+Features:
+- Field-weighted TF-IDF vectorization (BM25F field weighting concept).
+- Dynamic corpus-guided vocabulary spelling correction (Norvig/Levenshtein style via difflib).
+- Query keyword title recall, Jaccard title/section alignment, and verbatim n-gram phrase matching.
+- Structural header stub merging to eliminate tiny uninformative chunks.
+- Zero hardcoded query-to-answer mappings or query-specific artificial boost dictionaries.
 """
 
 import os
 import re
-import math
+import difflib
 from dataclasses import dataclass
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Set
+from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
@@ -25,30 +31,35 @@ class Passage:
     content: str
     score: float = 0.0
 
-TYPO_CORRECTIONS = {
-    "mutal": "mutual",
-    "mutul": "mutual",
-    "mutaul": "mutual",
-    "multual": "mutual",
-    "expence": "expense",
-    "expences": "expenses",
-    "exsit": "exit",
-    "ext": "exit",
-    "statment": "statement",
-    "statemnt": "statement",
-    "statments": "statements",
-    "lockin": "lock in",
-    "benchmrk": "benchmark",
-    "riskomtr": "riskometer",
-    "cancle": "cancel"
+STOPWORDS = {
+    "what", "is", "a", "an", "the", "in", "on", "of", "for", "to", "and", "or",
+    "how", "do", "i", "can", "my", "me", "are", "by", "with", "at", "from", "its",
+    "does", "tell", "about", "which", "there", "any"
 }
 
-def normalize_query(query: str) -> str:
-    """Normalizes query text and fixes common user typographical errors."""
-    q = query.lower()
-    for typo, correction in TYPO_CORRECTIONS.items():
-        q = re.sub(rf'\b{typo}\b', correction, q)
-    return q
+def normalize_query(query: str, vocabulary: Optional[Set[str]] = None, word_counts: Optional[Counter] = None) -> str:
+    """
+    Normalizes query text and applies dynamic corpus-guided typo correction.
+    If vocabulary is provided, non-stopwords not in vocabulary are matched against
+    the indexed corpus vocabulary.
+    """
+    q_lower = query.lower()
+    tokens = re.findall(r'\b\w+\b', q_lower)
+    if not vocabulary or not word_counts:
+        return " ".join(tokens)
+
+    corrected = []
+    for t in tokens:
+        if t in vocabulary or len(t) < 4:
+            corrected.append(t)
+        else:
+            matches = difflib.get_close_matches(t, vocabulary, n=3, cutoff=0.75)
+            if matches:
+                best = max(matches, key=lambda m: word_counts[m])
+                corrected.append(best)
+            else:
+                corrected.append(t)
+    return " ".join(corrected)
 
 class SourceRetriever:
     def __init__(self, sources_dir: Optional[str] = None):
@@ -59,6 +70,8 @@ class SourceRetriever:
         self.passages: List[Passage] = []
         self.vectorizer: Optional[TfidfVectorizer] = None
         self.tfidf_matrix = None
+        self.word_counts: Counter = Counter()
+        self.vocabulary: Set[str] = set()
         self._load_and_index()
 
     def _parse_frontmatter(self, text: str) -> Tuple[Dict[str, str], str]:
@@ -98,70 +111,58 @@ class SourceRetriever:
             cat = meta.get("category", "")
             last_up = meta.get("last_updated_from_sources", "2026-11-07")
 
-            # Split body into coherent sections by markdown headers
-            sections = re.split(r'\n(?=#{1,3}\s+)', body)
-            for sec in sections:
+            # Collect corpus vocabulary for typo correction
+            for w in re.findall(r'\b[a-zA-Z]{3,}\b', (title + " " + body).lower()):
+                self.word_counts[w] += 1
+
+            # Split body into sections by markdown headers
+            raw_sections = re.split(r'\n(?=#{1,3}\s+)', body)
+
+            # Merge short header stubs / intros (< 180 chars) into subsequent section
+            merged_sections = []
+            buffer = ""
+            for s in raw_sections:
+                s_clean = s.strip()
+                if not s_clean:
+                    continue
+                if len(s_clean) < 180 and not buffer:
+                    buffer = s_clean
+                    continue
+                if buffer:
+                    merged_sections.append(buffer + "\n\n" + s_clean)
+                    buffer = ""
+                else:
+                    merged_sections.append(s_clean)
+            if buffer:
+                merged_sections.append(buffer)
+
+            for sec in merged_sections:
                 sec_text = sec.strip()
                 if not sec_text or len(sec_text) < 30:
                     continue
                 lines = [l.strip() for l in sec_text.splitlines() if l.strip()]
-                if len(lines) <= 1 and lines[0].startswith("#"):
-                    continue
                 sec_title = lines[0].lstrip("#").strip() if lines and lines[0].startswith("#") else title
 
-                # If section is lengthy, sub-chunk logically
-                if len(sec_text) > 1000:
-                    sub_chunks = sec_text.split("\n\n")
-                    curr_chunk = []
-                    curr_len = 0
-                    for sc in sub_chunks:
-                        curr_chunk.append(sc)
-                        curr_len += len(sc)
-                        if curr_len > 600:
-                            p_content = "\n\n".join(curr_chunk)
-                            passages_list.append(Passage(
-                                doc_id=doc_id,
-                                title=title,
-                                url=url,
-                                organization=org,
-                                category=cat,
-                                last_updated=last_up,
-                                section_title=sec_title,
-                                content=p_content
-                            ))
-                            curr_chunk = []
-                            curr_len = 0
-                    if curr_chunk:
-                        p_content = "\n\n".join(curr_chunk)
-                        passages_list.append(Passage(
-                            doc_id=doc_id,
-                            title=title,
-                            url=url,
-                            organization=org,
-                            category=cat,
-                            last_updated=last_up,
-                            section_title=sec_title,
-                            content=p_content
-                        ))
-                else:
-                    passages_list.append(Passage(
-                        doc_id=doc_id,
-                        title=title,
-                        url=url,
-                        organization=org,
-                        category=cat,
-                        last_updated=last_up,
-                        section_title=sec_title,
-                        content=sec_text
-                    ))
+                passages_list.append(Passage(
+                    doc_id=doc_id,
+                    title=title,
+                    url=url,
+                    organization=org,
+                    category=cat,
+                    last_updated=last_up,
+                    section_title=sec_title,
+                    content=sec_text
+                ))
 
         self.passages = passages_list
+        self.vocabulary = set(self.word_counts.keys())
         if not self.passages:
             return
 
-        # Prepare corpus documents for TF-IDF Vectorizer
+        # Field-Weighted Document Vectorization (BM25F principle):
+        # Title (3x) + Section (2x) + Category (1x) + Content (1x)
         corpus_texts = [
-            f"{p.title} {p.category} {p.section_title} {p.content}"
+            f"{p.title} {p.title} {p.title} {p.section_title} {p.section_title} {p.category} {p.content}"
             for p in self.passages
         ]
 
@@ -181,97 +182,50 @@ class SourceRetriever:
     def doc_freq(self) -> Dict[str, int]:
         if self.vectorizer is None:
             return {}
-        # Vocabulary size as proxy for DF mapping
         return {term: int(idx) for term, idx in self.vectorizer.vocabulary_.items()}
 
     def retrieve(self, query: str, top_k: int = 3) -> List[Passage]:
         if not self.passages or self.vectorizer is None or self.tfidf_matrix is None:
             return []
 
-        q_norm = normalize_query(query)
-        q_lower = q_norm
+        # 1. Corpus-Guided Spelling Correction & Keyword Extraction
+        q_norm = normalize_query(query, self.vocabulary, self.word_counts)
+        q_words = [w for w in re.findall(r'\b\w+\b', q_norm) if len(w) >= 3 and w not in STOPWORDS]
+        q_set = set(q_words)
+        clean_q_phrase = " ".join(q_words)
 
-        # 1. Compute Cosine Similarities via TF-IDF Vector Space using normalized text
+        # 2. Vector Space TF-IDF Cosine Similarity
         query_vec = self.vectorizer.transform([q_norm])
         sim_scores = cosine_similarity(self.tfidf_matrix, query_vec).flatten()
 
-        # Check for core conceptual queries
-        is_mf_concept = any(phrase in q_lower for phrase in [
-            "what is a mutual fund", "what is mutual fund", "what are mutual funds",
-            "define mutual fund", "definition of mutual fund", "meaning of mutual fund",
-            "about mutual fund", "how mutual funds work", "concept of mutual fund"
-        ])
-        is_nav_concept = any(phrase in q_lower for phrase in [
-            "what is nav", "what is net asset value", "meaning of nav", "define nav"
-        ])
-        is_riskometer_concept = any(phrase in q_lower for phrase in [
-            "what is a riskometer", "what is riskometer", "what is risk-o-meter", "meaning of riskometer"
-        ])
-        is_benchmark_concept = any(phrase in q_lower for phrase in [
-            "what is a benchmark", "what is benchmark", "benchmark meaning"
-        ])
-
-        # 2. Scheme and Topic Entity Boosts
-        scheme_boosts = {
-            "elss": ["elss", "tax saver", "tax saving", "80c"],
-            "total market": ["total market", "nifty total market"],
-            "nifty": ["nifty total market", "nifty"],
-            "multicap": ["multicap", "multi cap"],
-            "liquid": ["liquid fund", "liquid"],
-            "banking": ["banking", "financial services"],
-            "capital gain": ["capital gains", "tax p&l", "tax report", "p&l report"],
-            "statement": ["statement", "cas", "consolidated account statement"],
-            "lock-in": ["lock-in", "lock in", "3 years", "three years"],
-            "exit load": ["exit load", "redeem", "redemption load"],
-            "expense ratio": ["expense ratio", "ter", "total expense ratio"],
-            "riskometer": ["riskometer", "risk-o-meter", "risk level", "very high"],
-            "benchmark": ["benchmark", "tri", "total return index"],
-            "cut-off": ["cut-off", "cut off", "timing", "2:00 pm", "12 noon", "same-day nav"],
-            "cancel": ["cancel sip", "stop sip", "cancel an ongoing sip"],
-            "start": ["start a sip", "start sip", "autopay", "mandate"]
-        }
-
-        active_boost_terms = []
-        for key, aliases in scheme_boosts.items():
-            if any(alias in q_lower for alias in aliases):
-                active_boost_terms.extend(aliases)
-
-        # 3. Combine Hybrid Scores
-        final_passages = []
+        # 3. Principled Field Alignment & Coverage Scoring
+        scored_passages = []
         for idx, p in enumerate(self.passages):
             raw_sim = float(sim_scores[idx])
-            boost = 0.0
-            p_text = (p.title + " " + p.section_title + " " + p.content).lower()
 
-            # Conceptual definition priority boosts
-            if is_mf_concept:
-                if ("what is a mutual fund" in p.title.lower() or "introduction to mutual funds" in p.title.lower()) and "riskometer" not in p.title.lower():
-                    boost += 1.00
-                elif "expense ratio" in p.title.lower() or "exit load" in p.title.lower() or "riskometer" in p.title.lower():
-                    boost -= 0.60
-            elif is_nav_concept:
-                if "net asset value" in p.title.lower() or "nav" in p.title.lower():
-                    boost += 0.85
-            elif is_riskometer_concept:
-                if "riskometer" in p.title.lower():
-                    boost += 0.85
-            elif is_benchmark_concept:
-                if "benchmark" in p.title.lower():
-                    boost += 0.85
+            t_lower = p.title.lower()
+            s_lower = p.section_title.lower()
+            t_words = set(re.findall(r'\b\w+\b', t_lower))
+            t_clean = {w for w in t_words if len(w) >= 3 and w not in STOPWORDS}
+            s_words = set(re.findall(r'\b\w+\b', s_lower))
+            s_clean = {w for w in s_words if len(w) >= 3 and w not in STOPWORDS}
+            c_words = set(re.findall(r'\b\w+\b', p.content.lower()))
 
-            for term in active_boost_terms:
-                if term in p.title.lower():
-                    boost += 0.35
-                elif term in p_text:
-                    boost += 0.15
+            bonus = 0.0
+            if q_set:
+                # Title keyword recall and Jaccard alignment (topic specificity)
+                t_recall = len(q_set & t_clean) / len(q_set)
+                t_jaccard = len(q_set & t_clean) / max(1, len(q_set | t_clean))
+                s_jaccard = len(q_set & s_clean) / max(1, len(q_set | s_clean))
+                c_coverage = len(q_set & c_words) / len(q_set)
 
-            # Direct title token match boost
-            q_words = re.findall(r'\w+', q_lower)
-            for w in q_words:
-                if len(w) > 3 and w in p.title.lower():
-                    boost += 0.10
+                bonus += (0.30 * t_recall) + (0.35 * t_jaccard) + (0.25 * s_jaccard) + (0.20 * c_coverage)
 
-            combined_score = raw_sim + boost
+            # Exact N-gram / Phrase Matching
+            if clean_q_phrase and (clean_q_phrase in t_lower or clean_q_phrase in s_lower):
+                bonus += 0.25
+
+            combined_score = raw_sim + bonus
             if combined_score > 0.05:
                 p_copy = Passage(
                     doc_id=p.doc_id,
@@ -284,7 +238,7 @@ class SourceRetriever:
                     content=p.content,
                     score=round(combined_score, 4)
                 )
-                final_passages.append(p_copy)
+                scored_passages.append(p_copy)
 
-        final_passages.sort(key=lambda x: x.score, reverse=True)
-        return final_passages[:top_k]
+        scored_passages.sort(key=lambda x: x.score, reverse=True)
+        return scored_passages[:top_k]
