@@ -1,332 +1,326 @@
 [
   {
-    "id": "groww_scheme_elss_tax_saver",
-    "title": "Groww ELSS Tax Saver Fund - Scheme Facts & Details",
-    "url": "https://groww.in/mutual-funds/groww-elss-tax-saver-fund-direct-growth",
-    "organization": "Groww Mutual Fund",
-    "doc_type": "scheme_page",
-    "category": "ELSS / Tax Saver",
-    "status": "downloaded",
-    "file": "groww_scheme_elss_tax_saver.md"
-  },
-  {
-    "id": "groww_scheme_nifty_total_market",
-    "title": "Groww Nifty Total Market Index Fund - Scheme Facts & Details",
-    "url": "https://groww.in/mutual-funds/groww-nifty-total-market-index-fund-direct-growth",
-    "organization": "Groww Mutual Fund",
-    "doc_type": "scheme_page",
-    "category": "Index Fund / Large & Mid & Small",
-    "status": "downloaded",
-    "file": "groww_scheme_nifty_total_market.md"
-  },
-  {
-    "id": "groww_scheme_multicap_fund",
-    "title": "Groww Multicap Fund - Scheme Facts & Details",
-    "url": "https://groww.in/mutual-funds/groww-multicap-fund-direct-growth",
-    "organization": "Groww Mutual Fund",
-    "doc_type": "scheme_page",
-    "category": "Equity / Multi Cap",
-    "status": "downloaded",
-    "file": "groww_scheme_multicap_fund.md"
-  },
-  {
-    "id": "groww_scheme_liquid_fund",
-    "title": "Groww Liquid Fund - Scheme Facts & Details",
-    "url": "https://groww.in/mutual-funds/groww-liquid-fund-direct-growth",
-    "organization": "Groww Mutual Fund",
-    "doc_type": "scheme_page",
-    "category": "Debt / Liquid",
-    "status": "downloaded",
-    "file": "groww_scheme_liquid_fund.md"
-  },
-  {
-    "id": "groww_scheme_banking_financial_services",
-    "title": "Groww Banking & Financial Services Fund - Scheme Facts & Details",
-    "url": "https://groww.in/mutual-funds/groww-banking-financial-services-fund-direct-growth",
-    "organization": "Groww Mutual Fund",
-    "doc_type": "scheme_page",
-    "category": "Equity / Sectoral",
-    "status": "downloaded",
-    "file": "groww_scheme_banking_financial_services.md"
-  },
-  {
-    "id": "groww_amc_kim_nifty_total_market",
-    "title": "Groww Nifty Total Market Index Fund - Key Information Memorandum (KIM)",
-    "url": "https://assets-netstorage.growwmf.in/compliance_docs/Downloads/KIM/Index%20Funds/KIM_Groww%20Nifty%20Total%20Market%20Index%20Fund.pdf",
-    "organization": "Groww Mutual Fund AMC",
-    "doc_type": "statutory_kim",
-    "category": "Statutory KIM / Compliance",
-    "status": "downloaded",
-    "file": "groww_amc_kim_nifty_total_market.md"
-  },
-  {
-    "id": "groww_amc_sid_portal",
-    "title": "Groww Mutual Fund - Scheme Information Documents (SID) Downloads",
-    "url": "https://www.growwmf.in/downloads/sid",
-    "organization": "Groww Mutual Fund AMC",
-    "doc_type": "amc_downloads",
-    "category": "Statutory SID / Compliance",
-    "status": "downloaded",
-    "file": "groww_amc_sid_portal.md"
-  },
-  {
-    "id": "groww_amc_kim_portal",
-    "title": "Groww Mutual Fund - Key Information Memorandum (KIM) Downloads",
-    "url": "https://www.growwmf.in/downloads/kim",
-    "organization": "Groww Mutual Fund AMC",
-    "doc_type": "amc_downloads",
-    "category": "Statutory KIM / Compliance",
-    "status": "downloaded",
-    "file": "groww_amc_kim_portal.md"
-  },
-  {
-    "id": "groww_amc_factsheets_portal",
-    "title": "Groww Mutual Fund - Monthly Factsheets & Disclosures",
-    "url": "https://www.growwmf.in/downloads/factsheets",
-    "organization": "Groww Mutual Fund AMC",
-    "doc_type": "amc_downloads",
-    "category": "Factsheets & Disclosures",
-    "status": "downloaded",
-    "file": "groww_amc_factsheets_portal.md"
-  },
-  {
-    "id": "groww_guide_capital_gains_statement",
-    "title": "How to Download Capital Gains Statement on Groww for Mutual Funds",
-    "url": "https://groww.in/blog/how-to-get-capital-gains-statement-for-mutual-fund-investments",
-    "organization": "Groww",
-    "doc_type": "platform_guide",
-    "category": "Statements & Taxation",
-    "status": "downloaded",
-    "file": "groww_guide_capital_gains_statement.md"
-  },
-  {
-    "id": "groww_faq_capital_gains_tax_report",
-    "title": "What is a Capital Gains or Tax P&L Report on Groww",
-    "url": "https://groww.in/help/stocks,-f&o,-ipo-&-mtf/sx-reports/what-is-a-capital-gain-or-tax-p-l-report--20",
-    "organization": "Groww Help",
-    "doc_type": "platform_faq",
-    "category": "Statements & Taxation",
-    "status": "downloaded",
-    "file": "groww_faq_capital_gains_tax_report.md"
-  },
-  {
-    "id": "groww_faq_how_to_start_sip",
-    "title": "How to Start an SIP on Groww (Mandates, AutoPay & Timelines)",
-    "url": "https://groww.in/help/mutual-funds/mf-sip/how-to-start-a-sip-on-groww",
-    "organization": "Groww Help",
-    "doc_type": "platform_faq",
-    "category": "SIP & Mandates",
-    "status": "downloaded",
-    "file": "groww_faq_how_to_start_sip.md"
-  },
-  {
-    "id": "groww_faq_how_to_cancel_sip",
-    "title": "How to Cancel or Stop an Ongoing SIP on Groww",
-    "url": "https://groww.in/help/mutual-funds/mf-sip/how-to-cancel-my-sip",
-    "organization": "Groww Help",
-    "doc_type": "platform_faq",
-    "category": "SIP & Mandates",
-    "status": "downloaded",
-    "file": "groww_faq_how_to_cancel_sip.md"
-  },
-  {
-    "id": "groww_faq_exit_load_explained",
-    "title": "Mutual Fund Exit Load Explained - Calculation and Exemptions",
-    "url": "https://groww.in/help/mutual-funds/order/what-is-exit-load--71",
-    "organization": "Groww Help",
-    "doc_type": "platform_faq",
-    "category": "Charges & Exit Load",
-    "status": "downloaded",
-    "file": "groww_faq_exit_load_explained.md"
-  },
-  {
-    "id": "groww_faq_redemption_nav_applicability",
-    "title": "NAV Applicability when Redeeming / Withdrawing Mutual Fund Units",
-    "url": "https://groww.in/help/mutual-funds/order/when-withdrawing-redeeming-which-days-nav-will-be-applicable-1",
-    "organization": "Groww Help",
-    "doc_type": "platform_faq",
-    "category": "NAV & Transactions",
-    "status": "downloaded",
-    "file": "groww_faq_redemption_nav_applicability.md"
-  },
-  {
-    "id": "groww_faq_switch_charges",
-    "title": "Charges and Taxes on Switching from Regular to Direct Mutual Funds",
-    "url": "https://groww.in/help/mutual-funds/switch-to-direct/what-are-the-charges-to-switch-from-regular-to-direct-84",
-    "organization": "Groww Help",
-    "doc_type": "platform_faq",
-    "category": "Charges & Switching",
-    "status": "downloaded",
-    "file": "groww_faq_switch_charges.md"
-  },
-  {
-    "id": "groww_guide_unit_allotment_nav",
-    "title": "Mutual Fund Unit Allotment & NAV Realization Process",
-    "url": "https://groww.in/blog/unit-allotment-and-nav-process",
-    "organization": "Groww",
-    "doc_type": "platform_guide",
-    "category": "NAV & Allotment",
-    "status": "downloaded",
-    "file": "groww_guide_unit_allotment_nav.md"
-  },
-  {
-    "id": "groww_guide_cutoff_timings",
-    "title": "SEBI Mutual Fund Cut-off Timings for Purchases & Redemptions",
-    "url": "https://groww.in/blog/sebi-revises-mutual-fund-cut-off-timings",
-    "organization": "Groww",
-    "doc_type": "platform_guide",
-    "category": "Cut-off Timings",
-    "status": "downloaded",
-    "file": "groww_guide_cutoff_timings.md"
-  },
-  {
-    "id": "groww_concept_expense_ratio",
-    "title": "What is Total Expense Ratio (TER) in Mutual Funds",
-    "url": "https://groww.in/p/expense-ratio",
-    "organization": "Groww",
-    "doc_type": "concept_guide",
-    "category": "Charges & Expense Ratio",
-    "status": "downloaded",
-    "file": "groww_concept_expense_ratio.md"
-  },
-  {
-    "id": "groww_concept_riskometer",
-    "title": "What is a Mutual Fund Riskometer and Risk Classifications",
-    "url": "https://groww.in/p/riskometer",
-    "organization": "Groww",
-    "doc_type": "concept_guide",
-    "category": "Riskometer & Risk",
-    "status": "downloaded",
-    "file": "groww_concept_riskometer.md"
-  },
-  {
-    "id": "groww_concept_benchmark",
-    "title": "Understanding Mutual Fund Benchmarks and Performance Indices",
-    "url": "https://groww.in/p/benchmark",
-    "organization": "Groww",
-    "doc_type": "concept_guide",
-    "category": "Benchmarks",
-    "status": "downloaded",
-    "file": "groww_concept_benchmark.md"
-  },
-  {
-    "id": "groww_concept_nav",
-    "title": "What is Net Asset Value (NAV) and Calculation Method",
-    "url": "https://groww.in/p/nav",
-    "organization": "Groww",
-    "doc_type": "concept_guide",
-    "category": "NAV & Valuation",
-    "status": "downloaded",
-    "file": "groww_concept_nav.md"
-  },
-  {
-    "id": "groww_pricing_charges",
-    "title": "Groww Mutual Fund Pricing, Account Opening & Zero AMC Fees",
-    "url": "https://groww.in/pricing",
-    "organization": "Groww",
-    "doc_type": "pricing_page",
-    "category": "Fees & Charges",
-    "status": "downloaded",
-    "file": "groww_pricing_charges.md"
-  },
-  {
-    "id": "sebi_circular_riskometer_labeling",
-    "title": "SEBI Circular on Product Labeling in Mutual Fund Schemes - Risk-o-meter",
-    "url": "https://www.sebi.gov.in/legal/circulars/oct-2020/circular-on-product-labeling-in-mutual-fund-schemes-risk-o-meter_47796.html",
-    "organization": "SEBI",
-    "doc_type": "regulatory_circular",
-    "category": "Regulatory Standards",
-    "status": "downloaded",
-    "file": "sebi_circular_riskometer_labeling.md"
-  },
-  {
-    "id": "sebi_circular_scheme_categorization",
-    "title": "SEBI Categorization and Rationalization of Mutual Fund Schemes",
-    "url": "https://www.sebi.gov.in/legal/circulars/oct-2017/categorization-and-rationalization-of-mutual-fund-schemes_36199.html",
-    "organization": "SEBI",
-    "doc_type": "regulatory_circular",
-    "category": "Regulatory Standards",
-    "status": "downloaded",
-    "file": "sebi_circular_scheme_categorization.md"
-  },
-  {
-    "id": "sebi_circular_tri_benchmarking",
-    "title": "SEBI Mandate on Benchmarking Schemes to Total Return Index (TRI)",
-    "url": "https://www.sebi.gov.in/legal/circulars/jan-2018/benchmarking-of-scheme-s-performance-to-total-return-index_37273.html",
-    "organization": "SEBI",
-    "doc_type": "regulatory_circular",
-    "category": "Regulatory Standards",
-    "status": "downloaded",
-    "file": "sebi_circular_tri_benchmarking.md"
-  },
-  {
-    "id": "sebi_investor_elss",
-    "title": "SEBI Investor Education - Equity Linked Saving Schemes (ELSS) & 3-Year Lock-in",
-    "url": "https://investor.sebi.gov.in/elss.html",
-    "organization": "SEBI Investor Office",
-    "doc_type": "investor_guide",
-    "category": "ELSS & Lock-in",
-    "status": "downloaded",
-    "file": "sebi_investor_elss.md"
-  },
-  {
-    "id": "sebi_investor_riskometer",
-    "title": "SEBI Investor Education - Understanding the Scheme Risk-o-meter",
-    "url": "https://investor.sebi.gov.in/riskometer.html",
-    "organization": "SEBI Investor Office",
-    "doc_type": "investor_guide",
-    "category": "Riskometer & Risk",
-    "status": "downloaded",
-    "file": "sebi_investor_riskometer.md"
-  },
-  {
-    "id": "sebi_investor_exit_load",
-    "title": "SEBI Investor Education - Mutual Fund Exit Loads & Redemption Deductions",
-    "url": "https://investor.sebi.gov.in/exit_load.html",
-    "organization": "SEBI Investor Office",
-    "doc_type": "investor_guide",
-    "category": "Charges & Exit Load",
-    "status": "downloaded",
-    "file": "sebi_investor_exit_load.md"
-  },
-  {
-    "id": "sebi_investor_cas",
-    "title": "SEBI Investor Education - Consolidated Account Statement (CAS)",
-    "url": "https://investor.sebi.gov.in/consolidated_account_statement.html",
-    "organization": "SEBI Investor Office",
-    "doc_type": "investor_guide",
+    "id": "amfi_faq_cas_pdf",
+    "title": "AMFI Comprehensive FAQs on Consolidated Account Statement (CAS)",
+    "organization": "AMFI",
     "category": "Statements & CAS",
-    "status": "downloaded",
-    "file": "sebi_investor_cas.md"
+    "doc_type": "statutory_faq",
+    "url": "https://portal.amfiindia.com/spages/FAQ%20on%20CAS.pdf",
+    "filename": "amfi_faq_cas_pdf.md"
+  },
+  {
+    "id": "amfi_guide_what_is_a_mutual_fund",
+    "title": "What is a Mutual Fund - AMFI Official Definition & Guide",
+    "organization": "AMFI",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://www.amfiindia.com/investor-corner/knowledge-center/what-are-mutual-funds.html",
+    "filename": "amfi_guide_what_is_a_mutual_fund.md"
   },
   {
     "id": "amfi_knowledge_expense_ratio",
     "title": "AMFI Knowledge Center - Total Expense Ratio (TER) in Mutual Funds",
-    "url": "https://www.amfiindia.com/investor/knowledge-center-info?zoneName=expenseRatio",
     "organization": "AMFI",
-    "doc_type": "amfi_guide",
     "category": "Charges & Expense Ratio",
-    "status": "downloaded",
-    "file": "amfi_knowledge_expense_ratio.md"
+    "doc_type": "amfi_guide",
+    "url": "https://www.amfiindia.com/investor/knowledge-center-info?zoneName=expenseRatio",
+    "filename": "amfi_knowledge_expense_ratio.md"
   },
   {
     "id": "amfi_online_download_cas",
     "title": "AMFI Online Center - How to Download Consolidated Account Statement (CAS)",
-    "url": "https://www.amfiindia.com/online-center/download-cas",
     "organization": "AMFI",
-    "doc_type": "amfi_guide",
     "category": "Statements & CAS",
-    "status": "downloaded",
-    "file": "amfi_online_download_cas.md"
+    "doc_type": "amfi_guide",
+    "url": "https://www.amfiindia.com/online-center/download-cas",
+    "filename": "amfi_online_download_cas.md"
   },
   {
-    "id": "amfi_faq_cas_pdf",
-    "title": "AMFI Comprehensive FAQs on Consolidated Account Statement (CAS)",
-    "url": "https://portal.amfiindia.com/spages/FAQ%20on%20CAS.pdf",
-    "organization": "AMFI",
-    "doc_type": "statutory_faq",
+    "id": "groww_amc_factsheets_portal",
+    "title": "Groww Mutual Fund - Monthly Factsheets & Disclosures",
+    "organization": "Groww Mutual Fund AMC",
+    "category": "Factsheets & Disclosures",
+    "doc_type": "amc_downloads",
+    "url": "https://www.growwmf.in/downloads/factsheets",
+    "filename": "groww_amc_factsheets_portal.md"
+  },
+  {
+    "id": "groww_amc_kim_nifty_total_market",
+    "title": "Groww Nifty Total Market Index Fund - Key Information Memorandum (KIM)",
+    "organization": "Groww Mutual Fund AMC",
+    "category": "Statutory KIM / Compliance",
+    "doc_type": "statutory_kim",
+    "url": "https://assets-netstorage.growwmf.in/compliance_docs/Downloads/KIM/Index%20Funds/KIM_Groww%20Nifty%20Total%20Market%20Index%20Fund.pdf",
+    "filename": "groww_amc_kim_nifty_total_market.md"
+  },
+  {
+    "id": "groww_amc_kim_portal",
+    "title": "Groww Mutual Fund - Key Information Memorandum (KIM) Downloads",
+    "organization": "Groww Mutual Fund AMC",
+    "category": "Statutory KIM / Compliance",
+    "doc_type": "amc_downloads",
+    "url": "https://www.growwmf.in/downloads/kim",
+    "filename": "groww_amc_kim_portal.md"
+  },
+  {
+    "id": "groww_amc_sid_portal",
+    "title": "Groww Mutual Fund - Scheme Information Documents (SID) Downloads",
+    "organization": "Groww Mutual Fund AMC",
+    "category": "Statutory SID / Compliance",
+    "doc_type": "amc_downloads",
+    "url": "https://www.growwmf.in/downloads/sid",
+    "filename": "groww_amc_sid_portal.md"
+  },
+  {
+    "id": "groww_concept_benchmark",
+    "title": "Understanding Mutual Fund Benchmarks and Performance Indices",
+    "organization": "Groww",
+    "category": "Benchmarks",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/benchmark",
+    "filename": "groww_concept_benchmark.md"
+  },
+  {
+    "id": "groww_concept_expense_ratio",
+    "title": "What is Total Expense Ratio (TER) in Mutual Funds",
+    "organization": "Groww",
+    "category": "Charges & Expense Ratio",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/expense-ratio",
+    "filename": "groww_concept_expense_ratio.md"
+  },
+  {
+    "id": "groww_concept_nav",
+    "title": "What is Net Asset Value (NAV) and Calculation Method",
+    "organization": "Groww",
+    "category": "NAV & Valuation",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/nav",
+    "filename": "groww_concept_nav.md"
+  },
+  {
+    "id": "groww_concept_riskometer",
+    "title": "What is a Mutual Fund Riskometer and Risk Classifications",
+    "organization": "Groww",
+    "category": "Riskometer & Risk",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/riskometer",
+    "filename": "groww_concept_riskometer.md"
+  },
+  {
+    "id": "groww_faq_capital_gains_tax_report",
+    "title": "What is a Capital Gains or Tax P&L Report on Groww",
+    "organization": "Groww Help",
+    "category": "Statements & Taxation",
+    "doc_type": "platform_faq",
+    "url": "https://groww.in/help/stocks,-f&o,-ipo-&-mtf/sx-reports/what-is-a-capital-gain-or-tax-p-l-report--20",
+    "filename": "groww_faq_capital_gains_tax_report.md"
+  },
+  {
+    "id": "groww_faq_exit_load_explained",
+    "title": "Mutual Fund Exit Load Explained - Calculation and Exemptions",
+    "organization": "Groww Help",
+    "category": "Charges & Exit Load",
+    "doc_type": "platform_faq",
+    "url": "https://groww.in/help/mutual-funds/order/what-is-exit-load--71",
+    "filename": "groww_faq_exit_load_explained.md"
+  },
+  {
+    "id": "groww_faq_how_to_cancel_sip",
+    "title": "How to Cancel or Stop an Ongoing SIP on Groww",
+    "organization": "Groww Help",
+    "category": "SIP & Mandates",
+    "doc_type": "platform_faq",
+    "url": "https://groww.in/help/mutual-funds/mf-sip/how-to-cancel-my-sip",
+    "filename": "groww_faq_how_to_cancel_sip.md"
+  },
+  {
+    "id": "groww_faq_how_to_start_sip",
+    "title": "How to Start an SIP on Groww (Mandates, AutoPay & Timelines)",
+    "organization": "Groww Help",
+    "category": "SIP & Mandates",
+    "doc_type": "platform_faq",
+    "url": "https://groww.in/help/mutual-funds/mf-sip/how-to-start-a-sip-on-groww",
+    "filename": "groww_faq_how_to_start_sip.md"
+  },
+  {
+    "id": "groww_faq_redemption_nav_applicability",
+    "title": "NAV Applicability when Redeeming / Withdrawing Mutual Fund Units",
+    "organization": "Groww Help",
+    "category": "NAV & Transactions",
+    "doc_type": "platform_faq",
+    "url": "https://groww.in/help/mutual-funds/order/when-withdrawing-redeeming-which-days-nav-will-be-applicable-1",
+    "filename": "groww_faq_redemption_nav_applicability.md"
+  },
+  {
+    "id": "groww_faq_switch_charges",
+    "title": "Charges and Taxes on Switching from Regular to Direct Mutual Funds",
+    "organization": "Groww Help",
+    "category": "Charges & Switching",
+    "doc_type": "platform_faq",
+    "url": "https://groww.in/help/mutual-funds/switch-to-direct/what-are-the-charges-to-switch-from-regular-to-direct-84",
+    "filename": "groww_faq_switch_charges.md"
+  },
+  {
+    "id": "groww_guide_capital_gains_statement",
+    "title": "How to Download Capital Gains Statement on Groww for Mutual Funds",
+    "organization": "Groww",
+    "category": "Statements & Taxation",
+    "doc_type": "platform_guide",
+    "url": "https://groww.in/blog/how-to-get-capital-gains-statement-for-mutual-fund-investments",
+    "filename": "groww_guide_capital_gains_statement.md"
+  },
+  {
+    "id": "groww_guide_cutoff_timings",
+    "title": "SEBI Mutual Fund Cut-off Timings for Purchases & Redemptions",
+    "organization": "Groww",
+    "category": "Cut-off Timings",
+    "doc_type": "platform_guide",
+    "url": "https://groww.in/blog/sebi-revises-mutual-fund-cut-off-timings",
+    "filename": "groww_guide_cutoff_timings.md"
+  },
+  {
+    "id": "groww_guide_unit_allotment_nav",
+    "title": "Mutual Fund Unit Allotment & NAV Realization Process",
+    "organization": "Groww",
+    "category": "NAV & Allotment",
+    "doc_type": "platform_guide",
+    "url": "https://groww.in/blog/unit-allotment-and-nav-process",
+    "filename": "groww_guide_unit_allotment_nav.md"
+  },
+  {
+    "id": "groww_guide_what_is_a_mutual_fund",
+    "title": "What is a Mutual Fund - Groww Knowledge Guide",
+    "organization": "Groww",
+    "category": "Mutual Fund Basics",
+    "doc_type": "concept_guide",
+    "url": "https://groww.in/p/what-is-mutual-fund",
+    "filename": "groww_guide_what_is_a_mutual_fund.md"
+  },
+  {
+    "id": "groww_pricing_charges",
+    "title": "Groww Mutual Fund Pricing, Account Opening & Zero AMC Fees",
+    "organization": "Groww",
+    "category": "Fees & Charges",
+    "doc_type": "pricing_page",
+    "url": "https://groww.in/pricing",
+    "filename": "groww_pricing_charges.md"
+  },
+  {
+    "id": "groww_scheme_banking_financial_services",
+    "title": "Groww Banking & Financial Services Fund - Scheme Facts & Details",
+    "organization": "Groww Mutual Fund",
+    "category": "Equity / Sectoral",
+    "doc_type": "scheme_page",
+    "url": "https://groww.in/mutual-funds/groww-banking-financial-services-fund-direct-growth",
+    "filename": "groww_scheme_banking_financial_services.md"
+  },
+  {
+    "id": "groww_scheme_elss_tax_saver",
+    "title": "Groww ELSS Tax Saver Fund - Scheme Facts & Details",
+    "organization": "Groww Mutual Fund",
+    "category": "ELSS / Tax Saver",
+    "doc_type": "scheme_page",
+    "url": "https://groww.in/mutual-funds/groww-elss-tax-saver-fund-direct-growth",
+    "filename": "groww_scheme_elss_tax_saver.md"
+  },
+  {
+    "id": "groww_scheme_liquid_fund",
+    "title": "Groww Liquid Fund - Scheme Facts & Details",
+    "organization": "Groww Mutual Fund",
+    "category": "Debt / Liquid",
+    "doc_type": "scheme_page",
+    "url": "https://groww.in/mutual-funds/groww-liquid-fund-direct-growth",
+    "filename": "groww_scheme_liquid_fund.md"
+  },
+  {
+    "id": "groww_scheme_multicap_fund",
+    "title": "Groww Multicap Fund - Scheme Facts & Details",
+    "organization": "Groww Mutual Fund",
+    "category": "Equity / Multi Cap",
+    "doc_type": "scheme_page",
+    "url": "https://groww.in/mutual-funds/groww-multicap-fund-direct-growth",
+    "filename": "groww_scheme_multicap_fund.md"
+  },
+  {
+    "id": "groww_scheme_nifty_total_market",
+    "title": "Groww Nifty Total Market Index Fund - Scheme Facts & Details",
+    "organization": "Groww Mutual Fund",
+    "category": "Index Fund / Large & Mid & Small",
+    "doc_type": "scheme_page",
+    "url": "https://groww.in/mutual-funds/groww-nifty-total-market-index-fund-direct-growth",
+    "filename": "groww_scheme_nifty_total_market.md"
+  },
+  {
+    "id": "sebi_circular_riskometer_labeling",
+    "title": "SEBI Circular on Product Labeling in Mutual Fund Schemes - Risk-o-meter",
+    "organization": "SEBI",
+    "category": "Regulatory Standards",
+    "doc_type": "regulatory_circular",
+    "url": "https://www.sebi.gov.in/legal/circulars/oct-2020/circular-on-product-labeling-in-mutual-fund-schemes-risk-o-meter_47796.html",
+    "filename": "sebi_circular_riskometer_labeling.md"
+  },
+  {
+    "id": "sebi_circular_scheme_categorization",
+    "title": "SEBI Categorization and Rationalization of Mutual Fund Schemes",
+    "organization": "SEBI",
+    "category": "Regulatory Standards",
+    "doc_type": "regulatory_circular",
+    "url": "https://www.sebi.gov.in/legal/circulars/oct-2017/categorization-and-rationalization-of-mutual-fund-schemes_36199.html",
+    "filename": "sebi_circular_scheme_categorization.md"
+  },
+  {
+    "id": "sebi_circular_tri_benchmarking",
+    "title": "SEBI Mandate on Benchmarking Schemes to Total Return Index (TRI)",
+    "organization": "SEBI",
+    "category": "Regulatory Standards",
+    "doc_type": "regulatory_circular",
+    "url": "https://www.sebi.gov.in/legal/circulars/jan-2018/benchmarking-of-scheme-s-performance-to-total-return-index_37273.html",
+    "filename": "sebi_circular_tri_benchmarking.md"
+  },
+  {
+    "id": "sebi_investor_cas",
+    "title": "SEBI Investor Education - Consolidated Account Statement (CAS)",
+    "organization": "SEBI Investor Office",
     "category": "Statements & CAS",
-    "status": "downloaded",
-    "file": "amfi_faq_cas_pdf.md"
+    "doc_type": "investor_guide",
+    "url": "https://investor.sebi.gov.in/consolidated_account_statement.html",
+    "filename": "sebi_investor_cas.md"
+  },
+  {
+    "id": "sebi_investor_elss",
+    "title": "SEBI Investor Education - Equity Linked Saving Schemes (ELSS) & 3-Year Lock-in",
+    "organization": "SEBI Investor Office",
+    "category": "ELSS & Lock-in",
+    "doc_type": "investor_guide",
+    "url": "https://investor.sebi.gov.in/elss.html",
+    "filename": "sebi_investor_elss.md"
+  },
+  {
+    "id": "sebi_investor_exit_load",
+    "title": "SEBI Investor Education - Mutual Fund Exit Loads & Redemption Deductions",
+    "organization": "SEBI Investor Office",
+    "category": "Charges & Exit Load",
+    "doc_type": "investor_guide",
+    "url": "https://investor.sebi.gov.in/exit_load.html",
+    "filename": "sebi_investor_exit_load.md"
+  },
+  {
+    "id": "sebi_investor_riskometer",
+    "title": "SEBI Investor Education - Understanding the Scheme Risk-o-meter",
+    "organization": "SEBI Investor Office",
+    "category": "Riskometer & Risk",
+    "doc_type": "investor_guide",
+    "url": "https://investor.sebi.gov.in/riskometer.html",
+    "filename": "sebi_investor_riskometer.md"
+  },
+  {
+    "id": "sebi_investor_what_is_mutual_fund",
+    "title": "Introduction to Mutual Funds - SEBI Investor Education",
+    "organization": "SEBI",
+    "category": "Mutual Fund Basics",
+    "doc_type": "sebi_circular",
+    "url": "https://investor.sebi.gov.in/mutualfunds.html",
+    "filename": "sebi_investor_what_is_mutual_fund.md"
   }
 ]

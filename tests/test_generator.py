@@ -109,6 +109,19 @@ def test_deterministic_extract_branches(sample_passage):
     # Cut-off timings
     ans = gen._deterministic_extract("what are the cut-off timings?", passages)
     assert "2:00 pm" in ans.lower()
+
+    # Mutual Fund definition (including typo handling)
+    ans = gen._deterministic_extract("what is a Mutal fund", passages)
+    assert "pools capital" in ans.lower() or "pool" in ans.lower()
+    assert "expense ratio" not in ans.lower()
+
+    # NAV definition
+    ans = gen._deterministic_extract("what is nav", passages)
+    assert "market value per unit" in ans.lower()
+
+    # Riskometer definition
+    ans = gen._deterministic_extract("what is a riskometer", passages)
+    assert "graphical representation" in ans.lower()
     
     # Generic summary fallback
     ans = gen._deterministic_extract("tell me about the fund manager", passages)

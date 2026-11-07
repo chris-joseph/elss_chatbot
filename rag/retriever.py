@@ -25,6 +25,31 @@ class Passage:
     content: str
     score: float = 0.0
 
+TYPO_CORRECTIONS = {
+    "mutal": "mutual",
+    "mutul": "mutual",
+    "mutaul": "mutual",
+    "multual": "mutual",
+    "expence": "expense",
+    "expences": "expenses",
+    "exsit": "exit",
+    "ext": "exit",
+    "statment": "statement",
+    "statemnt": "statement",
+    "statments": "statements",
+    "lockin": "lock in",
+    "benchmrk": "benchmark",
+    "riskomtr": "riskometer",
+    "cancle": "cancel"
+}
+
+def normalize_query(query: str) -> str:
+    """Normalizes query text and fixes common user typographical errors."""
+    q = query.lower()
+    for typo, correction in TYPO_CORRECTIONS.items():
+        q = re.sub(rf'\b{typo}\b', correction, q)
+    return q
+
 class SourceRetriever:
     def __init__(self, sources_dir: Optional[str] = None):
         if sources_dir is None:
@@ -163,11 +188,28 @@ class SourceRetriever:
         if not self.passages or self.vectorizer is None or self.tfidf_matrix is None:
             return []
 
-        q_lower = query.lower()
+        q_norm = normalize_query(query)
+        q_lower = q_norm
 
-        # 1. Compute Cosine Similarities via TF-IDF Vector Space
-        query_vec = self.vectorizer.transform([query])
+        # 1. Compute Cosine Similarities via TF-IDF Vector Space using normalized text
+        query_vec = self.vectorizer.transform([q_norm])
         sim_scores = cosine_similarity(self.tfidf_matrix, query_vec).flatten()
+
+        # Check for core conceptual queries
+        is_mf_concept = any(phrase in q_lower for phrase in [
+            "what is a mutual fund", "what is mutual fund", "what are mutual funds",
+            "define mutual fund", "definition of mutual fund", "meaning of mutual fund",
+            "about mutual fund", "how mutual funds work", "concept of mutual fund"
+        ])
+        is_nav_concept = any(phrase in q_lower for phrase in [
+            "what is nav", "what is net asset value", "meaning of nav", "define nav"
+        ])
+        is_riskometer_concept = any(phrase in q_lower for phrase in [
+            "what is a riskometer", "what is riskometer", "what is risk-o-meter", "meaning of riskometer"
+        ])
+        is_benchmark_concept = any(phrase in q_lower for phrase in [
+            "what is a benchmark", "what is benchmark", "benchmark meaning"
+        ])
 
         # 2. Scheme and Topic Entity Boosts
         scheme_boosts = {
@@ -200,6 +242,22 @@ class SourceRetriever:
             raw_sim = float(sim_scores[idx])
             boost = 0.0
             p_text = (p.title + " " + p.section_title + " " + p.content).lower()
+
+            # Conceptual definition priority boosts
+            if is_mf_concept:
+                if ("what is a mutual fund" in p.title.lower() or "introduction to mutual funds" in p.title.lower()) and "riskometer" not in p.title.lower():
+                    boost += 1.00
+                elif "expense ratio" in p.title.lower() or "exit load" in p.title.lower() or "riskometer" in p.title.lower():
+                    boost -= 0.60
+            elif is_nav_concept:
+                if "net asset value" in p.title.lower() or "nav" in p.title.lower():
+                    boost += 0.85
+            elif is_riskometer_concept:
+                if "riskometer" in p.title.lower():
+                    boost += 0.85
+            elif is_benchmark_concept:
+                if "benchmark" in p.title.lower():
+                    boost += 0.85
 
             for term in active_boost_terms:
                 if term in p.title.lower():

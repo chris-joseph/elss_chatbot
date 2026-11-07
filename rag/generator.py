@@ -207,11 +207,40 @@ class FactsOnlyGenerator:
             return None
 
     def _deterministic_extract(self, query: str, passages: List[Passage]) -> str:
-        q_lower = query.lower()
+        from rag.retriever import normalize_query
+        q_lower = normalize_query(query)
         primary = passages[0]
         date_str = primary.last_updated or "2026-11-07"
         citation = f"[{primary.title}]({primary.url})"
         combined_content = "\n".join([p.content for p in passages])
+
+        # Core Definition Queries
+        if any(k in q_lower for k in [
+            "what is a mutual fund", "what is mutual fund", "what are mutual funds",
+            "define mutual fund", "meaning of mutual fund", "concept of mutual fund", "about mutual fund"
+        ]):
+            return (
+                f"A mutual fund is an investment vehicle that pools capital from multiple investors to invest in a professionally managed portfolio of securities such as stocks, bonds, and money market instruments. "
+                f"Investors are allocated units representing a proportional share of the scheme's holdings based on its Net Asset Value (NAV). "
+                f"Official details: {citation}. "
+                f"Last updated from sources: {date_str}"
+            )
+
+        if ("what is nav" in q_lower or "net asset value" in q_lower) and "cut" not in q_lower:
+            return (
+                f"Net Asset Value (NAV) represents the market value per unit of a mutual fund scheme, calculated by dividing total net assets by the number of outstanding units. "
+                f"NAV is calculated and declared at the close of every business day after market valuation. "
+                f"Official details: {citation}. "
+                f"Last updated from sources: {date_str}"
+            )
+
+        if "what is a riskometer" in q_lower or "what is riskometer" in q_lower or "what is risk-o-meter" in q_lower:
+            return (
+                f"A Risk-o-meter is a standardized regulatory graphical representation mandated by SEBI that visualizes scheme risk across six tiers from Low to Very High. "
+                f"Mutual fund houses evaluate and update scheme riskometers monthly based on portfolio assets. "
+                f"Official details: {citation}. "
+                f"Last updated from sources: {date_str}"
+            )
 
         if "cancel" in q_lower and "sip" in q_lower:
             return (

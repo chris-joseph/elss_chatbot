@@ -40,3 +40,20 @@ def test_retrieve_cas_statement(retriever):
     assert len(passages) > 0
     top_urls = [p.url for p in passages]
     assert any("amfiindia" in u or "sebi.gov.in" in u for u in top_urls)
+
+def test_retrieve_mutual_fund_definition(retriever):
+    passages = retriever.retrieve("what is a Mutal fund", top_k=3)
+    assert len(passages) > 0
+    top_p = passages[0]
+    assert "what is a mutual fund" in top_p.title.lower()
+    assert "expense-ratio" not in top_p.url
+
+def test_retrieve_nav_definition(retriever):
+    passages = retriever.retrieve("what is nav", top_k=3)
+    assert len(passages) > 0
+    assert "nav" in passages[0].title.lower() or "net asset value" in passages[0].title.lower()
+
+def test_retrieve_riskometer_definition(retriever):
+    passages = retriever.retrieve("what is a riskometer", top_k=3)
+    assert len(passages) > 0
+    assert "riskometer" in passages[0].title.lower()

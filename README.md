@@ -14,11 +14,11 @@ An academic research prototype for a facts-only RAG (Retrieval-Augmented Generat
   3. **Groww Multicap Fund** (Equity / Multi Cap — 1% exit load if redeemed ≤1 year, 0.98% expense ratio)
   4. **Groww Liquid Fund** (Debt / Liquid — 7-day graded exit load, 0.11% expense ratio)
   5. **Groww Banking & Financial Services Fund** (Equity / Sectoral — 1% exit load if redeemed ≤30 days, 1.42% expense ratio)
-* **Corpus Sources (33 Public Regulatory & Platform Pages):**
+* **Corpus Sources (36 Public Regulatory & Platform Pages):**
   * Groww AMC Statutory KIM/SID and Factsheets (`growwmf.in`)
-  * Groww Platform Help & Statements Guides (`groww.in/blog`, `groww.in/help`, `groww.in/pricing`)
-  * SEBI Regulations on Risk-o-meter, Categorization & TRI Benchmarking (`sebi.gov.in`, `investor.sebi.gov.in`)
-  * AMFI Master Guides & CAS Retrieval Portals (`amfiindia.com`, `portal.amfiindia.com`)
+  * Groww Platform Help, Concepts & Statements Guides (`groww.in/blog`, `groww.in/p`, `groww.in/help`)
+  * SEBI Regulations & Investor Education Guides (`sebi.gov.in`, `investor.sebi.gov.in`)
+  * AMFI Master Guides, Definitions & CAS Retrieval Portals (`amfiindia.com`, `portal.amfiindia.com`)
 
 ---
 
@@ -66,7 +66,7 @@ The application will be live at `http://localhost:8501`.
 
 ```
 elss_chatbot/
-├── sources/                          # 33 Downloaded official sources
+├── sources/                          # 36 Downloaded official sources
 │   ├── groww_scheme_elss_tax_saver.md
 │   ├── groww_scheme_nifty_total_market.md
 │   ├── groww_guide_capital_gains_statement.md
@@ -78,7 +78,7 @@ elss_chatbot/
 │   ├── retriever.py                  # Hybrid BM25/TF-IDF source retriever
 │   ├── generator.py                  # Facts-only generator with offline fallback
 │   └── engine.py                     # Unified RAG coordinator
-├── tests/                            # Automated test suite (49 tests)
+├── tests/                            # Automated test suite (52 tests)
 ├── app.py                            # Streamlit interactive web UI
 ├── cli.py                            # Command-line interface and evaluator
 ├── sample_qa.md                      # Evaluated Q&A pairs (markdown)
