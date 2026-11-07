@@ -51,6 +51,12 @@ PROVIDER_DEFAULTS = {
         "env_key": "DEEPSEEK_API_KEY",
         "display_name": "DeepSeek"
     },
+    "gemini": {
+        "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "default_model": "gemini-2.0-flash",
+        "env_key": "GEMINI_API_KEY",
+        "display_name": "Google Gemini"
+    },
     "openai": {
         "base_url": "https://api.openai.com/v1",
         "default_model": "gpt-4o-mini",
@@ -90,6 +96,7 @@ class FactsOnlyGenerator:
         base_url: Optional[str] = None,
         model: Optional[str] = None
     ):
+        self.last_error: Optional[str] = None
         self.provider, self.api_key, self.base_url, self.model = self._resolve_config(
             provider=provider,
             api_key=api_key,
@@ -111,6 +118,8 @@ class FactsOnlyGenerator:
                 prov = "groq"
             elif os.environ.get("DEEPSEEK_API_KEY"):
                 prov = "deepseek"
+            elif os.environ.get("GEMINI_API_KEY"):
+                prov = "gemini"
             elif os.environ.get("OPENAI_API_KEY"):
                 prov = "openai"
             elif os.environ.get("LLM_BASE_URL"):
@@ -140,6 +149,19 @@ class FactsOnlyGenerator:
                 m_name = PROVIDER_DEFAULTS[prov]["default_model"]
             else:
                 m_name = "llama-3.3-70b-versatile"
+        else:
+            # Cross-provider model auto-reconciliation:
+            # If the user did not pass an explicit model argument and environment has a model from another provider
+            if model is None:
+                m_lower = m_name.lower()
+                if prov == "deepseek" and any(k in m_lower for k in ["llama", "gpt", "gemini"]):
+                    m_name = PROVIDER_DEFAULTS["deepseek"]["default_model"]
+                elif prov == "groq" and any(k in m_lower for k in ["deepseek", "gpt", "gemini"]):
+                    m_name = PROVIDER_DEFAULTS["groq"]["default_model"]
+                elif prov == "gemini" and not m_lower.startswith("gemini"):
+                    m_name = PROVIDER_DEFAULTS["gemini"]["default_model"]
+                elif prov == "openai" and any(k in m_lower for k in ["llama", "deepseek", "gemini"]):
+                    m_name = PROVIDER_DEFAULTS["openai"]["default_model"]
 
         return prov, key, b_url.rstrip("/"), m_name
 
@@ -156,7 +178,8 @@ class FactsOnlyGenerator:
             "base_url": self.base_url,
             "has_api_key": has_key,
             "is_active": is_active,
-            "status_label": status_label
+            "status_label": status_label,
+            "last_error": self.last_error
         }
 
     def _truncate_to_sentences(self, text: str, max_sentences: int = 3) -> str:
@@ -213,8 +236,14 @@ class FactsOnlyGenerator:
             with urllib.request.urlopen(req, timeout=12) as response:
                 res_data = json.loads(response.read().decode("utf-8"))
                 content = res_data["choices"][0]["message"]["content"]
+                self.last_error = None
                 return content.strip()
-        except Exception:
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="ignore")[:250]
+            self.last_error = f"HTTP {e.code}: {err_body}"
+            return None
+        except Exception as e:
+            self.last_error = str(e)
             return None
 
     def _extract_structured_facts(
@@ -356,8 +385,12 @@ class FactsOnlyGenerator:
 
         if struct_facts:
             scheme_name = primary.title.split("-")[0].strip()
+            is_scheme = any(w in scheme_name.lower() for w in ["fund", "scheme"]) and "glossary" not in scheme_name.lower() and "abbreviation" not in scheme_name.lower()
             for _, k, v, _ in struct_facts[:2]:
-                final_sentences.append(f"The {k} for {scheme_name} is {v}.")
+                if is_scheme:
+                    final_sentences.append(f"The {k} for {scheme_name} is {v}.")
+                else:
+                    final_sentences.append(f"{k}: {v}" if v.endswith((".", "!", "?")) else f"{k}: {v}.")
         else:
             # 2. Extract salient sentences based on BM25 query term overlap density
             narrative_sents = self._score_sentences(passages, query, q_tokens)
@@ -388,7 +421,7 @@ class FactsOnlyGenerator:
                 f"[Source {i}]: {p.title}\n"
                 f"URL: {p.url}\n"
                 f"Organization: {p.organization}\n"
-                f"Content: {p.content[:1000]}\n"
+                f"Content: {p.content[:2500]}\n"
             )
         context_str = "\n".join(context_blocks)
 

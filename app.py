@@ -193,7 +193,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Cache RAG Engine instance
-@st.cache_resource
+@st.cache_resource(show_spinner="⚡ Initializing verified mutual fund knowledge engine...")
 def get_engine():
     return RAGEngine()
 
@@ -287,7 +287,8 @@ def handle_query_submission(query_text: str):
     st.session_state.messages.append({"role": "user", "content": clean_q})
     
     # Run RAG Engine with active LLM configuration
-    res = engine.answer(clean_q)
+    with st.spinner("🔍 Consulting verified sources & generating factual answer..."):
+        res = engine.answer(clean_q)
     
     # Append assistant response
     st.session_state.messages.append({

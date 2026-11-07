@@ -212,3 +212,56 @@ def test_engine_dynamic_llm_reconfiguration():
     assert status_updated["is_active"] is True
     assert "Groq" in status_updated["status_label"]
 
+def test_gemini_provider_resolution():
+    with patch.dict("os.environ", {"GEMINI_API_KEY": "AIzaSyTest12345"}, clear=True):
+        gen = FactsOnlyGenerator()
+        assert gen.provider == "gemini"
+        assert gen.api_key == "AIzaSyTest12345"
+        assert gen.model == "gemini-2.0-flash"
+        assert "googleapis.com" in gen.base_url
+        status = gen.get_status()
+        assert status["is_active"] is True
+        assert "Google Gemini" in status["status_label"]
+
+def test_provider_model_cross_reconciliation():
+    # If environment had LLM_MODEL=llama-3.3-70b-versatile but provider is deepseek, auto-reconcile
+    with patch.dict("os.environ", {"DEEPSEEK_API_KEY": "sk_test_deepseek", "LLM_MODEL": "llama-3.3-70b-versatile"}, clear=True):
+        gen = FactsOnlyGenerator()
+        assert gen.provider == "deepseek"
+        assert gen.model == "deepseek-chat"
+
+    # If environment had LLM_MODEL=deepseek-chat but provider is groq, auto-reconcile
+    with patch.dict("os.environ", {"GROQ_API_KEY": "gsk_test_groq", "LLM_MODEL": "deepseek-chat"}, clear=True):
+        gen = FactsOnlyGenerator()
+        assert gen.provider == "groq"
+        assert gen.model == "llama-3.3-70b-versatile"
+
+def test_last_error_tracking():
+    gen = FactsOnlyGenerator(provider="groq", api_key="test_key")
+    with patch("urllib.request.urlopen", side_effect=Exception("Rate limit exceeded")):
+        res = gen._call_llm("prompt", "system")
+        assert res is None
+        assert "Rate limit exceeded" in gen.last_error
+        assert "Rate limit exceeded" in gen.get_status()["last_error"]
+
+def test_glossary_deterministic_extract_formatting():
+    gen = FactsOnlyGenerator()
+    glossary_passage = Passage(
+        doc_id="groww_guide_mutual_fund_abbreviations_glossary",
+        title="Complete Glossary of Mutual Fund Abbreviations and Acronyms",
+        url="https://groww.in/p/mutual-fund-glossary-abbreviations",
+        organization="Groww Mutual Fund",
+        category="Foundational / Glossary",
+        last_updated="2026-11-07",
+        section_title="Core Fund Concepts",
+        content=(
+            "- **AUM (Assets Under Management)**: The total cumulative market value of all investments.\n"
+            "- **TER (Total Expense Ratio)**: The annual operating fee percentage charged by AMC."
+        )
+    )
+    res = gen._deterministic_extract("what is AUM", [glossary_passage])
+    # Must NOT say "The AUM for Complete Glossary..."
+    assert "The AUM (Assets Under Management) for Complete Glossary" not in res
+    assert "AUM (Assets Under Management): The total cumulative market value" in res
+
+
