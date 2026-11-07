@@ -1,6 +1,6 @@
 # Groww Mutual Fund FAQ Assistant - Official Public Sources Catalog
 
-Total Sources Indexed: **46 official public documents**.
+Total Sources Indexed: **47 official public documents**.
 
 | # | Title | Organization | Category | URL |
 |---|---|---|---|---|
@@ -50,3 +50,4 @@ Total Sources Indexed: **46 official public documents**.
 | 44 | SEBI Investor Education - Mutual Fund Exit Loads & Redemption Deductions | SEBI Investor Office | Charges & Exit Load | [https://investor.sebi.gov.in/exit_load.html](https://investor.sebi.gov.in/exit_load.html) |
 | 45 | SEBI Investor Education - Understanding the Scheme Risk-o-meter | SEBI Investor Office | Riskometer & Risk | [https://investor.sebi.gov.in/riskometer.html](https://investor.sebi.gov.in/riskometer.html) |
 | 46 | Introduction to Mutual Funds - SEBI Investor Education | SEBI | Mutual Fund Basics | [https://investor.sebi.gov.in/mutualfunds.html](https://investor.sebi.gov.in/mutualfunds.html) |
+| 47 | Groww Mutual Fund - Complete Directory of Schemes Managed by Groww AMC | Groww Mutual Fund AMC | AMC Schemes & Portfolios | [https://www.growwmf.in/downloads/factsheets](https://www.growwmf.in/downloads/factsheets) |

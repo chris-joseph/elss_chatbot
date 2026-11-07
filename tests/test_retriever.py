@@ -57,3 +57,10 @@ def test_retrieve_riskometer_definition(retriever):
     passages = retriever.retrieve("what is a riskometer", top_k=3)
     assert len(passages) > 0
     assert "riskometer" in passages[0].title.lower()
+
+def test_retrieve_groww_amc_schemes(retriever):
+    passages = retriever.retrieve("what are schemes under groww amc", top_k=3)
+    assert len(passages) > 0
+    doc_ids = [p.doc_id for p in passages]
+    assert any("groww_amc_schemes_directory" in did or "groww_guide_what_is_an_amc" in did or "groww_scheme" in did for did in doc_ids)
+

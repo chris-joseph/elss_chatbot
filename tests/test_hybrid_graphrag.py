@@ -74,3 +74,17 @@ def test_hybrid_retriever_aum_query(hybrid_retriever):
     assert len(res) >= 1
     assert "groww_guide_mutual_fund_abbreviations_glossary" in res[0].doc_id
 
+def test_knowledge_graph_amc_schemes_traversal(kg):
+    """Verifies that query for groww amc traverses to managed schemes."""
+    res = kg.query_graph("what are schemes under groww amc")
+    assert "Groww Asset Management Limited" in res["matched_entities"]
+    assert any("groww_scheme" in did or "groww_amc" in did for did in res["doc_ids"])
+
+def test_hybrid_retriever_groww_amc_schemes(hybrid_retriever):
+    """Verifies HybridRetriever retrieves scheme directory for groww amc."""
+    res = hybrid_retriever.retrieve("what are schemes under groww amc", top_k=3)
+    assert len(res) >= 1
+    doc_ids = [p.doc_id for p in res]
+    assert "groww_amc_schemes_directory" in doc_ids or any("groww_scheme" in did for did in doc_ids)
+
+

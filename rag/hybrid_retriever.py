@@ -57,8 +57,9 @@ class HybridRetriever:
         min_score: float = MIN_RELEVANCE_SCORE
     ) -> List[Passage]:
         """
-        Executes parallel Tri-Modal retrieval and fuses results via Reciprocal Rank Fusion (RRF).
-        Guarantees out-of-scope rejection if lexical confidence is below threshold.
+        Streamlined Vector-First Hybrid Retriever.
+        Fuses dense semantic similarity (ChromaDB) with lexical keyword matching (BM25)
+        and Knowledge Graph multi-hop candidate injection.
         """
         q_lower = query.lower()
         is_proc = any(w in q_lower for w in ["how to", "how do", "how can", "steps", "cancel", "stop", "download", "start"])
@@ -67,52 +68,69 @@ class HybridRetriever:
         if self.lexical_retriever.is_out_of_vocabulary(query):
             return []
 
-        # 1. Lexical BM25F Stream (with exact numerical weighting)
-        lex_passages = self.lexical_retriever.retrieve(query, top_k=6, min_score=min_score)
+        # 1. Dense Semantic Vector Stream (ChromaDB ONNX embeddings) - Primary
+        dense_passages = self.dense_store.search(query, top_k=8)
 
-        # 2. Dense Semantic Vector Stream (ChromaDB ONNX embeddings)
-        dense_passages = self.dense_store.search(query, top_k=6)
+        # 2. Lexical BM25F Stream (with exact numerical weighting) - Secondary
+        lex_passages = self.lexical_retriever.retrieve(query, top_k=8, min_score=min_score)
 
-        # Dual-Stream Out-of-Scope Gate: if lexical found nothing AND dense similarity < 0.40
-        if not lex_passages and (not dense_passages or dense_passages[0].score < 0.40):
+        # Dual-Stream Out-of-Scope Gate: if lexical found nothing AND dense similarity < 0.30
+        if not lex_passages and (not dense_passages or dense_passages[0].score < 0.30):
             return []
 
         # 3. Knowledge Graph Stream (Entity extraction & multi-hop edge traversal)
-        # Suppress generic concept graph boosts on procedural queries (e.g. how to cancel SIP)
         kg_doc_ids = set()
         if not is_proc:
             kg_res = self.kg.query_graph(query)
             kg_doc_ids = set(kg_res.get("doc_ids", []))
 
-        # 4. Calibrated Reciprocal Rank Fusion (RRF)
-        # Formula: RRF_score(d) = sum( w_m / (k + rank_m(d)) )
+        # 4. Calibrated Reciprocal Rank Fusion (RRF) with KG Candidate Injection
         k_rrf = 60
         w_lex = 1.2
-        w_dense = 0.4
-        w_kg = 0.6
+        w_dense = 1.0
+        w_kg = 0.8
 
         rrf_scores: Dict[str, float] = defaultdict(float)
         passage_map: Dict[str, Passage] = {}
 
+        # Accumulate Dense Ranks (primary semantic signal)
+        for rank, p in enumerate(dense_passages):
+            passage_key = f"{p.doc_id}_{p.section_title}"
+            passage_map[passage_key] = p
+            rrf_scores[passage_key] += w_dense / (k_rrf + rank + 1)
+
         # Accumulate Lexical Ranks (with confidence-weighted boost)
         for rank, p in enumerate(lex_passages):
             passage_key = f"{p.doc_id}_{p.section_title}"
-            passage_map[passage_key] = p
+            if passage_key not in passage_map:
+                passage_map[passage_key] = p
             confidence_factor = 1.0 + max(0.0, float(p.score) - 0.45)
             rrf_scores[passage_key] += (w_lex / (k_rrf + rank + 1)) * confidence_factor
 
-        # Accumulate Dense Ranks
-        for rank, p in enumerate(dense_passages):
-            passage_key = f"{p.doc_id}_{p.section_title}"
-            if passage_key not in passage_map:
-                passage_map[passage_key] = p
-            rrf_scores[passage_key] += w_dense / (k_rrf + rank + 1)
-
-        # Accumulate Knowledge Graph Multi-Hop Boosts
+        # Accumulate Knowledge Graph Multi-Hop Boosts & Candidate Injection
         if kg_doc_ids:
+            # Scheme and AMC entities get primary priority over secondary relational attribute nodes
+            primary_entity_doc_ids = {
+                self.kg.graph.nodes[n].get("doc_id")
+                for n in kg_res.get("matched_entities", [])
+                if self.kg.graph.nodes[n].get("type") in ("Scheme", "AMC")
+            }
+
+            # First, boost existing passages in passage_map matching kg_doc_ids
             for passage_key, p in passage_map.items():
-                if p.doc_id in kg_doc_ids:
+                if p.doc_id in primary_entity_doc_ids:
+                    rrf_scores[passage_key] += (w_kg * 1.35) / (k_rrf + 1)
+                elif p.doc_id in kg_doc_ids:
                     rrf_scores[passage_key] += w_kg / (k_rrf + 1)
+
+            # Candidate Injection: If a kg_doc_id is not yet in passage_map, inject its top passage
+            for p in self.lexical_retriever.passages:
+                if p.doc_id in kg_doc_ids:
+                    passage_key = f"{p.doc_id}_{p.section_title}"
+                    if passage_key not in passage_map:
+                        passage_map[passage_key] = p
+                        boost = (w_kg * 1.35) if p.doc_id in primary_entity_doc_ids else w_kg
+                        rrf_scores[passage_key] += boost / (k_rrf + 1)
 
         # Sort candidate passages by fused RRF score
         sorted_keys = sorted(rrf_scores.keys(), key=lambda x: rrf_scores[x], reverse=True)

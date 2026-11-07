@@ -34,6 +34,13 @@ def test_offline_amc_definition(offline_engine):
     assert "asset management company" in ans or "amc" in ans
     assert "https://groww.in/p/what-is-amc" in res["answer"]
 
+def test_offline_groww_amc_schemes(offline_engine):
+    res = offline_engine.answer("what are schemes under groww amc")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert any(term in ans for term in ["groww", "scheme", "equity", "elss", "fund"])
+    assert "last updated from sources:" in ans
+
 def test_offline_nav_definition(offline_engine):
     res = offline_engine.answer("what is NAV")
     assert res["status"] == "factual"

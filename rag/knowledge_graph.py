@@ -111,7 +111,10 @@ class MutualFundKnowledgeGraph:
 
         # AMC Entity Node
         amc_name = "Groww Asset Management Limited"
-        self.graph.add_node(amc_name, type="AMC", doc_id="groww_guide_what_is_an_amc")
+        self.graph.add_node(amc_name, type="AMC", doc_id="groww_amc_schemes_directory")
+        self.scheme_to_doc["groww amc"] = "groww_amc_schemes_directory"
+        self.scheme_to_doc["groww mutual fund"] = "groww_amc_schemes_directory"
+        self.scheme_to_doc["groww asset management limited"] = "groww_amc_schemes_directory"
 
         for s in schemes:
             s_name = s["name"]
@@ -244,6 +247,8 @@ class MutualFundKnowledgeGraph:
         for node in self.graph.nodes():
             n_lower = str(node).lower()
             if len(n_lower) >= 3 and n_lower in q_lower:
+                matched_nodes.append(node)
+            elif n_lower == "groww asset management limited" and any(k in q_lower for k in ["groww amc", "groww asset management", "groww mutual fund", "groww fund house", "schemes under groww", "groww schemes", "funds offered by groww"]):
                 matched_nodes.append(node)
             elif n_lower == "section 80c" and ("80c" in q_lower or "tax saver" in q_lower or "tax saving" in q_lower):
                 matched_nodes.append(node)

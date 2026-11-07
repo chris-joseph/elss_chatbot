@@ -16,6 +16,12 @@ An Asset Management Company (AMC) is a SEBI-registered corporate entity responsi
 
 For example, Groww Asset Management Limited is the AMC that operates and manages Groww Mutual Fund schemes.
 
+### Schemes Managed by Groww AMC
+Groww Asset Management Limited offers a diverse portfolio of mutual fund schemes:
+- **Active Equity Schemes:** Groww ELSS Tax Saver Fund, Groww Multicap Fund, Groww Banking & Financial Services Fund, Groww Large Cap Fund, Groww Small Cap Fund, and Groww Value Fund.
+- **Index Funds & FoFs:** Groww Nifty Total Market Index Fund, Groww Nifty 50 Index Fund, Groww Nifty Smallcap 250 Index Fund, Groww Gold/Silver ETF FoFs.
+- **Debt & Liquid Schemes:** Groww Liquid Fund, Groww Overnight Fund, and Groww Short Duration Fund.
+
 ## Who Runs Mutual Funds: The 3-Tier Governance Structure
 
 Indian mutual funds operate under a strict three-tier fiduciary structure mandated by the Securities and Exchange Board of India (SEBI) to ensure investor money is protected:

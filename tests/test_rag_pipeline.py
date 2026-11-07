@@ -186,5 +186,14 @@ def test_engine_graceful_retriever_fallback():
         assert res["status"] == "factual"
         assert "pool of money" in res["answer"].lower() or "fund manager" in res["answer"].lower()
 
+def test_engine_schemes_under_groww_amc(engine):
+    """Verifies that RAGEngine answers queries about schemes under Groww AMC factually."""
+    res = engine.answer("what are schemes under groww amc")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert any(term in ans for term in ["elss", "multicap", "liquid", "index", "groww mutual fund", "groww asset management"])
+    assert "http" in res["answer"]
+
+
 
 
