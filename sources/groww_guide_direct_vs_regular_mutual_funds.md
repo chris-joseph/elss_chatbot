@@ -38,3 +38,12 @@ Investors holding units in regular plans can switch their investments into direc
 - On Groww or through the AMC, investors can place a switch request from the regular plan to the direct plan of the same scheme.
 - A switch is treated under Indian tax laws as a redemption from the regular plan followed by a fresh purchase into the direct plan.
 - Applicable capital gains taxes and exit loads may apply if units have not completed their specified holding period.
+
+## Direct Plan vs SIP: Key Differences & How They Work Together
+
+A frequent point of confusion among mutual fund investors is comparing **Direct Plans** with **SIPs**. Direct Plans and SIPs are not competing or mutually exclusive options—they belong to two completely separate, orthogonal dimensions of mutual fund investing:
+
+1. **Plan Variant (Direct vs Regular)**: Refers to **who you buy the fund from and how expense ratios are structured**. A Direct Plan eliminates intermediaries and distributor commissions, giving investors a lower Total Expense Ratio (TER) and higher Net Asset Value (NAV).
+2. **Investment Mode (SIP vs Lump Sum)**: Refers to **how and when capital is invested**. A Systematic Investment Plan (SIP) is a disciplined method where a fixed amount (such as ₹500 or ₹1,000) is automatically invested at regular intervals (monthly or weekly) to benefit from rupee-cost averaging and compounding.
+3. **They Work Together (Direct SIP)**: Investors do not have to choose between Direct and SIP. On direct mutual fund platforms like Groww, you can start a **Direct SIP**—combining the lower cost of a Direct Plan with the automated discipline of a monthly SIP. Alternatively, investors can also do a **Direct Lump Sum**, a **Regular SIP**, or a **Regular Lump Sum**.
+

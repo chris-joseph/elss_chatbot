@@ -14,7 +14,7 @@ import re
 import json
 import urllib.request
 from typing import List, Dict, Optional, Any, Set, Tuple
-from rag.retriever import Passage, STOPWORDS
+from rag.retriever import Passage, STOPWORDS, FINANCIAL_SHORT_TERMS, ABBREVIATION_SYNONYMS
 
 def load_dotenv_if_present():
     """Lightweight zero-dependency .env loader for local self-hosting."""
@@ -69,6 +69,8 @@ GENERIC_TOPIC_WORDS: Set[str] = {
     "fund", "funds", "mutual", "scheme", "groww", "details", "facts",
     "what", "is", "the", "for", "official", "tell", "about", "which"
 }
+
+MAX_RESPONSE_SENTENCES: int = int(os.environ.get("MAX_RESPONSE_SENTENCES", "10"))
 
 def clean_sentence(s: str) -> str:
     """Removes links, formatting noise, and dates from extracted sentences."""
@@ -204,7 +206,7 @@ class FactsOnlyGenerator:
                 {"role": "user", "content": prompt}
             ],
             "temperature": 0.1,
-            "max_tokens": 250
+            "max_tokens": 600
         }
         try:
             req = urllib.request.Request(url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST")
@@ -273,6 +275,7 @@ class FactsOnlyGenerator:
         q_lower = query.lower()
         is_def = any(w in q_lower for w in ["what is", "what are", "define", "meaning"])
         is_proc = any(w in q_lower for w in ["how to", "how do", "how can", "steps", "cancel", "start", "download"])
+        is_comp = any(w in q_lower for w in [" vs ", " v/s ", " versus ", "difference", "compare", "between"])
 
         scored_sentences = []
         seen = set()
@@ -289,7 +292,7 @@ class FactsOnlyGenerator:
                     continue
                 seen.add(clean_s)
 
-                s_words = [w for w in re.findall(r"\b\w+\b", clean_s.lower()) if len(w) >= 3]
+                s_words = [w for w in re.findall(r"\b\w+\b", clean_s.lower()) if len(w) >= 3 or w in FINANCIAL_SHORT_TERMS]
                 s_set = set(s_words)
                 if not s_words:
                     continue
@@ -305,6 +308,10 @@ class FactsOnlyGenerator:
                 # Procedural query boost
                 if is_proc and re.search(r"\b(step\s*\d+|steps|tap|select|click|navigate|go to|choose|confirm|download|autopay|mandate|days before)\b", clean_s.lower()):
                     score += 0.8
+
+                # Comparative query boost
+                if is_comp and re.search(r"\b(whereas|while|unlike|difference|distinct|instead of|compared to|both|complementary|two distinct|orthogonal|neither|either)\b", clean_s.lower()):
+                    score += 0.9
 
                 if s_idx == 0:
                     score += 0.2
@@ -331,7 +338,14 @@ class FactsOnlyGenerator:
 
         primary = passages[0]
         q_clean = query.lower()
-        q_tokens = [w for w in re.findall(r"\b\w+\b", q_clean) if len(w) >= 3 and w not in STOPWORDS]
+        raw_tokens = [
+            w for w in re.findall(r"\b\w+\b", q_clean)
+            if (len(w) >= 3 or w in FINANCIAL_SHORT_TERMS) and w not in STOPWORDS
+        ]
+        q_tokens = list(raw_tokens)
+        for w in raw_tokens:
+            if w in ABBREVIATION_SYNONYMS:
+                q_tokens.extend(ABBREVIATION_SYNONYMS[w])
 
         # 1. Check for structured key-value attributes
         struct_facts = self._extract_structured_facts(passages, q_tokens)
@@ -344,13 +358,15 @@ class FactsOnlyGenerator:
         else:
             # 2. Extract salient sentences based on BM25 query term overlap density
             narrative_sents = self._score_sentences(passages, query, q_tokens)
-            for _, sent, _ in narrative_sents[:2]:
+            max_ext = min(MAX_RESPONSE_SENTENCES, 6)
+            for _, sent, _ in narrative_sents[:max_ext]:
                 final_sentences.append(sent if sent.endswith((".", "!", "?")) else f"{sent}.")
 
         if not final_sentences:
             final_sentences = ["Official scheme facts and regulatory disclosures are available in the verified documentation."]
 
-        main_text = " ".join(final_sentences[:2])
+        max_ext = min(MAX_RESPONSE_SENTENCES, 6)
+        main_text = " ".join(final_sentences[:max_ext])
         citation = f"[{primary.title}]({primary.url})"
         return f"{main_text} Official details: {citation}. Last updated from sources: {primary.last_updated}"
 
@@ -378,7 +394,7 @@ class FactsOnlyGenerator:
             "Your job is to provide concise, factual answers about mutual fund schemes, charges, statements, and regulations based strictly on the provided context.\n\n"
             "STRICT RULES:\n"
             "1. Base your answer solely on the context provided. Do not invent or extrapolate facts.\n"
-            "2. Total explanation must be at most 3 sentences.\n"
+            "2. Total explanation must be complete, informative, and at most 10 sentences.\n"
             "3. Include exactly ONE clickable markdown citation link ([Source Title](Source URL)) in your answer.\n"
             "4. Never provide investment advice, buy/sell recommendations, or personal portfolio opinions.\n"
             "5. If the question cannot be answered directly and strictly using the provided context (e.g. out-of-scope topics, general world knowledge, or conversational chit-chat), you must explicitly state that the official documentation does not contain this information and refer to the official factsheet link.\n"
@@ -388,7 +404,7 @@ class FactsOnlyGenerator:
         user_prompt = (
             f"Context:\n{context_str}\n\n"
             f"User Question: {query}\n\n"
-            "Answer (<=3 sentences with 1 citation link and 'Last updated from sources:' suffix):"
+            "Answer (<=10 sentences with 1 citation link and 'Last updated from sources:' suffix):"
         )
 
         llm_response = self._call_llm(user_prompt, system_prompt)
@@ -397,7 +413,7 @@ class FactsOnlyGenerator:
             final_text = self._deterministic_extract(query, passages)
         else:
             final_text = self._ensure_citation(llm_response, primary)
-            final_text = self._truncate_to_sentences(final_text, max_sentences=3)
+            final_text = self._truncate_to_sentences(final_text, max_sentences=MAX_RESPONSE_SENTENCES)
             if "Last updated from sources:" not in final_text:
                 final_text = f"{final_text.strip()} Last updated from sources: {primary.last_updated}"
 

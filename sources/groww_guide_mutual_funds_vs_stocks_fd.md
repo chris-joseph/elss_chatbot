@@ -14,6 +14,8 @@ Investors frequently compare mutual funds with direct equities (stocks), bank fi
 
 ## Mutual Funds vs Direct Stocks
 
+Direct stocks involve buying individual company shares, requiring investors to actively research financials, track market quarterly results, and manage single-stock risk. In contrast, mutual funds pool money to provide automatic professional diversification across 30 to 100+ securities managed by SEBI-registered fund managers, reducing company-specific risk.
+
 | Feature | Mutual Funds | Direct Stocks |
 |---|---|---|
 | **Diversification** | High; single scheme holds 30 to 100+ stocks across sectors | Low to moderate unless substantial capital is allocated across many companies |
@@ -24,6 +26,8 @@ Investors frequently compare mutual funds with direct equities (stocks), bank fi
 | **Costs** | Total Expense Ratio (TER) deducted daily from NAV | Brokerage, exchange transaction charges, and demat charges per trade |
 
 ## Mutual Funds vs Fixed Deposits (FD)
+
+Mutual funds and bank Fixed Deposits (FD) differ fundamentally in their return structures, safety, and taxation. While Fixed Deposits provide guaranteed, predictable interest backed by bank deposit insurance, mutual funds offer market-linked returns without guarantees, providing higher long-term potential to beat inflation. Additionally, equity mutual fund capital gains are taxed at 12.5% for LTCG above ₹1.25 Lakh, whereas FD interest is taxed at the investor's applicable income tax slab rate.
 
 | Feature | Mutual Funds | Fixed Deposits (FD) |
 |---|---|---|

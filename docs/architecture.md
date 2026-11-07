@@ -17,7 +17,7 @@ The primary objective of this system is to serve verified, auditable mutual fund
        │ 3. Field-Weighted Information Retrieval (BM25F concept)│
        │ 4. Anti-Overfitting & Dynamic Vocabulary Normalization │
        │ 5. Dual-Mode Grounded Generation (LLM + Offline Engine)│
-       │ 6. Auditable Brevity (≤3 Sentences + 1 Verified Link)  │
+       │ 6. Auditable Brevity (≤10 Sentences + 1 Verified Link) │
        └────────────────────────────────────────────────────────┘
 ```
 
@@ -66,13 +66,13 @@ flowchart TD
     
     TopK --> Generator{"Generator Engine<br/>(generator.py)"}
     
-    Generator -- "LLM Key Active<br/>(Groq / DeepSeek / OpenAI / Ollama)" --> OnlineLLM["Strict System-Prompted LLM Inference<br/>(Temperature: 0.1, Max Tokens: 250)"]
+    Generator -- "LLM Key Active<br/>(Groq / DeepSeek / OpenAI / Ollama)" --> OnlineLLM["Strict System-Prompted LLM Inference<br/>(Temperature: 0.1, Max Tokens: 600)"]
     Generator -- "Offline / No API Key / Timeout" --> OfflineExtractor["Dynamic Grounded Extractor<br/>(Key-Value Bullet Parser + BM25 Sentence Ranker)"]
     
-    OnlineLLM --> PostProc["Post-Processor: Truncate to ≤3 Sentences & Ensure Citation"]
+    OnlineLLM --> PostProc["Post-Processor: Truncate to ≤10 Sentences & Ensure Citation"]
     OfflineExtractor --> PostProc
     
-    PostProc --> FinalResponse["Verified Factual Response<br/>(≤3 Sentences + 1 Official Citation Link + Timestamp)"]
+    PostProc --> FinalResponse["Verified Factual Response<br/>(≤10 Sentences + 1 Official Citation Link + Timestamp)"]
 ```
 
 ---

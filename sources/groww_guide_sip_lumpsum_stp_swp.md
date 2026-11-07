@@ -39,3 +39,8 @@ A Systematic Transfer Plan (STP) is a facility where an investor transfers a fix
 A Systematic Withdrawal Plan (SWP) is a facility that allows an investor to redeem a predetermined fixed amount periodically from an existing mutual fund holding into their bank account.
 - **Common Use Case**: Creating a regular, predictable income stream post-retirement while the remaining balance continues to grow in the fund.
 - **Tax Efficiency**: Unlike traditional fixed deposit interest which is fully taxed at the slab rate, only the capital gains component of each SWP withdrawal is subject to capital gains tax.
+
+## Is a SIP Different from Direct or Regular Plans?
+
+Yes. A Systematic Investment Plan (SIP) is an **investment execution method** (investing periodically in automated installments vs making a one-time lump sum), whereas Direct and Regular are **plan distribution variants** (determining whether distributor commissions are deducted from the scheme's NAV). You can invest in a Direct Plan through a SIP (known as a Direct SIP) or in a Regular Plan through a SIP (Regular SIP).
+

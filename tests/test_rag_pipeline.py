@@ -42,7 +42,7 @@ def test_engine_factual_elss_lockin(engine):
     assert "Last updated from sources:" in ans
     main_text = ans.split("Last updated from sources:")[0].strip()
     sentences = [s for s in re.split(r'(?<=[.!?])\s+', main_text) if s.strip()]
-    assert len(sentences) <= 3
+    assert len(sentences) <= 10
 
 def test_engine_factual_capital_gains(engine):
     res = engine.answer("How do I download my mutual fund capital gains statement on Groww?")
@@ -130,4 +130,34 @@ def test_engine_out_of_scope_rejection(engine):
     r2 = engine.answer("what time is it now")
     assert r2["status"] == "out_of_scope"
     assert "No verified official sources were found" in r2["answer"]
+
+def test_engine_vs_direct_vs_sip(engine):
+    """Verifies that 'difference b/w direct and sip' provides a comprehensive multi-sentence comparison."""
+    res = engine.answer("what is the difference b/w direct and sip")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "direct" in ans
+    assert "sip" in ans
+    # Check completeness: should explain both concepts within 10 sentences
+    main_text = res["answer"].split("Last updated from sources:")[0].strip()
+    sentences = [s for s in re.split(r'(?<=[.!?])\s+', main_text) if s.strip()]
+    assert 2 <= len(sentences) <= 10
+
+def test_engine_vs_mf_vs_fd(engine):
+    """Verifies that shorthand 'mf vs fd' correctly retrieves comparison and produces factual answer."""
+    res = engine.answer("mf vs fd")
+    assert res["status"] == "factual"
+    ans = res["answer"].lower()
+    assert "fd" in ans or "fixed deposit" in ans
+    assert "https://groww.in/p/mutual-funds-vs-stocks-fd" in res["answer"]
+
+def test_engine_vs_direct_vs_regular(engine):
+    """Verifies 'direct vs regular' and 'direct v/s regular' both succeed."""
+    r1 = engine.answer("direct vs regular")
+    r2 = engine.answer("direct v/s regular")
+    assert r1["status"] == "factual"
+    assert r2["status"] == "factual"
+    assert "https://groww.in/p/direct-vs-regular-mutual-funds" in r1["answer"]
+    assert "https://groww.in/p/direct-vs-regular-mutual-funds" in r2["answer"]
+
 

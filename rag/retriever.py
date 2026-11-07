@@ -69,6 +69,8 @@ PLURAL_MAPPINGS: Dict[str, str] = {
 }
 
 ABBREVIATION_SYNONYMS: Dict[str, List[str]] = {
+    "mf": ["mutual", "fund"],
+    "fd": ["fixed", "deposit"],
     "amc": ["asset", "management", "company"],
     "ter": ["total", "expense", "ratio"],
     "nav": ["net", "asset", "value"],
@@ -111,8 +113,11 @@ def normalize_query(query: str, vocabulary: Optional[Set[str]] = None, word_coun
     Normalizes query text, applies morphological lemmatization,
     and applies dynamic corpus-guided typo correction.
     """
-    q_lower = query.lower()
-    raw_tokens = re.findall(r'\b\w+\b', q_lower)
+    q_clean = query.lower()
+    q_clean = re.sub(r'\b(v/s|v\.s\.|vs\.)\b', 'vs', q_clean)
+    q_clean = re.sub(r'\b(b/w|bw)\b', 'between', q_clean)
+    q_clean = re.sub(r'\b(w/o|wo)\b', 'without', q_clean)
+    raw_tokens = re.findall(r'\b\w+\b', q_clean)
     normalized_tokens = [PLURAL_MAPPINGS.get(t, t) for t in raw_tokens]
 
     if not vocabulary or not word_counts:
@@ -321,6 +326,9 @@ class SourceRetriever:
         query_vec = self.vectorizer.transform([expanded_query_str])
         sim_scores = cosine_similarity(self.tfidf_matrix, query_vec).flatten()
 
+        # Enriched query set for field alignment
+        q_align_set = set(expanded_query_tokens)
+
         # 3. Principled IDF-Weighted Field Alignment & Coverage Scoring
         scored_passages = []
         for idx, p in enumerate(self.passages):
@@ -335,12 +343,12 @@ class SourceRetriever:
             c_words = set(re.findall(r'\b\w+\b', lemmatize_text(p.content)))
 
             bonus = 0.0
-            if q_set:
+            if q_align_set:
                 # IDF-weighted Title recall and Jaccard alignment (topic specificity)
-                t_recall = self._idf_recall(q_set, t_clean)
-                t_jaccard = self._idf_jaccard(q_set, t_clean)
-                s_jaccard = self._idf_jaccard(q_set, s_clean)
-                c_coverage = self._idf_recall(q_set, c_words)
+                t_recall = self._idf_recall(q_align_set, t_clean)
+                t_jaccard = self._idf_jaccard(q_align_set, t_clean)
+                s_jaccard = self._idf_jaccard(q_align_set, s_clean)
+                c_coverage = self._idf_recall(q_align_set, c_words)
 
                 bonus += (0.30 * t_recall) + (0.35 * t_jaccard) + (0.25 * s_jaccard) + (0.20 * c_coverage)
 
