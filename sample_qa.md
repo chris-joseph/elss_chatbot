@@ -91,3 +91,21 @@ This file contains 10 evaluated real-world queries demonstrating the assistant's
   > I cannot compute, project, or compare fund returns. Please consult the official Groww Mutual Fund monthly factsheet for historical scheme disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets).
 * **Citation Link:** [Groww Factsheets](https://www.growwmf.in/downloads/factsheets)
 * **Status:** `refusal_performance`
+
+---
+
+### Query 11: Out-of-Scope & Unverified Query Rejection
+* **User Query:** `boomba diagga?` (or `what time is it now?`)
+* **Assistant Answer:**
+  > No verified official sources were found matching this query. This assistant only answers factual questions about Groww Mutual Fund schemes, charges, statements, and regulations based on verified official documentation. Official disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). Last updated from sources: 2026-11-07
+* **Citation Link:** [Groww Factsheets](https://www.growwmf.in/downloads/factsheets)
+* **Status:** `out_of_scope`
+
+---
+
+### Query 12: Core Conceptual Definition with Dynamic Typo Tolerance
+* **User Query:** `what is a Mutal fund`
+* **Assistant Answer:**
+  > A mutual fund is a pool of money managed by a professional Fund Manager. A mutual fund is an investment vehicle formed when an Asset Management Company (AMC) or fund house pools money from multiple individuals and institutional investors who share a common investment objective. Official details: [What is a Mutual Fund](https://groww.in/p/what-is-mutual-fund). Last updated from sources: 2026-11-07
+* **Citation Link:** [What is a Mutual Fund](https://groww.in/p/what-is-mutual-fund)
+* **Status:** `factual`

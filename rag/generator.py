@@ -324,7 +324,8 @@ class FactsOnlyGenerator:
         if not passages:
             return (
                 "No verified official sources were found matching this query. "
-                "Official details: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). "
+                "This assistant only answers factual questions about Groww Mutual Fund schemes, charges, statements, and regulations based on verified official documentation. "
+                "Official disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). "
                 "Last updated from sources: 2026-11-07"
             )
 
@@ -356,7 +357,7 @@ class FactsOnlyGenerator:
     def generate(self, query: str, passages: List[Passage]) -> Dict[str, str]:
         if not passages:
             return {
-                "answer": "No verified official sources were found matching this scheme query. Please refer to Groww Mutual Fund official disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). Last updated from sources: 2026-11-07",
+                "answer": "No verified official sources were found matching this query. This assistant only answers factual questions about Groww Mutual Fund schemes, charges, statements, and regulations based on verified official documentation. Official disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). Last updated from sources: 2026-11-07",
                 "source_url": "https://www.growwmf.in/downloads/factsheets",
                 "source_title": "Groww Factsheets"
             }
@@ -380,7 +381,8 @@ class FactsOnlyGenerator:
             "2. Total explanation must be at most 3 sentences.\n"
             "3. Include exactly ONE clickable markdown citation link ([Source Title](Source URL)) in your answer.\n"
             "4. Never provide investment advice, buy/sell recommendations, or personal portfolio opinions.\n"
-            f"5. Always conclude your answer with: \"Last updated from sources: {primary.last_updated}\"."
+            "5. If the question cannot be answered directly and strictly using the provided context (e.g. out-of-scope topics, general world knowledge, or conversational chit-chat), you must explicitly state that the official documentation does not contain this information and refer to the official factsheet link.\n"
+            f"6. Always conclude your answer with: \"Last updated from sources: {primary.last_updated}\"."
         )
 
         user_prompt = (

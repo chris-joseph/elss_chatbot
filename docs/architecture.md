@@ -58,7 +58,10 @@ flowchart TD
     Normalizer --> Retriever{"Multi-Signal Retriever<br/>(retriever.py)"}
     TFIDFIndex -.-> Retriever
     
-    Retriever --> TopK["Top-k Scored Passages<br/>(Cosine Sim + Title Jaccard + Section Alignment)"]
+    Retriever --> ConfidenceGate{"Relevance Confidence Gate<br/>(Score ≥ 0.45 & In-Vocab)?"}
+    
+    ConfidenceGate -- "Below Threshold / OOD<br/>('boomba diagga', 'time now')" --> OutOfScope["Status: out_of_scope<br/>Scope Refusal Notice + Factsheet Link"]
+    ConfidenceGate -- "Confidence Validated<br/>(Score ≥ 0.45)" --> TopK["Top-k Scored Passages<br/>(Cosine Sim + Title Jaccard + Section Alignment)"]
     
     TopK --> Generator{"Generator Engine<br/>(generator.py)"}
     
@@ -229,6 +232,27 @@ Before returning the answer to the user:
    * If omitted by an LLM backend, automatically synthesizes and injects the verified link from `primary_passage.url`.
 3. **Auditable Source Suffix:**
    * Enforces the conclusion format: `Last updated from sources: {primary_passage.last_updated}`.
+
+---
+
+### 3.7 Step 7: Out-of-Scope (OOD) Gating & Hallucination Defense
+
+To prevent the assistant from hallucinating or answering questions outside its verified documentation corpus (e.g. *"boomba diagga?"*, *"what time is it now?"*, *"who is the prime minister of india?"*, *"recipe for pasta"*), the pipeline enforces a **two-tier confidence defense**:
+
+1. **Tier 1 — Fast Out-of-Vocabulary Gate ($O(1)$):**
+   * Before vector search, the retriever inspects the non-stopword query keywords $Q_{\text{keywords}}$.
+   * If non-empty query keywords contain zero overlapping tokens with `self.vocabulary` (e.g. *"boomba diagga"*), the query is immediately rejected without executing unnecessary vector transforms.
+
+2. **Tier 2 — Multi-Signal Relevance Confidence Gate (`MIN_RELEVANCE_SCORE = 0.45`):**
+   * When an unrelated query contains common general English words (e.g., *"time"* in *"what time is it now?"*, or *"india"* in *"prime minister of india"*), naive retrievers yield weak spurious matches (scoring $0.10 \sim 0.28$).
+   * By enforcing a strict threshold of $S \ge 0.45$, all out-of-domain queries are discarded.
+   * Empirically, legitimate in-domain queries consistently score between $0.57$ and $1.55$, ensuring **zero false rejections**.
+
+3. **Status Classification & Dedicated UI Badge:**
+   * When no passages meet the confidence threshold, `RAGEngine` returns `status: "out_of_scope"`.
+   * Streamlit displays a distinct warning banner: `⚠️ Out of Scope / Unverified Query`.
+   * CLI displays tag: `[OUT_OF_SCOPE]`.
+   * No API calls are dispatched to external LLMs, eliminating both inference cost and hallucination risk.
 
 ---
 

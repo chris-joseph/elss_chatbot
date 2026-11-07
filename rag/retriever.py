@@ -37,6 +37,8 @@ STOPWORDS = {
     "does", "tell", "about", "which", "there", "any"
 }
 
+MIN_RELEVANCE_SCORE = 0.45
+
 def normalize_query(query: str, vocabulary: Optional[Set[str]] = None, word_counts: Optional[Counter] = None) -> str:
     """
     Normalizes query text and applies dynamic corpus-guided typo correction.
@@ -184,7 +186,7 @@ class SourceRetriever:
             return {}
         return {term: int(idx) for term, idx in self.vectorizer.vocabulary_.items()}
 
-    def retrieve(self, query: str, top_k: int = 3) -> List[Passage]:
+    def retrieve(self, query: str, top_k: int = 3, min_score: float = MIN_RELEVANCE_SCORE) -> List[Passage]:
         if not self.passages or self.vectorizer is None or self.tfidf_matrix is None:
             return []
 
@@ -193,6 +195,12 @@ class SourceRetriever:
         q_words = [w for w in re.findall(r'\b\w+\b', q_norm) if len(w) >= 3 and w not in STOPWORDS]
         q_set = set(q_words)
         clean_q_phrase = " ".join(q_words)
+
+        # Fast Out-of-Vocabulary Gate: if query has keywords but NONE exist in corpus vocabulary
+        if q_words:
+            known_in_corpus = [w for w in q_words if w in self.vocabulary]
+            if not known_in_corpus:
+                return []
 
         # 2. Vector Space TF-IDF Cosine Similarity
         query_vec = self.vectorizer.transform([q_norm])
@@ -226,7 +234,7 @@ class SourceRetriever:
                 bonus += 0.25
 
             combined_score = raw_sim + bonus
-            if combined_score > 0.05:
+            if combined_score >= min_score:
                 p_copy = Passage(
                     doc_id=p.doc_id,
                     title=p.title,

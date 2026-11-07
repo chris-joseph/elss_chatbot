@@ -77,10 +77,11 @@ class RAGEngine:
         # Step 3: Generate Grounded Facts-Only Answer
         gen_result = self.generator.generate(normalized_query, passages)
         latency = (time.time() - start_time) * 1000.0
+        status = "factual" if passages else "out_of_scope"
 
         return {
             "answer": gen_result["answer"],
-            "status": "factual",
+            "status": status,
             "source_url": gen_result["source_url"],
             "source_title": gen_result["source_title"],
             "latency_ms": round(latency, 2),

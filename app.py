@@ -332,6 +332,8 @@ for msg in st.session_state.messages:
                 st.warning(f"⚖️ **Facts-Only Policy:**\n\n{content}")
             elif status == "refusal_performance":
                 st.info(f"📈 **No Performance Claims:**\n\n{content}")
+            elif status == "out_of_scope":
+                st.warning(f"⚠️ **Out of Scope / Unverified Query:**\n\n{content}")
             else:
                 st.markdown(content)
             

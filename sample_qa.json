@@ -78,5 +78,21 @@
     "citation_url": "https://www.growwmf.in/downloads/factsheets",
     "status": "refusal_performance",
     "category": "Performance Guardrail"
+  },
+  {
+    "id": "qa_11",
+    "query": "boomba diagga?",
+    "answer": "No verified official sources were found matching this query. This assistant only answers factual questions about Groww Mutual Fund schemes, charges, statements, and regulations based on verified official documentation. Official disclosures: [Groww Factsheets](https://www.growwmf.in/downloads/factsheets). Last updated from sources: 2026-11-07",
+    "citation_url": "https://www.growwmf.in/downloads/factsheets",
+    "status": "out_of_scope",
+    "category": "Scope Boundary"
+  },
+  {
+    "id": "qa_12",
+    "query": "what is a Mutal fund",
+    "answer": "A mutual fund is a pool of money managed by a professional Fund Manager. A mutual fund is an investment vehicle formed when an Asset Management Company (AMC) or fund house pools money from multiple individuals and institutional investors who share a common investment objective. Official details: [What is a Mutual Fund](https://groww.in/p/what-is-mutual-fund). Last updated from sources: 2026-11-07",
+    "citation_url": "https://groww.in/p/what-is-mutual-fund",
+    "status": "factual",
+    "category": "Core Concepts"
   }
 ]
