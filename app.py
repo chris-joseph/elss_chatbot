@@ -3,7 +3,7 @@ app.py
 Adaptive, Mobile-Friendly Streamlit UI for Groww Mutual Fund Facts-Only FAQ Assistant.
 Theme: Orange, Cream, and Navy Blue.
 Features conversational chat (st.chat_message & st.chat_input), touch-friendly targets,
-environment-based LLM configuration (.env), and fluid responsive typography.
+and fluid responsive typography.
 """
 
 import streamlit as st
@@ -208,7 +208,6 @@ with st.sidebar:
     st.markdown("### ⚡ LLM Engine Status")
     llm_status = engine.get_llm_status()
     st.markdown(f"<p style='font-size: 13.5px; font-weight: 600; color: #FF6B35; margin-bottom: 2px;'>{llm_status['status_label']}</p>", unsafe_allow_html=True)
-    st.caption("Configured via environment variables / `.env` file.")
 
     st.markdown("---")
     st.markdown("### 🧹 Session Controls")
