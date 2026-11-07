@@ -16,6 +16,28 @@ import urllib.request
 from typing import List, Dict, Optional, Any
 from rag.retriever import Passage
 
+def load_dotenv_if_present():
+    """Lightweight zero-dependency .env loader for local self-hosting."""
+    for candidate in [".env", os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")]:
+        if os.path.isfile(candidate):
+            try:
+                with open(candidate, "r", encoding="utf-8") as f:
+                    for line in f:
+                        line = line.strip()
+                        if not line or line.startswith("#") or "=" not in line:
+                            continue
+                        k, v = line.split("=", 1)
+                        k = k.strip()
+                        v = v.strip().strip("'\"")
+                        if k and k not in os.environ and v:
+                            os.environ[k] = v
+            except Exception:
+                pass
+            break
+
+# Auto-load .env on import if available
+load_dotenv_if_present()
+
 PROVIDER_DEFAULTS = {
     "groq": {
         "base_url": "https://api.groq.com/openai/v1",
@@ -82,8 +104,10 @@ class FactsOnlyGenerator:
                 prov = "offline"
 
         # 2. Resolve Key
-        key = api_key
-        if key is None:
+        key = None
+        if api_key is not None:
+            key = api_key.strip()
+        else:
             if prov in PROVIDER_DEFAULTS and PROVIDER_DEFAULTS[prov]["env_key"]:
                 key = os.environ.get(PROVIDER_DEFAULTS[prov]["env_key"])
             if not key:

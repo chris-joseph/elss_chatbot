@@ -56,3 +56,22 @@ def test_run_interactive_keyboard_interrupt(capsys):
         run_interactive(mock_engine)
         captured = capsys.readouterr()
         assert "Exiting." in captured.out
+
+def test_run_single_query(capsys):
+    from cli import run_single_query
+    mock_engine = MagicMock(spec=RAGEngine)
+    mock_engine.answer.return_value = {
+        "answer": "Test single query answer",
+        "status": "factual",
+        "source_url": "https://groww.in"
+    }
+    run_single_query(mock_engine, "sample question")
+    captured = capsys.readouterr()
+    assert "Test single query answer" in captured.out
+    assert "Source: https://groww.in" in captured.out
+
+def test_cli_main_with_query_flag():
+    with patch("sys.argv", ["cli.py", "--query", "What is ELSS lock-in?"]), patch("cli.run_single_query") as mock_sq:
+        main()
+        mock_sq.assert_called_once()
+

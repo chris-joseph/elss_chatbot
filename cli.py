@@ -5,6 +5,7 @@ Command-Line Interface and Headless Evaluator for Groww Mutual Fund FAQ Assistan
 
 import sys
 import argparse
+from typing import Optional
 from rag.engine import RAGEngine
 
 SAMPLE_EVAL_QUERIES = [
@@ -21,8 +22,10 @@ SAMPLE_EVAL_QUERIES = [
 ]
 
 def run_eval(engine: RAGEngine):
+    status = engine.get_llm_status()
     print("=" * 80)
     print(" GROWW MUTUAL FUND FACTS-ONLY FAQ ASSISTANT - HEADLESS EVALUATION")
+    print(f" LLM Status: {status['status_label']}")
     print("=" * 80)
     print()
 
@@ -36,9 +39,18 @@ def run_eval(engine: RAGEngine):
         print("-" * 80)
         print()
 
+def run_single_query(engine: RAGEngine, query: str):
+    res = engine.answer(query)
+    print(f"[{res['status'].upper()}]")
+    print(res['answer'])
+    if res.get('source_url'):
+        print(f"Source: {res['source_url']}")
+
 def run_interactive(engine: RAGEngine):
+    status = engine.get_llm_status()
     print("=" * 70)
     print(" Groww Mutual Fund FAQ Assistant (CLI Mode)")
+    print(f" Status: {status['status_label']}")
     print(" Facts-only. No investment advice.")
     print(" Type 'quit' or 'exit' to leave.")
     print("=" * 70)
@@ -64,10 +76,21 @@ def run_interactive(engine: RAGEngine):
 def main():
     parser = argparse.ArgumentParser(description="Groww Mutual Fund FAQ Assistant CLI")
     parser.add_argument("--eval", action="store_true", help="Run automated evaluation against sample queries")
+    parser.add_argument("--query", "-q", type=str, default=None, help="Ask a single question and print response")
+    parser.add_argument("--provider", type=str, default=None, help="LLM Provider (groq, deepseek, openai, ollama, offline)")
+    parser.add_argument("--model", type=str, default=None, help="Model identifier")
+    parser.add_argument("--api-key", type=str, default=None, help="API key for selected provider")
     args = parser.parse_args()
 
-    engine = RAGEngine()
-    if args.eval:
+    engine = RAGEngine(
+        provider=args.provider,
+        api_key=args.api_key,
+        model=args.model
+    )
+
+    if args.query:
+        run_single_query(engine, args.query)
+    elif args.eval:
         run_eval(engine)
     else:
         run_interactive(engine)
