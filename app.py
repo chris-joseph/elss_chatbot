@@ -236,6 +236,15 @@ with st.sidebar:
     """)
 
     st.markdown("---")
+    st.markdown("### 🎓 Academic Disclaimer")
+    st.markdown("""
+    * **Academic Project**: Developed strictly as an educational and research prototype.
+    * **No Affiliation**: Not associated, affiliated, authorized, or endorsed by **Groww**, **SEBI**, **AMFI**, or any AMC.
+    * **Zero Liability**: Not responsible or liable for any misuse of this platform or reliance on its outputs.
+    * **Verification**: Always verify facts against primary official regulatory disclosures.
+    """)
+
+    st.markdown("---")
     st.markdown("### 📖 Official Corpus")
     catalog_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sources", "sources_catalog.json")
     if os.path.exists(catalog_path):
@@ -253,7 +262,7 @@ st.markdown("""
 <div class="header-box">
     <div class="header-title">Groww Mutual Fund <span>FAQ Assistant</span></div>
     <div class="welcome-line">Welcome! I am your facts-only guide for mutual fund schemes, charges, exit loads, and statement guides.</div>
-    <div class="disclaimer-badge">🔒 Facts-only. No investment advice.</div>
+    <div class="disclaimer-badge">🔒 Facts-only. No investment advice. Academic Project.</div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -339,3 +348,12 @@ user_prompt = st.chat_input("Ask a factual question about Groww mutual funds, ch
 if user_prompt:
     handle_query_submission(user_prompt)
     st.rerun()
+
+# Persistent Academic & Legal Disclaimer Footer
+st.markdown("""
+<div style='text-align: center; margin-top: 40px; padding: 18px 12px; border-top: 1px solid #233554; font-size: 11.5px; color: #8892B0; line-height: 1.6;'>
+    🎓 <b>Academic Research Prototype</b> &bull; Facts-only. No investment advice.<br>
+    This project is not affiliated with, endorsed by, or associated with Groww, SEBI, AMFI, or any mutual fund house.<br>
+    The authors and maintainers are not responsible for any misuse of this platform or reliance on its outputs. Always verify facts with official regulatory filings.
+</div>
+""", unsafe_allow_html=True)

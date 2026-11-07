@@ -164,7 +164,7 @@ Run the full automated test suite:
 ```bash
 ./venv/bin/pytest tests/ -v
 ```
-All 44 test cases validate:
+All 49 test cases validate:
 * PAN, Aadhaar, Phone, Email, OTP, and Bank Account privacy blocking.
 * Buy/sell opinion & portfolio advice refusals with AMFI education links.
 * Return calculations and CAGR prediction refusals with Factsheet links.
@@ -182,10 +182,18 @@ All 44 test cases validate:
 
 ---
 
-## 📜 Disclaimer Snippet
+## 📜 Disclaimer & Academic Disclosure
 
+### Required UI Snippet
 ```text
-Facts-only. No investment advice.
+Facts-only. No investment advice. Academic project.
 ```
 
-> **Legal Disclaimer:** This assistant provides factual information regarding mutual fund schemes, charges, exit loads, and regulatory procedures derived exclusively from official public disclosures. It does not provide investment advice or recommendations. Read all scheme-related documents carefully before investing. No PII is accepted or stored.
+### Full Legal & Academic Disclosure
+> **Academic Project Notice:** This application is strictly an independent **academic and educational research project** developed solely for prototype study and research evaluation of facts-only Retrieval-Augmented Generation (RAG) guardrails.
+>
+> **No Affiliation or Association:** This project, its authors, and contributors are **not associated, affiliated, authorized, endorsed, sponsored, or in any way officially connected** with **Groww** (Nextbillion Technology Pvt. Ltd.), **Groww Mutual Fund** (Groww Asset Management Limited), the **Securities and Exchange Board of India (SEBI)**, the **Association of Mutual Funds in India (AMFI)**, or any of their subsidiaries or affiliates. All product names, scheme titles, and trademarks are the property of their respective owners.
+>
+> **No Investment Advice (Facts-Only):** This assistant provides factual information derived exclusively from public regulatory disclosures. It does not provide investment advice, financial planning, or buy/sell recommendations. Mutual fund investments are subject to market risks; read all scheme-related documents carefully.
+>
+> **Disclaimer of Liability & Misuse:** Neither the authors nor contributors shall be held liable for any misuse, financial decisions, losses, or damages resulting from the use of or reliance on this academic prototype. Users are solely responsible for independently verifying all scheme facts against official regulatory sources. No personally identifiable information (PII) is accepted or stored.

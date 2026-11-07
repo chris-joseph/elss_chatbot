@@ -26,6 +26,7 @@ def run_eval(engine: RAGEngine):
     print("=" * 80)
     print(" GROWW MUTUAL FUND FACTS-ONLY FAQ ASSISTANT - HEADLESS EVALUATION")
     print(f" LLM Status: {status['status_label']}")
+    print(" Academic research prototype. Not affiliated with Groww, SEBI, or AMFI.")
     print("=" * 80)
     print()
 
@@ -51,7 +52,8 @@ def run_interactive(engine: RAGEngine):
     print("=" * 70)
     print(" Groww Mutual Fund FAQ Assistant (CLI Mode)")
     print(f" Status: {status['status_label']}")
-    print(" Facts-only. No investment advice.")
+    print(" Facts-only. No investment advice. Academic Project.")
+    print(" Not affiliated with Groww, SEBI, or AMFI.")
     print(" Type 'quit' or 'exit' to leave.")
     print("=" * 70)
     print()
